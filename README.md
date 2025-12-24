@@ -18,7 +18,7 @@ Cada colaborador debe tener:
 En la carpeta donde quieras guardar el proyecto, ejecuta:
 
 ```bash
-git clone URL_DEL_REPOSITORIO
+git clone https://github.com/Marco-Perez-Padilla/Interfaces-Inteligentes-Proyecto.git
 ```
 
 ### Abrir el proyecto en Unity Hub

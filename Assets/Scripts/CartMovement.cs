@@ -2,157 +2,102 @@ using UnityEngine;
 
 /**
  * @class CartMovement
- * @brief Controla movimiento, rotación, vibración e inclinación (roll) de la vagoneta.
+ * @brief Controla el movimiento 3D de la vagoneta.
  *
- * - Sigue un camino punto a punto
- * - Rota hacia la dirección de avance (yaw)
- * - Aplica inclinación lateral en curvas (roll)
- * - Informa a la cámara de curvatura y velocidad
+ * Incluye:
+ * - Yaw (dirección)
+ * - Roll (curvas)
+ * - Pitch (pendientes)
+ * - Velocidad dependiente de pendiente
  */
 public class CartMovement : MonoBehaviour
 {
-    // =========================
-    // REFERENCIAS
-    // =========================
-
     [Header("References")]
     public PathGenerator pathGenerator;
     public CameraShake cameraShake;
 
-    // =========================
-    // MOVIMIENTO
-    // =========================
+    [Header("Base Movement")]
+    public float baseSpeed = 2f;
+    public float rotationSmooth = 6f;
 
-    [Header("Movement Settings")]
-    public float speed = 2f;
-    public float rotationSpeed = 6f;
-
-    // =========================
-    // VIBRACIÓN
-    // =========================
-
-    [Header("Vibration Settings")]
-    public float curveInfluence = 1.2f;
-    public float speedInfluence = 0.6f;
-
-    // =========================
-    // ROLL (INCLINACIÓN)
-    // =========================
+    [Header("Speed by Slope")]
+    public float slopeAcceleration = 2f;
+    public float minSpeed = 1f;
+    public float maxSpeed = 6f;
 
     [Header("Roll Settings")]
-    [Tooltip("Ángulo máximo de inclinación lateral")]
     public float maxRollAngle = 8f;
+    public float rollSmooth = 6f;
 
-    [Tooltip("Velocidad de interpolación del roll")]
-    public float rollSmoothness = 6f;
+    [Header("Pitch Settings")]
+    public float maxPitchAngle = 10f;
+    public float pitchSmooth = 5f;
 
-    // =========================
-    // ESTADO INTERNO
-    // =========================
+    private int index = 1;
+    private float currentSpeed;
+    private Vector3 lastDir;
+    private float roll;
+    private float pitch;
 
-    private int currentIndex = 0;
-    private Vector3 lastDirection;
-    private float currentRoll = 0f;
-
-    /**
-     * @brief Inicializa la vagoneta en el primer punto del camino.
-     */
     void Start()
     {
-        if (pathGenerator != null && pathGenerator.pathPoints.Count > 0)
-        {
-            transform.position = pathGenerator.pathPoints[0];
-            currentIndex = 1;
-        }
-
-        lastDirection = transform.forward;
+        transform.position = pathGenerator.pathPoints[0];
+        lastDir = transform.forward;
+        currentSpeed = baseSpeed;
     }
 
-    /**
-     * @brief Actualiza movimiento, rotación, vibración y roll.
-     */
     void Update()
     {
-        if (pathGenerator == null) return;
-        if (currentIndex >= pathGenerator.pathPoints.Count) return;
+        if (index >= pathGenerator.pathPoints.Count) return;
 
-        MoveRotateAndRoll();
-        UpdateCameraVibration();
-    }
+        Vector3 target = pathGenerator.pathPoints[index];
+        Vector3 dir = (target - transform.position).normalized;
 
-    /**
-     * @brief Movimiento y rotación principal de la vagoneta.
-     */
-    void MoveRotateAndRoll()
-    {
-        Vector3 target = pathGenerator.pathPoints[currentIndex];
-        Vector3 direction = (target - transform.position).normalized;
-
-        // =====================
-        // YAW (rotación base)
-        // =====================
-        if (direction.sqrMagnitude > 0.001f)
-        {
-            Quaternion targetYaw = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                targetYaw,
-                rotationSpeed * Time.deltaTime
-            );
-        }
-
-        // =====================
-        // ROLL (inclinación)
-        // =====================
-
-        float signedAngle = Vector3.SignedAngle(lastDirection, direction, Vector3.up);
-
-        // Curvatura normalizada (-1 a 1)
-        float curveFactor = Mathf.Clamp(signedAngle / 45f, -1f, 1f);
-
-        float targetRoll = -curveFactor * maxRollAngle;
-
-        currentRoll = Mathf.Lerp(
-            currentRoll,
-            targetRoll,
-            rollSmoothness * Time.deltaTime
-        );
-
-        transform.rotation *= Quaternion.Euler(0f, 0f, currentRoll);
-
-        // =====================
-        // MOVIMIENTO
-        // =====================
+        UpdateSpeed(dir);
+        UpdateRotation(dir);
 
         transform.position = Vector3.MoveTowards(
             transform.position,
             target,
-            speed * Time.deltaTime
+            currentSpeed * Time.deltaTime
         );
 
         if (Vector3.Distance(transform.position, target) < 0.05f)
-        {
-            currentIndex++;
-        }
+            index++;
 
-        lastDirection = direction;
+        lastDir = dir;
+
+        UpdateCameraVibration(dir);
     }
 
-    /**
-     * @brief Ajusta la vibración según curvatura y velocidad.
-     */
-    void UpdateCameraVibration()
+    void UpdateSpeed(Vector3 dir)
     {
-        if (cameraShake == null || !cameraShake.enableShake)
-            return;
+        currentSpeed += -dir.y * slopeAcceleration * Time.deltaTime;
+        currentSpeed = Mathf.Clamp(currentSpeed, minSpeed, maxSpeed);
+    }
 
-        float curvature = Vector3.Angle(lastDirection, transform.forward) / 90f;
-        curvature = Mathf.Clamp01(curvature);
+    void UpdateRotation(Vector3 dir)
+    {
+        Quaternion yaw = Quaternion.LookRotation(new Vector3(dir.x, 0f, dir.z));
 
-        float speedFactor = Mathf.Clamp01(speed / 5f);
+        float targetPitch = -Mathf.Asin(dir.y) * Mathf.Rad2Deg;
+        targetPitch = Mathf.Clamp(targetPitch, -maxPitchAngle, maxPitchAngle);
+        pitch = Mathf.Lerp(pitch, targetPitch, pitchSmooth * Time.deltaTime);
 
-        cameraShake.dynamicFactor =
-            curvature * curveInfluence +
-            speedFactor * speedInfluence;
+        float curve = Vector3.SignedAngle(lastDir, dir, Vector3.up) / 45f;
+        float targetRoll = -Mathf.Clamp(curve, -1f, 1f) * maxRollAngle;
+        roll = Mathf.Lerp(roll, targetRoll, rollSmooth * Time.deltaTime);
+
+        transform.rotation = yaw * Quaternion.Euler(pitch, 0f, roll);
+    }
+
+    void UpdateCameraVibration(Vector3 dir)
+    {
+        if (cameraShake == null || !cameraShake.enableShake) return;
+
+        float curvature = Mathf.Abs(Vector3.SignedAngle(lastDir, dir, Vector3.up)) / 90f;
+        float speedFactor = currentSpeed / maxSpeed;
+
+        cameraShake.dynamicFactor = Mathf.Clamp01(curvature + speedFactor);
     }
 }

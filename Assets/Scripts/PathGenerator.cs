@@ -3,20 +3,18 @@ using UnityEngine;
 
 /**
  * @class PathGenerator
- * @brief Generador procedural de caminos sobre un grid ortogonal.
+ * @brief Genera un camino procedural 3D sobre un grid ortogonal cúbico.
  *
- * Genera un camino aleatorio SIN CICLOS utilizando DFS con backtracking.
- * El camino:
- *  - Es visible en el editor (sin Play)
- *  - Empieza en la vagoneta
- *  - No tiene diagonales
- *  - No repite nodos
- *  - Evita callejones sin salida prematuros
+ * Características:
+ * - Grid uniforme en X, Y y Z (usa spacing en todos los ejes)
+ * - Visualización 3D del grid mediante Gizmos
+ * - Camino sin ciclos (DFS)
+ * - Pendientes diagonales realistas (sin escalones)
+ * - No permite subir y bajar de forma inmediata
  *
- * Diseñado para ser ampliado a:
- *  - bifurcaciones
- *  - dificultad progresiva
- *  - subidas y bajadas
+ * El camino se genera en dos fases:
+ *  1) Topología X/Z (DFS)
+ *  2) Modulación vertical por niveles del grid
  */
 [ExecuteAlways]
 public class PathGenerator : MonoBehaviour
@@ -29,13 +27,13 @@ public class PathGenerator : MonoBehaviour
     [Header("Grid Settings")]
     public int seed = 0;
 
-    /** @brief Número de puntos en el eje X */
+    /** @brief Número de celdas en X */
     public int gridWidth = 10;
 
-    /** @brief Número de puntos en el eje Z */
+    /** @brief Número de celdas en Z */
     public int gridHeight = 10;
 
-    /** @brief Distancia entre puntos */
+    /** @brief Tamaño de cada celda del grid (X, Y y Z) */
     public float spacing = 2f;
 
     // ======================================================
@@ -47,30 +45,55 @@ public class PathGenerator : MonoBehaviour
     public int maxPathLength = 60;
 
     // ======================================================
+    // CONFIGURACIÓN DE ALTURA
+    // ======================================================
+
+    /** @brief Altura máxima del camino */
+    [Header("Height Settings")]
+    public float maxHeight = 6f;
+
+    /** @brief Probabilidad de iniciar una pendiente */
+    [Range(0f, 1f)]
+    public float climbChance = 0.25f;
+
+    // ======================================================
+    // VISUALIZACIÓN DEL GRID 3D
+    // ======================================================
+
+    /** @brief Número de niveles visibles del grid en Y */
+    [Header("Grid 3D Visualization")]
+    public int heightLevels = 4;
+
+    // ======================================================
     // DATOS GENERADOS
     // ======================================================
 
-    /** @brief Puntos del grid (espacio de búsqueda) */
-    [Header("Generated Data")]
+    /** @brief Todos los puntos del grid base (X/Z) */
     public List<Vector3> gridPoints = new List<Vector3>();
 
-    /** @brief Camino final generado */
+    /** @brief Camino final generado (3D) */
     public List<Vector3> pathPoints = new List<Vector3>();
 
     /** @brief Referencia a la vagoneta */
     private Transform cart;
 
     // ======================================================
-    // CICLO DE VIDA (EDITOR + RUNTIME)
+    // CICLO DE VIDA
     // ======================================================
 
+    /**
+     * @brief Se ejecuta al activar el componente.
+     */
     void OnEnable()
     {
         Generate();
     }
 
+    /**
+     * @brief Se ejecuta al modificar valores en el Inspector.
+     */
     void OnValidate()
-    {   
+    {
         ClampPathLength();
         Generate();
     }
@@ -80,44 +103,31 @@ public class PathGenerator : MonoBehaviour
     // ======================================================
 
     /**
-     * @brief Genera grid y camino completo.
+     * @brief Genera el grid, el camino y la altura.
      */
     void Generate()
     {
         if (!FindCart()) return;
 
         GenerateGrid();
-
-        int attempts = 0;
-        const int MAX_ATTEMPTS = 20;
-
-        while (attempts < MAX_ATTEMPTS)
-        {
-            Random.InitState(seed + attempts);
-            GeneratePathDFS();
-
-            if (pathPoints.Count >= maxPathLength)
-                break;
-
-            attempts++;
-        }
+        GeneratePathWithRetries();
+        ApplyVerticalVariation();
     }
 
-
     /**
-     * @brief Busca la vagoneta por tag.
+     * @brief Busca la vagoneta usando su tag.
      */
     bool FindCart()
     {
-        GameObject cartObj = GameObject.FindGameObjectWithTag("Vagoneta");
-        if (cartObj == null) return false;
+        GameObject obj = GameObject.FindGameObjectWithTag("Vagoneta");
+        if (obj == null) return false;
 
-        cart = cartObj.transform;
+        cart = obj.transform;
         return true;
     }
 
     /**
-     * @brief Genera un grid ortogonal de puntos.
+     * @brief Genera el grid ortogonal base en X/Z.
      */
     void GenerateGrid()
     {
@@ -128,22 +138,33 @@ public class PathGenerator : MonoBehaviour
         {
             for (int z = 0; z < gridHeight; z++)
             {
-                Vector3 p = origin + new Vector3(x * spacing, 0f, z * spacing);
-                gridPoints.Add(p);
+                gridPoints.Add(origin + new Vector3(x * spacing, 0f, z * spacing));
             }
         }
     }
 
-    // ======================================================
-    // CAMINO DFS + BACKTRACKING (SIN DIAGONALES)
-    // ======================================================
+    /**
+     * @brief Intenta generar un camino válido varias veces.
+     */
+    void GeneratePathWithRetries()
+    {
+        int attempts = 0;
+        const int MAX_ATTEMPTS = 20;
+
+        while (attempts < MAX_ATTEMPTS)
+        {
+            Random.InitState(seed + attempts);
+            GeneratePathDFS();
+
+            if (pathPoints.Count >= maxPathLength)
+                return;
+
+            attempts++;
+        }
+    }
 
     /**
-     * @brief Genera el camino usando DFS con backtracking.
-     *
-     * - Sin ciclos
-     * - Sin diagonales
-     * - Retrocede correctamente (sin saltos visuales)
+     * @brief Genera un camino sin ciclos usando DFS.
      */
     void GeneratePathDFS()
     {
@@ -173,11 +194,51 @@ public class PathGenerator : MonoBehaviour
             }
             else
             {
-                // Backtracking: retroceder también visualmente
                 stack.Pop();
-                if (pathPoints.Count > 0)
-                    pathPoints.RemoveAt(pathPoints.Count - 1);
+                pathPoints.RemoveAt(pathPoints.Count - 1);
             }
+        }
+    }
+
+    /**
+     * @brief Aplica altura usando niveles discretos del grid.
+     *
+     * La altura se calcula como:
+     *   nivel * spacing
+     * garantizando un grid cúbico coherente.
+     */
+    void ApplyVerticalVariation()
+    {
+        if (pathPoints.Count < 2) return;
+
+        int currentLevel = 0;
+        int maxLevel = Mathf.RoundToInt(maxHeight / spacing);
+
+        int state = 0;
+        //  1 = subir
+        //  0 = plano
+        // -1 = bajar
+
+        for (int i = 0; i < pathPoints.Count - 1; i++)
+        {
+            if (state == 0 && Random.value < climbChance)
+                state = Random.value > 0.5f ? 1 : -1;
+
+            if (state == 1 && currentLevel >= maxLevel)
+                state = 0;
+
+            if (state == -1 && currentLevel <= 0)
+                state = 0;
+
+            currentLevel += state;
+            currentLevel = Mathf.Clamp(currentLevel, 0, maxLevel);
+
+            Vector3 next = pathPoints[i + 1];
+            next.y = currentLevel * spacing;
+            pathPoints[i + 1] = next;
+
+            if (state != 0 && Random.value < 0.25f)
+                state = 0;
         }
     }
 
@@ -188,26 +249,25 @@ public class PathGenerator : MonoBehaviour
     /**
      * @brief Devuelve el punto del grid más cercano a una posición.
      */
-    Vector3 GetClosestPoint(Vector3 position)
+    Vector3 GetClosestPoint(Vector3 pos)
     {
         Vector3 closest = gridPoints[0];
-        float minDist = Vector3.Distance(position, closest);
+        float minDist = Vector3.Distance(pos, closest);
 
         foreach (Vector3 p in gridPoints)
         {
-            float d = Vector3.Distance(position, p);
+            float d = Vector3.Distance(pos, p);
             if (d < minDist)
             {
                 minDist = d;
                 closest = p;
             }
         }
-
         return closest;
     }
 
     /**
-     * @brief Obtiene vecinos ORTOGONALES no visitados (sin diagonales).
+     * @brief Obtiene vecinos ortogonales no visitados.
      */
     List<Vector3> GetOrthogonalNeighbours(Vector3 point, HashSet<Vector3> visited)
     {
@@ -217,21 +277,24 @@ public class PathGenerator : MonoBehaviour
         {
             if (visited.Contains(p)) continue;
 
-            Vector3 delta = p - point;
+            Vector3 d = p - point;
 
-            bool horizontal =
-                Mathf.Abs(delta.x - spacing) < 0.01f && Mathf.Abs(delta.z) < 0.01f ||
-                Mathf.Abs(delta.x + spacing) < 0.01f && Mathf.Abs(delta.z) < 0.01f;
+            bool moveX = Mathf.Abs(Mathf.Abs(d.x) - spacing) < 0.01f && Mathf.Abs(d.z) < 0.01f;
+            bool moveZ = Mathf.Abs(Mathf.Abs(d.z) - spacing) < 0.01f && Mathf.Abs(d.x) < 0.01f;
 
-            bool vertical =
-                Mathf.Abs(delta.z - spacing) < 0.01f && Mathf.Abs(delta.x) < 0.01f ||
-                Mathf.Abs(delta.z + spacing) < 0.01f && Mathf.Abs(delta.x) < 0.01f;
-
-            if (horizontal || vertical)
+            if (moveX || moveZ)
                 neighbours.Add(p);
         }
 
         return neighbours;
+    }
+
+    /**
+     * @brief Limita la longitud máxima del camino.
+     */
+    void ClampPathLength()
+    {
+        maxPathLength = Mathf.Clamp(maxPathLength, 1, gridWidth * gridHeight);
     }
 
     // ======================================================
@@ -239,17 +302,23 @@ public class PathGenerator : MonoBehaviour
     // ======================================================
 
     /**
-     * @brief Dibuja el grid y el camino en la Scene View.
+     * @brief Dibuja el grid 3D y el camino en la Scene View.
      */
     void OnDrawGizmos()
     {
-        // Grid
-        Gizmos.color = Color.gray;
-        foreach (Vector3 p in gridPoints)
-            Gizmos.DrawSphere(p, 0.12f);
+        // Grid 3D
+        Gizmos.color = new Color(0.6f, 0.6f, 0.6f, 0.4f);
+        for (int h = 0; h <= heightLevels; h++)
+        {
+            float y = h * spacing;
+            foreach (Vector3 p in gridPoints)
+            {
+                Gizmos.DrawSphere(new Vector3(p.x, y, p.z), 0.08f);
+            }
+        }
 
         // Camino
-        if (pathPoints == null || pathPoints.Count < 2) return;
+        if (pathPoints.Count < 2) return;
 
         Gizmos.color = Color.yellow;
         for (int i = 0; i < pathPoints.Count - 1; i++)
@@ -258,19 +327,4 @@ public class PathGenerator : MonoBehaviour
             Gizmos.DrawLine(pathPoints[i], pathPoints[i + 1]);
         }
     }
-
-    /**
-     * @brief Asegura que la longitud del camino es válida.
-     */
-    void ClampPathLength()
-    {
-        int maxPossible = gridWidth * gridHeight;
-
-        if (maxPathLength > maxPossible)
-            maxPathLength = maxPossible;
-
-        if (maxPathLength < 1)
-            maxPathLength = 1;
-    }
-
 }

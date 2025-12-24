@@ -1,6 +1,6 @@
-# 📘 README — Colaboradores del Proyecto Unity
+# README — Colaboradores del Proyecto Unity
 
-## 🔧 Requisitos previos
+## Requisitos previos
 
 Cada colaborador debe tener:
 

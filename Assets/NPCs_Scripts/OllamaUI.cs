@@ -26,41 +26,37 @@ public class OllamaUI : MonoBehaviour
     [Header("Output")]
     public FloatingText3D floatingText;
 
-    private Keyboard keyboard;
+    public delegate void LLMEvent();
+    public event LLMEvent OnPalancaDetected;
 
     [Header("Typewriter Settings")]
     public float charDelay = 0.05f; 
 
     private void OnEnable()
     {
-        if (whisperUI != null)
+        if (whisperUI != null) {
             whisperUI.OnWhisperTranscription += OnWhisperTranscribed;
+            whisperUI.OnWhisperError += OnWhisperFailed;
+        }
     }
 
     private void OnDisable()
     {
-        if (whisperUI != null)
+        if (whisperUI != null) {
             whisperUI.OnWhisperTranscription -= OnWhisperTranscribed;
-    }
-
-    void Start()
-    {
-        keyboard = Keyboard.current;
-    }
-
-    void Update()
-    {
-        if (keyboard == null) return;
-
-        if (keyboard.xKey.wasPressedThisFrame)
-        {
-            StartCoroutine(SendMessageToChatbot(texto));
+            whisperUI.OnWhisperError -= OnWhisperFailed;
         }
     }
 
     // -------------------------------
-    // Evento de Whisper
+    // Eventos de Whisper
     // -------------------------------
+    private void OnWhisperFailed()
+    {
+        Debug.Log("Whisper falló, usando el texto por defecto.");
+        StartCoroutine(DelayedSendFromWhisper(0.1f, texto)); 
+    }
+
     private void OnWhisperTranscribed()
     {
         string prompt = whisperUI.outputText.text;
@@ -137,6 +133,12 @@ public class OllamaUI : MonoBehaviour
                 if (floatingText != null)
                 {
                     StartCoroutine(TypewriterEffect(content));
+                }
+
+                if (content.ToLower().Contains("palanca"))
+                {
+                    Debug.Log("Evento LLM: 'palanca' detectada!");
+                    OnPalancaDetected?.Invoke();
                 }
             }
         }

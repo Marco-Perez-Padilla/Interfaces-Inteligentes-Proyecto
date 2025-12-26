@@ -38,10 +38,12 @@ public class WhisperUI : MonoBehaviour
         if (Keyboard.current == null) return;
 
         if (Keyboard.current.vKey.wasPressedThisFrame)
-            StartRecording();
-
-        if (Keyboard.current.vKey.wasReleasedThisFrame)
-            StopRecording();
+        {
+            if (!isRecording)
+                StartRecording();
+            else
+                StopRecording();
+        }
     }
 
     void ToggleRecording()

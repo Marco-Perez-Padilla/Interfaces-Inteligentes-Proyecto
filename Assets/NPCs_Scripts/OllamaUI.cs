@@ -3,7 +3,7 @@ using UnityEngine.Networking;
 using System.Collections;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-
+using TMPro;
 
 // Main class that manages messages sent to Ollama
 public class OllamaUI : MonoBehaviour
@@ -23,8 +23,8 @@ public class OllamaUI : MonoBehaviour
     [Header("LLM Settings")]
     private string littleLlmUrl = "http://gpu1.esit.ull.es:4000/v1/chat/completions";
 
-    [Header("Output UI")]
-    public Text llmOutputText;
+    [Header("Output")]
+    public FloatingText3D floatingText;
 
     private Keyboard keyboard;
 
@@ -75,20 +75,36 @@ public class OllamaUI : MonoBehaviour
         string json = JsonUtility.ToJson(safe);
         string safePrompt = json.Substring(10, json.Length - 12);
 
-        StartCoroutine(SendMessageToChatbot(safePrompt));
+        string npcContext = "Eres un NPC de tutorial en un juego de aventura. "
+                            + "Mantén siempre tu rol de NPC interactivo. "
+                            + "Si el jugador dice 'vale', 'ok' o 'sí', explícale que debe tirar de la palanca de la vagoneta para empezar el recorrido. "
+                            + "Si dice otra cosa, da la bienvenida al túnel del terror y asegúrate de incluir la palabra 'vagoneta'. "
+                            + "No salgas nunca de tu rol y haz que tu respuesta sea coherente con la acción del jugador.";
+
+        // Escapar el contenido
+        string escapedNpc = npcContext.Replace("\"", "\\\"").Replace("\n", "\\n");
+        string escapedUser = prompt.Replace("\"", "\\\"").Replace("\n", "\\n");
+
+        // Construir JSON de forma segura
+        string jsonPayload = "{"
+            + "\"model\": \"ollama/llama3.1:8b\","
+            + "\"messages\": ["
+            + "{\"role\": \"system\", \"content\": \"" + escapedNpc + "\"},"
+            + "{\"role\": \"user\", \"content\": \"" + escapedUser + "\"}"
+            + "]"
+            + "}";
+
+        // Enviar al LLM
+        StartCoroutine(SendMessageToChatbot(jsonPayload, true));
+
     }
 
     // -------------------------------
     // Corrutina que llama al LLM
     // -------------------------------
-    public IEnumerator SendMessageToChatbot(string message)
+    public IEnumerator SendMessageToChatbot(string jsonPayload, bool isRawPayload = false)
     {
-        Debug.Log("Entra en OllamaUI con mensaje: " + message);
-
-        string jsonPayload = "{"
-            + "\"model\": \"ollama/llama3.1:8b\","
-            + "\"messages\": [{\"role\": \"user\", \"content\": \"" + message + "\"}]"
-            + "}";
+        Debug.Log("Entra en OllamaUI con mensaje: " + jsonPayload);
 
         UnityWebRequest request = new UnityWebRequest(littleLlmUrl, "POST");
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonPayload);
@@ -118,7 +134,7 @@ public class OllamaUI : MonoBehaviour
                 content = content.Replace("\\n", "\n").Replace("\\\"", "\"");
 
             
-                if (llmOutputText != null)
+                if (floatingText != null)
                 {
                     StartCoroutine(TypewriterEffect(content));
                 }
@@ -128,10 +144,10 @@ public class OllamaUI : MonoBehaviour
 
     private IEnumerator TypewriterEffect(string fullText)
     {
-        llmOutputText.text = "";
+        floatingText.SetText("");
         foreach (char c in fullText)
         {
-            llmOutputText.text += c;
+            floatingText.SetText(floatingText.GetComponent<TextMeshPro>().text + c);
             yield return new WaitForSeconds(charDelay);
         }
     }

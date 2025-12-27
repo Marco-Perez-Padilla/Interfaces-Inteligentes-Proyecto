@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class NPCTriggerNotificator : MonoBehaviour
+public class TriggerNotificator : MonoBehaviour
 {
     public delegate void TriggerEvent();
     public event TriggerEvent OnPlayerEntered;

@@ -1,16 +1,29 @@
 using UnityEngine;
 
-public class TriggerNotificator : MonoBehaviour
+public class NPCTriggerNotificator : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public delegate void TriggerEvent();
+    public event TriggerEvent OnPlayerEntered;
+
+    public string targetTag = "Player";
+    //public bool notifyOnlyOnce = true;
+
+    //private bool notified = false;
+
+    void Awake()
     {
-        
+        GetComponent<Collider>().isTrigger = true;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter(Collider other)
     {
-        
+        //if (notified && notifyOnlyOnce)
+            //return;
+
+        if (!other.CompareTag(targetTag))
+            return;
+
+        OnPlayerEntered?.Invoke();
+        //notified = true;
     }
 }

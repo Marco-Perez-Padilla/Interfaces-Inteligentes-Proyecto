@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
 public class NPCChaser : MonoBehaviour
 {
     [Header("References")]
@@ -8,16 +7,16 @@ public class NPCChaser : MonoBehaviour
     public Transform player;
 
     [Header("Movement")]
-    public float speedMultiplier = 0.9f;          
+    public float speedMultiplier = 1.5f;          
     public float rotationSpeed = 360f;   
     
     [Header("Chase Control")]
     public float chaseDuration = 5f;
-    public float playerSpeedThreshold = 3f;
 
     private Rigidbody rb;
     private bool chasing = false;
     private float chaseTimer = 0f;
+    private float npcSpeed = 0f;
 
     void Awake()
     {
@@ -64,18 +63,6 @@ public class NPCChaser : MonoBehaviour
 
         Vector3 direction = toPlayer.normalized;
 
-        // Movement towards the player
-        float playerSpeed = GetPlayerSpeed();
-
-        // Explicación: A más lento vaya el jugador, más rápido va el npc
-        //if (playerSpeed < playerSpeedThreshold)
-        //{
-            // NPC se vuelve más rápido según qué tan lento vaya el jugador
-            //float speedFactor = 1f + (playerSpeedThreshold - playerSpeed); // +1 unidad/s por cada unidad por debajo
-            //npcSpeed = Mathf.Max(playerSpeed * speedMultiplier * speedFactor, npcMinSpeed);
-        //}
-
-        float npcSpeed = playerSpeed * speedMultiplier;
         rb.velocity = direction * npcSpeed;
 
         // Rotation towards the player
@@ -96,6 +83,8 @@ public class NPCChaser : MonoBehaviour
             player = p.transform;
         }
 
+        float playerSpeedAtEntry = GetPlayerSpeed();
+        npcSpeed = Mathf.Max(playerSpeedAtEntry * speedMultiplier, 1f);
         StartChase();
     }
 

@@ -10,7 +10,7 @@ public class WhisperUI : MonoBehaviour
     [Header("UI")]
     public Button recordButton;
     public Text statusText;
-    public Text outputText;
+    public string outputText { get; private set; }
 
     [Header("Whisper API")]
     public string whisperUrl = "http://gpu2.esit.ull.es:8000/v1/audio/transcriptions";
@@ -97,7 +97,8 @@ public class WhisperUI : MonoBehaviour
         {
             string json = request.downloadHandler.text;
             statusText.text = "Transcrito";
-            outputText.text = json;
+            outputText = json;
+            Debug.LogError(json);
             OnWhisperTranscription?.Invoke();
         }
     }

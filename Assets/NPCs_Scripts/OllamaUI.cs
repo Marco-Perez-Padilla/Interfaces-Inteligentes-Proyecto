@@ -59,7 +59,7 @@ public class OllamaUI : MonoBehaviour
 
     private void OnWhisperTranscribed()
     {
-        string prompt = whisperUI.outputText.text;
+        string prompt = whisperUI.outputText;
         StartCoroutine(DelayedSendFromWhisper(1.5f, prompt));
     }
 

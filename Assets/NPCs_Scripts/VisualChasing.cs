@@ -1,7 +1,6 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
-public class NPCChaser : MonoBehaviour
+public class VisualChasing : MonoBehaviour
 {
     [Header("References")]
     public TriggerNotificator triggerZone;

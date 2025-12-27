@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class NPCChaser : MonoBehaviour
+public class NPCChasingEvent : MonoBehaviour
 {
     [Header("References")]
     public TriggerNotificator triggerZone;

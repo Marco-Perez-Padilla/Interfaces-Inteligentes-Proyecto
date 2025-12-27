@@ -4,6 +4,7 @@ public class TriggerNotificator : MonoBehaviour
 {
     public delegate void TriggerEvent();
     public event TriggerEvent OnPlayerEntered;
+    public event TriggerEvent OnPlayerExited;
 
     public string targetTag = "Player";
     //public bool notifyOnlyOnce = true;

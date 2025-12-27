@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class NPCChaser : MonoBehaviour
 {
     [Header("References")]
@@ -7,17 +8,16 @@ public class NPCChaser : MonoBehaviour
     public Transform player;
 
     [Header("Movement")]
-    public float speedMultiplier = 1.5f;          
-    public float rotationSpeed = 360f;   
-    
+    public float npcSpeedWhileChasing = 1.5f; 
+    public float rotationSpeed = 360f;
+    public float viewAngle = 60f; 
+
     [Header("Chase Control")]
     public float chaseDuration = 5f;
-    public float speedTreshold = 1f;
 
     private Rigidbody rb;
     private bool chasing = false;
     private float chaseTimer = 0f;
-    private float npcSpeed = 0f;
 
     void Awake()
     {
@@ -27,7 +27,8 @@ public class NPCChaser : MonoBehaviour
 
     void OnEnable()
     {
-        if (triggerZone != null) {
+        if (triggerZone != null)
+        {
             triggerZone.OnPlayerEntered += OnPlayerEnteredTrigger;
             triggerZone.OnPlayerExited  += StopChase;
         }
@@ -35,7 +36,8 @@ public class NPCChaser : MonoBehaviour
 
     void OnDisable()
     {
-        if (triggerZone != null) {
+        if (triggerZone != null)
+        {
             triggerZone.OnPlayerEntered -= OnPlayerEnteredTrigger;
             triggerZone.OnPlayerExited  -= StopChase;
         }
@@ -48,9 +50,7 @@ public class NPCChaser : MonoBehaviour
 
         chaseTimer -= Time.deltaTime;
         if (chaseTimer <= 0f)
-        {
             StopChase();
-        }
     }
 
     void FixedUpdate()
@@ -61,15 +61,24 @@ public class NPCChaser : MonoBehaviour
         Vector3 toPlayer = player.position - transform.position;
         Vector3 direction = toPlayer.normalized;
 
-        rb.linearVelocity = direction * npcSpeed;
+        bool playerLooking = IsPlayerLookingAtNPC(transform, player, viewAngle);
 
-        // Rotation towards the player
-        Quaternion targetRotation = Quaternion.LookRotation(direction);
-        rb.MoveRotation(Quaternion.RotateTowards(
-            rb.rotation,
-            targetRotation,
-            rotationSpeed * Time.fixedDeltaTime
-        ));
+        if (playerLooking)
+        {
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+        else
+        {
+            rb.velocity = direction * npcSpeedWhileChasing;
+
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            rb.MoveRotation(Quaternion.RotateTowards(
+                rb.rotation,
+                targetRotation,
+                rotationSpeed * Time.fixedDeltaTime
+            ));
+        }
     }
 
     void OnPlayerEnteredTrigger()
@@ -81,8 +90,6 @@ public class NPCChaser : MonoBehaviour
             player = p.transform;
         }
 
-        float playerSpeedAtEntry = GetPlayerSpeed();
-        npcSpeed = Mathf.Max(playerSpeedAtEntry * speedMultiplier, speedTreshold);
         StartChase();
     }
 
@@ -96,17 +103,16 @@ public class NPCChaser : MonoBehaviour
     public void StopChase()
     {
         chasing = false;
-        rb.linearVelocity = Vector3.zero;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
     }
 
-    float GetPlayerSpeed()
+    bool IsPlayerLookingAtNPC(Transform npc, Transform player, float viewAngle = 60f)
     {
-        if (player == null) return 5f;
+        Vector3 toNPC = npc.position - player.position;
+        Vector3 playerForward = player.forward;
 
-        Rigidbody playerRb = player.GetComponent<Rigidbody>();
-        if (playerRb != null)
-            return Mathf.Max(playerRb.linearVelocity.magnitude, 0.1f);
-
-        return 5f;
+        float angle = Vector3.Angle(playerForward, toNPC);
+        return angle < viewAngle / 2f;
     }
 }

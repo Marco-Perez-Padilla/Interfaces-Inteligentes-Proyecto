@@ -64,12 +64,12 @@ public class VisualChasing : MonoBehaviour
 
         if (playerLooking)
         {
-            rb.velocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
         }
         else
         {
-            rb.velocity = direction * npcSpeedWhileChasing;
+            rb.linearVelocity = direction * npcSpeedWhileChasing;
 
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             rb.MoveRotation(Quaternion.RotateTowards(
@@ -102,7 +102,7 @@ public class VisualChasing : MonoBehaviour
     public void StopChase()
     {
         chasing = false;
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
     }
 

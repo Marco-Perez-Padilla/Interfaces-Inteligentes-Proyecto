@@ -12,6 +12,7 @@ public class NPCChaser : MonoBehaviour
     
     [Header("Chase Control")]
     public float chaseDuration = 5f;
+    public float speedTreshold = 1f;
 
     private Rigidbody rb;
     private bool chasing = false;
@@ -84,7 +85,7 @@ public class NPCChaser : MonoBehaviour
         }
 
         float playerSpeedAtEntry = GetPlayerSpeed();
-        npcSpeed = Mathf.Max(playerSpeedAtEntry * speedMultiplier, 1f);
+        npcSpeed = Mathf.Max(playerSpeedAtEntry * speedMultiplier, speedTreshold);
         StartChase();
     }
 

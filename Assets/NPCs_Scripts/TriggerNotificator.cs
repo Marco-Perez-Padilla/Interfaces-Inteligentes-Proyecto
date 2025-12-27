@@ -26,4 +26,12 @@ public class TriggerNotificator : MonoBehaviour
         OnPlayerEntered?.Invoke();
         //notified = true;
     }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag(targetTag))
+            return;
+
+        OnPlayerExited?.Invoke();
+    }
 }

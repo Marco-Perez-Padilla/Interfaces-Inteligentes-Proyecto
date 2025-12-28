@@ -24,4 +24,17 @@ public class PathNode
 
   /** @brief Marca de nodo de fusión (Pf). */ 
   public bool isMergeNode;
+
+  /** @brief ¿Este nodo presenta una decisión jugable real? */
+  public bool isDecisionNode;
+
+  /** @brief Salidas válidas para el jugador (solo si isDecisionNode) */
+  public List<PathNode> decisionExits = new();
+
+  /** @brief Nodo primordial (inicio protegido) */
+  public bool isPrimordial;
+  /** @brief Puede iniciar una subruta desde el main path */
+  public bool canStartSubPath;
+    /** @brief Puede recibir una subruta (entrada válida) */
+  public bool canReceiveSubPath;
 }

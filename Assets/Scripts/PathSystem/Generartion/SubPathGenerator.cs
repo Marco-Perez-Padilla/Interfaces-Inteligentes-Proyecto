@@ -3,11 +3,11 @@ using UnityEngine;
 
 /**
  * @file SubPathGenerator.cs
- * @brief Genera subrutas topológicas cerradas (FASE 1).
+ * @brief Genera subrutas topológicas 2D cerradas (Fase 1).
  *
- * Reglas Fase 1:
+ * Reglas:
  * - Sale una sola vez del main path (Pi)
- * - Tiene un Pj elegido previamente
+ * - Tiene un Pj posterior en el main
  * - No pisa el main salvo Pi y Pj
  * - No se ramifica
  * - Si no llega a Pj, se descarta
@@ -21,6 +21,9 @@ public class SubPathGenerator
     this.grid = grid;
   }
 
+  /**
+   * @brief Intenta generar una subruta desde Pi.
+   */
   public List<PathNode> Generate(
       PathNode pi,
       List<PathNode> mainPath,
@@ -34,48 +37,52 @@ public class SubPathGenerator
     // -----------------------------
     // Selección de Pj
     // -----------------------------
-    List<PathNode> possiblePj = new();
+    List<PathNode> candidates = new();
+    for (int i = piIndex + minLength; i < mainPath.Count; i++)
+      candidates.Add(mainPath[i]);
 
-    for (int i = piIndex + minLength; i < mainPath.Count - 1; i++)
+    Shuffle(candidates);
+
+    foreach (var pj in candidates)
     {
-      if (!mainPath[i].isDP)
-        possiblePj.Add(mainPath[i]);
+      var sub = TryGenerate(pi, pj, mainPath, subId, minLength);
+      if (sub != null)
+        return sub;
     }
 
-    if (possiblePj.Count == 0)
-      return null;
+    return null;
+  }
 
-    PathNode pj = possiblePj[Random.Range(0, possiblePj.Count)];
+  // ======================================================
+  // DFS dirigido Pi -> Pj
+  // ======================================================
 
-    // -----------------------------
-    // DFS dirigido Pi -> Pj
-    // -----------------------------
-    HashSet<Vector3> visited = new();
+  private List<PathNode> TryGenerate(
+      PathNode pi,
+      PathNode pj,
+      List<PathNode> mainPath,
+      int subId,
+      int minLength)
+  {
     HashSet<Vector3> forbidden = new();
-
     foreach (var n in mainPath)
     {
       if (n != pi && n != pj)
         forbidden.Add(n.position);
     }
 
-    List<Vector3> rawPath = GenerateDirectedDFS(
+    List<Vector3> raw = GenerateDFS(
         pi.position,
         pj.position,
-        visited,
         forbidden,
         minLength
     );
 
-    if (rawPath == null || rawPath.Count < minLength)
+    if (raw == null)
       return null;
 
-    // -----------------------------
-    // Construcción PathNode
-    // -----------------------------
     List<PathNode> sub = new();
-
-    foreach (var p in rawPath)
+    foreach (var p in raw)
     {
       sub.Add(new PathNode
       {
@@ -85,12 +92,14 @@ public class SubPathGenerator
       });
     }
 
+    // Conexiones internas
     for (int i = 0; i < sub.Count - 1; i++)
     {
       sub[i].connections.Add(sub[i + 1]);
       sub[i + 1].connections.Add(sub[i]);
     }
 
+    // Conexiones con main
     pi.connections.Add(sub[0]);
     sub[0].connections.Add(pi);
 
@@ -100,29 +109,25 @@ public class SubPathGenerator
     return sub;
   }
 
-  // ======================================================
-  // DFS DIRIGIDO
-  // ======================================================
-
-  private List<Vector3> GenerateDirectedDFS(
+  private List<Vector3> GenerateDFS(
       Vector3 start,
       Vector3 goal,
-      HashSet<Vector3> visited,
       HashSet<Vector3> forbidden,
       int minLength)
   {
     Stack<Vector3> stack = new();
     Dictionary<Vector3, Vector3> parent = new();
+    HashSet<Vector3> visited = new();
 
     stack.Push(start);
     visited.Add(start);
 
     while (stack.Count > 0)
     {
-      Vector3 current = stack.Pop();
+      var current = stack.Pop();
 
       if (current == goal && visited.Count >= minLength)
-        return ReconstructPath(parent, start, goal);
+        return Reconstruct(parent, start, goal);
 
       var neighbours = grid.GetNeighbours(current);
       Shuffle(neighbours);
@@ -141,7 +146,7 @@ public class SubPathGenerator
     return null;
   }
 
-  private List<Vector3> ReconstructPath(
+  private List<Vector3> Reconstruct(
       Dictionary<Vector3, Vector3> parent,
       Vector3 start,
       Vector3 end)
@@ -152,10 +157,8 @@ public class SubPathGenerator
 
     while (current != start)
     {
-      if (!parent.ContainsKey(current))
+      if (!parent.TryGetValue(current, out current))
         return null;
-
-      current = parent[current];
       path.Add(current);
     }
 
@@ -163,7 +166,7 @@ public class SubPathGenerator
     return path;
   }
 
-  private void Shuffle(List<Vector3> list)
+  private void Shuffle<T>(List<T> list)
   {
     for (int i = 0; i < list.Count; i++)
     {

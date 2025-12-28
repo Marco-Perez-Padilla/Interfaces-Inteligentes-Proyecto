@@ -3,13 +3,13 @@ using UnityEngine;
 
 /**
  * @file HeightModulator.cs
- * @brief Aplica variación vertical sin romper la topología del grafo.
+ * @brief Aplica altura a caminos sin alterar la topología.
  *
- * Reglas:
- * - El main path tiene un tramo inicial plano
- * - Las subrutas salen planas desde Pi
- * - Nunca se sube/baja en el nodo de salida
- * - El nodo de fusión SIEMPRE hereda la altura del main
+ * Reglas clave:
+ * - La altura NO crea bifurcaciones
+ * - La altura pertenece al tramo, no al nodo
+ * - Las subrutas heredan la altura del Pi
+ * - La fusión fuerza coincidencia exacta en Y
  */
 public static class HeightModulator
 {
@@ -17,42 +17,62 @@ public static class HeightModulator
   // MAIN PATH
   // ======================================================
 
+  /**
+   * @brief Aplica altura al camino principal.
+   *
+   * @param path Camino principal
+   * @param spacing Tamaño del grid
+   * @param maxHeight Altura máxima absoluta
+   * @param climbChance Probabilidad de cambiar estado vertical
+   * @param flatStartLength Nodos iniciales planos
+   */
   public static void ApplyToMain(
-      List<PathNode> main,
-      float stepHeight,
+      List<PathNode> path,
+      float spacing,
       float maxHeight,
       float climbChance,
       int flatStartLength)
   {
-    if (main == null || main.Count < 2)
+    if (path == null || path.Count < 2)
       return;
 
-    int maxLevel = Mathf.RoundToInt(maxHeight / stepHeight);
-    int currentLevel = 0;
-    int direction = 0;
+    int maxLevel = Mathf.RoundToInt(maxHeight / spacing);
 
-    for (int i = 0; i < main.Count; i++)
+    int currentLevel = 0;
+    int verticalState = 0;
+    // -1 = bajando, 0 = plano, 1 = subiendo
+
+    for (int i = 0; i < path.Count; i++)
     {
+      // Inicio plano garantizado
       if (i < flatStartLength)
       {
-        SetHeight(main[i], 0f);
+        SetHeight(path[i], 0f);
         continue;
       }
 
-      if (direction == 0 && Random.value < climbChance)
-        direction = Random.value > 0.5f ? 1 : -1;
+      // Cambio de estado SOLO si estamos planos
+      if (verticalState == 0 && Random.value < climbChance)
+        verticalState = Random.value > 0.5f ? 1 : -1;
 
-      if (direction == 1 && currentLevel >= maxLevel)
-        direction = 0;
+      // Límites
+      if (verticalState == 1 && currentLevel >= maxLevel)
+        verticalState = 0;
 
-      if (direction == -1 && currentLevel <= 0)
-        direction = 0;
+      if (verticalState == -1 && currentLevel <= 0)
+        verticalState = 0;
 
-      currentLevel = Mathf.Clamp(currentLevel + direction, 0, maxLevel);
-      SetHeight(main[i], currentLevel * stepHeight);
+      currentLevel = Mathf.Clamp(
+          currentLevel + verticalState,
+          0,
+          maxLevel
+      );
 
-      if (Random.value < 0.25f)
-        direction = 0;
+      SetHeight(path[i], currentLevel * spacing);
+
+      // Salida natural a plano
+      if (verticalState != 0 && Random.value < 0.25f)
+        verticalState = 0;
     }
   }
 
@@ -60,69 +80,76 @@ public static class HeightModulator
   // SUB PATH
   // ======================================================
 
+  /**
+   * @brief Aplica altura a una subruta.
+   *
+   * Reglas:
+   * - Hereda la altura del Pi
+   * - Tramo inicial plano
+   * - Fusión fuerza altura exacta en Pj
+   */
   public static void ApplyToSubPath(
-      List<PathNode> sub,
+      List<PathNode> subPath,
       int flatExitLength,
-      float stepHeight,
+      float spacing,
       float maxHeight,
       float climbChance)
   {
-    if (sub == null || sub.Count == 0)
+    if (subPath == null || subPath.Count < 2)
       return;
 
-    // Altura base = nodo Pi (conectado al main)
-    PathNode pi = sub[0].connections.Find(n => n.pathType == PathType.Main);
-    float baseHeight = pi != null ? pi.position.y : 0f;
+    int maxLevel = Mathf.RoundToInt(maxHeight / spacing);
 
-    int maxLevel = Mathf.RoundToInt(maxHeight / stepHeight);
-    int currentLevel = Mathf.RoundToInt(baseHeight / stepHeight);
-    int direction = 0;
+    // Heredar altura del Pi
+    float startY = subPath[0].position.y;
+    int currentLevel = Mathf.RoundToInt(startY / spacing);
 
-    for (int i = 0; i < sub.Count; i++)
+    int verticalState = 0;
+
+    for (int i = 0; i < subPath.Count; i++)
     {
-      PathNode node = sub[i];
-
-      // Tramo de salida plano
+      // Tramo plano inicial
       if (i < flatExitLength)
       {
-        SetHeight(node, baseHeight);
+        SetHeight(subPath[i], currentLevel * spacing);
         continue;
       }
 
-      // Último nodo: interpolar hacia merge
-      if (i == sub.Count - 1 &&
-          node.connections.Exists(c => c.isMergeNode))
+      if (verticalState == 0 && Random.value < climbChance)
+        verticalState = Random.value > 0.5f ? 1 : -1;
+
+      if (verticalState == 1 && currentLevel >= maxLevel)
+        verticalState = 0;
+
+      if (verticalState == -1 && currentLevel <= 0)
+        verticalState = 0;
+
+      currentLevel = Mathf.Clamp(
+          currentLevel + verticalState,
+          0,
+          maxLevel
+      );
+
+      SetHeight(subPath[i], currentLevel * spacing);
+
+      if (Random.value < 0.3f)
+        verticalState = 0;
+    }
+
+    // Forzar fusión exacta (último nodo)
+    PathNode last = subPath[^1];
+    foreach (var c in last.connections)
+    {
+      if (c.pathType == PathType.Main)
       {
-        PathNode merge = node.connections.Find(c => c.isMergeNode);
-        float y = Mathf.Lerp(
-            currentLevel * stepHeight,
-            merge.position.y,
-            0.85f
-        );
-
-        SetHeight(node, y);
-        continue;
+        SetHeight(last, c.position.y);
+        break;
       }
-
-      if (direction == 0 && Random.value < climbChance)
-        direction = Random.value > 0.5f ? 1 : -1;
-
-      if (direction == 1 && currentLevel >= maxLevel)
-        direction = 0;
-
-      if (direction == -1 && currentLevel <= 0)
-        direction = 0;
-
-      currentLevel = Mathf.Clamp(currentLevel + direction, 0, maxLevel);
-      SetHeight(node, currentLevel * stepHeight);
-
-      if (Random.value < 0.25f)
-        direction = 0;
     }
   }
 
   // ======================================================
-  // UTILIDAD
+  // UTIL
   // ======================================================
 
   private static void SetHeight(PathNode node, float y)

@@ -44,3 +44,8 @@ AddressableAssetsData/*/*.bin*
 .idea/
 .vs/
 Proyecto.sln/
+
+# ======================
+# Compiled files
+# ======================
+*.meta

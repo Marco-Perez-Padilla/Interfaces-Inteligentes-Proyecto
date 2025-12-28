@@ -635,7 +635,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WhisperUI
   recordButton: {fileID: 56296292}
   statusText: {fileID: 915158503}
-  outputText: {fileID: 1105385143}
   whisperUrl: http://gpu2.esit.ull.es:8000/v1/audio/transcriptions
   model: medium
 --- !u!4 &938306977

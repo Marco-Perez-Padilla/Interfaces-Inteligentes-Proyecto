@@ -37,6 +37,7 @@ public class NoiseDetector : MonoBehaviour
     private AudioClip clip;
     private string micName;
     private bool isRecording = false;
+    private Transform playerTransform; 
 
     void Awake()
     {
@@ -46,12 +47,14 @@ public class NoiseDetector : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Player")) return;
+        playerTransform = other.transform;
         StartRecording();
     }
 
     void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Player")) return;
+        playerTransform = null;
         StopRecording();
     }
 
@@ -85,7 +88,8 @@ public class NoiseDetector : MonoBehaviour
 
         if(frequencyFilteredRMS > threshold)
         {
-            OnNoiseDetected?.Invoke(transform.position, frequencyFilteredRMS);
+            Vector3 noisePosition = playerTransform != null ? playerTransform.position : transform.position;
+            OnNoiseDetected?.Invoke(noisePosition, frequencyFilteredRMS);
         }
     }
 }

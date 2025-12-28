@@ -351,8 +351,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PathGizmosDrawer
   generator: {fileID: 1125221323}
   debugMode: 0
-  mainNodeRadius: 0.5
-  subNodeRadius: 0.2
+  drawGrid: 1
+  gridHeightLevels: 4
+  gridHeightStep: 2
 --- !u!114 &1125221323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -368,15 +369,12 @@ MonoBehaviour:
   cartTransform: {fileID: 1686061188}
   width: 10
   height: 10
-  spacing: 6
-  maxMainLength: 30
+  spacing: 2
+  maxMainLength: 40
   minSubLength: 4
-  maxHeight: 10
-  climbChance: 0
-  flatStartLength: 3
-  flatSubStartLength: 3
-  primordialNodes: 3
-  subPathCooldown: 3
+  maxHeight: 6
+  climbChance: 0.263
+  flatStartLength: 5
   useRandomSeed: 0
   seed: 1234
   regenerateInEditor: 1
@@ -395,7 +393,6 @@ GameObject:
   - component: {fileID: 1686061184}
   - component: {fileID: 1686061189}
   - component: {fileID: 1686061190}
-  - component: {fileID: 1686061191}
   m_Layer: 0
   m_Name: Vagoneta
   m_TagString: Vagoneta
@@ -535,10 +532,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e4786ea65743e34693aa8a666b9dec0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CartMovement
-  pathGenerator: {fileID: 1125221323}
-  cameraShake: {fileID: 0}
+  pathGenerator: {fileID: 0}
+  cameraShake: {fileID: 804551024}
   speed: 2
-  rotationSpeed: 3
+  rotationSpeed: 6
 --- !u!114 &1686061190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -553,21 +550,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CartMount
   seatPoint: {fileID: 380383737}
   cartMovement: {fileID: 1686061189}
---- !u!114 &1686061191
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1686061183}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13ac0a396ab5ee34db53a4f81b54f090, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DecisionController
-  cart: {fileID: 1686061189}
-  selectedIndex: 0
-  waitingForDecision: 0
 --- !u!1 &1854954950
 GameObject:
   m_ObjectHideFlags: 0

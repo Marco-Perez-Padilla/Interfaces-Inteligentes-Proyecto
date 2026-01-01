@@ -23,6 +23,7 @@ public class NoiseDetector : MonoBehaviour
 {
     [Header("Zone Settings")]
     public float threshold = 0.1f; // Nivel de ruido para disparar evento
+    public float highNoiseThreshold = 1f; // Disparar evento con muy alto ruido
     public float minFrequency = 100f; // Ignorar ruido bajo (ventilador)
     public float maxFrequency = 5000f; // Ignorar ruido muy agudo
     public int windowSize = 1024; 
@@ -33,6 +34,7 @@ public class NoiseDetector : MonoBehaviour
 
     public delegate void NoiseEvent(Vector3 position, float intensity);
     public event NoiseEvent OnNoiseDetected;
+    public event NoiseEvent OnHighNoiseDetected;
 
     private AudioClip clip;
     private string micName;
@@ -85,6 +87,12 @@ public class NoiseDetector : MonoBehaviour
 
         // filtrar ruido
         float frequencyFilteredRMS = rms; 
+        if(frequencyFilteredRMS > highNoiseThreshold)
+        {
+            Vector3 noisePosition = playerTransform != null ? playerTransform.position : transform.position;
+            OnHighNoiseDetected?.Invoke(noisePosition, frequencyFilteredRMS);
+            return;
+        }
 
         if(frequencyFilteredRMS > threshold)
         {

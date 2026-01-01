@@ -1,40 +1,40 @@
 using System.Collections.Generic;
-using UnityEngine; 
+using UnityEngine;
 
-/** 
- * @file PathNode.cs 
- * @brief Nodo lógico del sistema de caminos. 
- * Un PathNode representa un punto navegable del grafo. 
- * No contiene lógica de movimiento ni decisiones de jugador. 
+/**
+ * @file PathNode.cs
+ * @brief Nodo lógico único del sistema de caminos.
+ *
+ * REGLA FUNDAMENTAL:
+ * - Existe UN SOLO PathNode por posición X/Y/Z en todo el grafo.
+ * - La posición define la identidad del nodo.
  */
-public class PathNode 
-{ 
-  /** @brief Posición mundial del nodo. */ 
+public class PathNode
+{
+  /** Posición mundial exacta */
   public Vector3 position;
-  /** @brief Tipo de camino al que pertenece. */ 
-  public PathType pathType;
-  /** @brief Identificador del camino (0 = main, 1..N = subrutas). */ 
-  public int pathId; 
-  /** @brief Conexiones navegables desde este nodo. */ 
-  public List<PathNode> connections = new(); 
-  /** @brief Marca de punto seguro (DP). */ 
-  public bool isDP; 
-  /** @brief Marca de punto de salida de subruta (Pi). */ 
-  public bool isPi; 
 
-  /** @brief Marca de nodo de fusión (Pf). */ 
+  /** Tipo dominante del camino */
+  public PathType pathType;
+
+  /** Conexiones navegables */
+  public List<PathNode> connections = new();
+
+  /** Punto seguro (DP) */
+  public bool isDP;
+
+  /** Punto de salida de subruta (Pi) */
+  public bool isPi;
+
+  /** Nodo de fusión con el main path */
   public bool isMergeNode;
 
-  /** @brief ¿Este nodo presenta una decisión jugable real? */
+  /** Nodo con decisión jugable */
   public bool isDecisionNode;
-
-  /** @brief Salidas válidas para el jugador (solo si isDecisionNode) */
   public List<PathNode> decisionExits = new();
 
-  /** @brief Nodo primordial (inicio protegido) */
+  /** Nodo primordial */
   public bool isPrimordial;
-  /** @brief Puede iniciar una subruta desde el main path */
   public bool canStartSubPath;
-    /** @brief Puede recibir una subruta (entrada válida) */
   public bool canReceiveSubPath;
 }

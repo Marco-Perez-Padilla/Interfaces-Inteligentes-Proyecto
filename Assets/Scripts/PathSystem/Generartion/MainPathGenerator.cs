@@ -3,53 +3,46 @@ using UnityEngine;
 
 /**
  * @file MainPathGenerator.cs
- * @brief Genera el camino principal usando DFS con backtracking y reintentos.
- *
- * Características:
- * - Parte desde la posición real de la vagoneta
- * - No deja caminos inconexos
- * - No genera rutas rechazadas
- * - Respeta el límite natural del grid
- * - Reintenta con seeds derivadas
+ * @brief Genera el camino principal sin ciclos.
  */
 public class MainPathGenerator
 {
     private readonly Grid2D grid;
     private readonly Transform cart;
+    private readonly PathGraph graph;
 
-    private const int MAX_ATTEMPTS = 20;
-
-    public MainPathGenerator(Grid2D grid, Transform cart)
+    public MainPathGenerator(Grid2D grid, Transform cart, PathGraph graph)
     {
         this.grid = grid;
         this.cart = cart;
+        this.graph = graph;
     }
 
-    /**
-     * @brief Genera el camino principal.
-     */
-    public List<PathNode> Generate(
-        int seed,
-        int maxLength)
+    public List<PathNode> Generate(int seed, int maxLength)
     {
         Vector3 start = GetClosestPoint(cart.position);
+        Random.InitState(seed);
 
-        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++)
+        List<Vector3> raw = GenerateDFS(start, maxLength);
+
+        List<PathNode> path = new();
+
+        for (int i = 0; i < raw.Count; i++)
         {
-            Random.InitState(seed + attempt);
+            PathNode node = graph.GetOrCreateNode(raw[i], PathType.Main);
+            path.Add(node);
 
-            List<Vector3> rawPath = GenerateDFS(start, maxLength);
-
-            if (rawPath.Count >= maxLength)
-                return ConvertToPathNodes(rawPath);
+            if (i > 0)
+            {
+                Connect(path[i - 1], node);
+            }
         }
 
-        // Fallback: devuelve lo mejor que haya
-        return ConvertToPathNodes(GenerateDFS(start, maxLength));
+        return path;
     }
 
     // ======================================================
-    // DFS REAL CON BACKTRACKING
+    // DFS 2D
     // ======================================================
 
     private List<Vector3> GenerateDFS(Vector3 start, int maxLength)
@@ -65,7 +58,7 @@ public class MainPathGenerator
         while (stack.Count > 0 && result.Count < maxLength)
         {
             Vector3 current = stack.Peek();
-            List<Vector3> neighbours = GetUnvisitedNeighbours(current, visited);
+            var neighbours = GetUnvisitedNeighbours(current, visited);
 
             if (neighbours.Count > 0)
             {
@@ -84,68 +77,38 @@ public class MainPathGenerator
         return result;
     }
 
-    // ======================================================
-    // CONVERSIÓN A NODOS
-    // ======================================================
-
-    private List<PathNode> ConvertToPathNodes(List<Vector3> raw)
+    private List<Vector3> GetUnvisitedNeighbours(Vector3 p, HashSet<Vector3> visited)
     {
-        List<PathNode> nodes = new();
-
-        for (int i = 0; i < raw.Count; i++)
-        {
-            nodes.Add(new PathNode
-            {
-                position = raw[i],
-                pathType = PathType.Main,
-                pathId = 0
-            });
-        }
-
-        // Conexiones lineales
-        for (int i = 0; i < nodes.Count - 1; i++)
-        {
-            nodes[i].connections.Add(nodes[i + 1]);
-            nodes[i + 1].connections.Add(nodes[i]);
-        }
-
-        return nodes;
+        List<Vector3> result = new();
+        foreach (var n in grid.GetNeighbours(p))
+            if (!visited.Contains(n))
+                result.Add(n);
+        return result;
     }
-
-    // ======================================================
-    // UTILIDADES
-    // ======================================================
 
     private Vector3 GetClosestPoint(Vector3 pos)
     {
         Vector3 closest = grid.points[0];
-        float minDist = Vector3.Distance(pos, closest);
+        float min = Vector3.Distance(pos, closest);
 
         foreach (var p in grid.points)
         {
             float d = Vector3.Distance(pos, p);
-            if (d < minDist)
+            if (d < min)
             {
-                minDist = d;
+                min = d;
                 closest = p;
             }
         }
-
         return closest;
     }
 
-    private List<Vector3> GetUnvisitedNeighbours(
-        Vector3 p,
-        HashSet<Vector3> visited)
+    private void Connect(PathNode a, PathNode b)
     {
-        List<Vector3> result = new();
-
-        foreach (var n in grid.GetNeighbours(p))
+        if (!a.connections.Contains(b))
         {
-            if (!visited.Contains(n))
-                result.Add(n);
+            a.connections.Add(b);
+            b.connections.Add(a);
         }
-
-        return result;
     }
 }

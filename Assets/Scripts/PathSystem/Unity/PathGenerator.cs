@@ -8,8 +8,11 @@ using UnityEngine;
  * Responsabilidades:
  * - Inicializar grid
  * - Generar camino principal (DFS con backtracking)
- * - Generar subrutas (Fase 1)
- * - Aplicar altura (Fase 2)
+ * - Resolver reglas de nodos primordiales y cooldown
+ * - Generar subrutas (fase topológica)
+ * - Aplicar altura (fase visual)
+ * - Limitar pendientes máximas (≤ 45°)
+ * - Resolver decisiones jugables
  */
 [ExecuteAlways]
 public class PathGenerator : MonoBehaviour
@@ -43,13 +46,13 @@ public class PathGenerator : MonoBehaviour
   // ======================================================
 
   [Header("Height")]
-  public float maxHeight = 6f; /// Altura máxima absoluta
-  [Range(0f, 1f)] public float climbChance = 0.25f; // Probabilidad de cambio vertical
-  public int flatStartLength = 5; // Nodos iniciales planos
-  public int flatSubStartLength = 2; // Nodos iniciales planos en subrutas
+  public float maxHeight = 6f;                 // Altura máxima absoluta
+  [Range(0f, 1f)] public float climbChance = 0.25f;
+  public int flatStartLength = 5;              // Main path plano inicial
+  public int flatSubStartLength = 2;            // Subruta plana inicial
 
   // ======================================================
-  // SUBPATH RULES  
+  // SUBPATH RULES
   // ======================================================
 
   [Header("SubPath Rules")]
@@ -75,6 +78,7 @@ public class PathGenerator : MonoBehaviour
   // DATA
   // ======================================================
 
+  [Header("Generated Data")]
   public PathGraph graph = new();
 
   private Grid2D grid;
@@ -89,17 +93,17 @@ public class PathGenerator : MonoBehaviour
   }
 
 #if UNITY_EDITOR
-    void OnValidate()
-    {
-        if (!regenerateInEditor || Application.isPlaying)
-            return;
+  void OnValidate()
+  {
+    if (!regenerateInEditor || Application.isPlaying)
+      return;
 
-        if (useRandomSeed)
-            seed = System.Environment.TickCount;
+    if (useRandomSeed)
+      seed = System.Environment.TickCount;
 
-        Generate();
-        UnityEditor.SceneView.RepaintAll();
-    }
+    Generate();
+    UnityEditor.SceneView.RepaintAll();
+  }
 #endif
 
   // ======================================================
@@ -114,18 +118,22 @@ public class PathGenerator : MonoBehaviour
       return;
     }
 
+    // -------------------------
+    // RESET
+    // -------------------------
     graph = new PathGraph();
     Random.InitState(seed);
 
-    // Grid base
+    // -------------------------
+    // GRID BASE
+    // -------------------------
     grid = new Grid2D(transform.position, width, height, spacing);
 
-    // =========================
+    // -------------------------
     // MAIN PATH
-    // =========================
-
+    // -------------------------
     MainPathGenerator mainGen =
-        new MainPathGenerator(grid, cartTransform);
+        new MainPathGenerator(grid, cartTransform, graph);
 
     graph.mainPath = mainGen.Generate(seed, maxMainLength);
 
@@ -135,7 +143,9 @@ public class PathGenerator : MonoBehaviour
       return;
     }
 
-    // Altura main path 
+    // -------------------------
+    // ALTURA MAIN PATH
+    // -------------------------
     HeightModulator.ApplyToMain(
         graph.mainPath,
         spacing,
@@ -144,27 +154,41 @@ public class PathGenerator : MonoBehaviour
         flatStartLength
     );
 
-    // =========================
-    // SUB PATHS 
-    // =========================
+    // =====================================================
+    // REGLAS DE GAMEPLAY (ANTES DE SUBRUTAS)
+    // =====================================================
 
-    SubPathGenerator subGen = new SubPathGenerator(grid);
+    SubPathCooldownResolver.Apply(
+        graph.mainPath,
+        primordialNodes,
+        subPathCooldown
+    );
 
-    int subId = 1;
-    for (int i = 3; i < graph.mainPath.Count - 3; i += 5)
+    // -------------------------
+    // SUB PATHS (FASE TOPOLOGÍA)
+    // -------------------------
+    SubPathGenerator subGen = new SubPathGenerator(grid, graph);
+
+    for (int i = primordialNodes; i < graph.mainPath.Count - 3; i += 5)
     {
-      var sub = subGen.Generate(
-          graph.mainPath[i],
-          graph.mainPath,
-          subId++,
-          minSubLength
-      );
+      PathNode pi = graph.mainPath[i];
+
+      // Respeta cooldown y primordiales
+      if (!pi.canStartSubPath)
+        continue;
+
+      PathNode pj =
+          graph.mainPath[Random.Range(0, graph.mainPath.Count)];
+
+      var sub = subGen.Generate(pi, pj, minSubLength);
 
       if (sub != null && sub.Count > 0)
         graph.subPaths.Add(sub);
     }
 
-    // Altura subrutas
+    // -------------------------
+    // ALTURA SUBRUTAS
+    // -------------------------
     foreach (var sub in graph.subPaths)
     {
       HeightModulator.ApplyToSubPath(
@@ -176,13 +200,15 @@ public class PathGenerator : MonoBehaviour
       );
     }
 
-    DecisionResolver.Resolve(graph);
+    // =====================================================
+    // LIMITADOR DE PENDIENTES (≤ 45°)
+    // =====================================================
+    SlopeLimiter.Apply(graph, spacing);
 
-    SubPathCooldownResolver.Apply(
-      graph.mainPath,
-      primordialNodes,
-      subPathCooldown
-    );
+    // -------------------------
+    // RESOLUCIÓN FINAL
+    // -------------------------
+    DecisionResolver.Resolve(graph);
   }
 
   // ======================================================

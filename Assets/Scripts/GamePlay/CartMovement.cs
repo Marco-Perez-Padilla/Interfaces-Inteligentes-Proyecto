@@ -2,17 +2,17 @@ using UnityEngine;
 
 /**
  * @file CartMovement.cs
- * @brief Controla el movimiento de la vagoneta a través del camino principal.
+ * @brief Maneja el movimiento de la vagoneta a lo largo del main path.
  *
- * Este componente solo debe inicializarse en Play Mode.
- * Si el PathGenerator aún no ha generado un camino válido,
- * el movimiento se desactiva y se muestra un warning.
+ * Este script:
+ * - Mueve la vagoneta
+ * - NO toma decisiones
+ * - NO toca CartDecisionController
  */
 public class CartMovement : MonoBehaviour
 {
     [Header("References")]
     public PathGenerator pathGenerator;
-    public CameraShake cameraShake;
 
     [Header("Movement Settings")]
     public float speed = 2f;
@@ -20,40 +20,28 @@ public class CartMovement : MonoBehaviour
 
     private PathNode currentNode;
     private PathNode targetNode;
-    private Vector3 lastDirection;
+    public bool allowAdvance = true;
 
     void Start()
     {
-        // IMPORTANTE: nunca inicializar en Editor
         if (!Application.isPlaying)
             return;
 
-        if (pathGenerator == null ||
-            pathGenerator.graph == null ||
-            pathGenerator.graph.mainPath == null ||
-            pathGenerator.graph.mainPath.Count < 2)
+        if (pathGenerator.graph.mainPath.Count < 2)
         {
-            Debug.LogWarning(
-                "CartMovement: PathGenerator no válido o camino principal insuficiente."
-            );
             enabled = false;
             return;
         }
 
-        // Arranque en el primer nodo del main path
         currentNode = pathGenerator.graph.mainPath[0];
         targetNode = pathGenerator.graph.mainPath[1];
 
         transform.position = currentNode.position;
-        lastDirection = transform.forward;
     }
 
     void Update()
     {
-        if (!Application.isPlaying)
-            return;
-
-        if (currentNode == null || targetNode == null)
+        if (!allowAdvance)
             return;
 
         MoveTowardsTarget();
@@ -61,33 +49,22 @@ public class CartMovement : MonoBehaviour
 
     private void MoveTowardsTarget()
     {
-        Vector3 targetPos = targetNode.position;
-        Vector3 direction = (targetPos - transform.position).normalized;
+        Vector3 dir = (targetNode.position - transform.position).normalized;
 
-        // Rotación progresiva
-        if (direction.sqrMagnitude > 0.001f)
-        {
-            Quaternion targetRot = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                targetRot,
-                rotationSpeed * Time.deltaTime
-            );
-        }
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            Quaternion.LookRotation(dir),
+            rotationSpeed * Time.deltaTime
+        );
 
-        // Movimiento
         transform.position = Vector3.MoveTowards(
             transform.position,
-            targetPos,
+            targetNode.position,
             speed * Time.deltaTime
         );
 
-        if (Vector3.Distance(transform.position, targetPos) < 0.05f)
-        {
+        if (Vector3.Distance(transform.position, targetNode.position) < 0.05f)
             AdvanceToNextNode();
-        }
-
-        lastDirection = direction;
     }
 
     private void AdvanceToNextNode()
@@ -99,4 +76,5 @@ public class CartMovement : MonoBehaviour
             targetNode = pathGenerator.graph.mainPath[index + 1];
         }
     }
+    public PathNode GetCurrentNode() => currentNode;
 }

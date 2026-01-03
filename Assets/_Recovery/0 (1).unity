@@ -353,7 +353,6 @@ MonoBehaviour:
   debugMode: 0
   mainNodeRadius: 0.5
   subNodeRadius: 0.2
-  subPathOffset: 0.15
 --- !u!114 &1125221323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -370,16 +369,16 @@ MonoBehaviour:
   width: 10
   height: 10
   spacing: 6
-  maxMainLength: 30
+  maxMainLength: 40
   minSubLength: 5
   maxHeight: 10
-  climbChance: 0.25
+  climbChance: 0.272
   flatStartLength: 3
   flatSubStartLength: 3
-  primordialNodes: 3
+  primordialNodes: 2
   subPathCooldown: 3
-  useRandomSeed: 1
-  seed: 13735234
+  useRandomSeed: 0
+  seed: 126
   regenerateInEditor: 1
 --- !u!1 &1686061183
 GameObject:
@@ -396,6 +395,7 @@ GameObject:
   - component: {fileID: 1686061184}
   - component: {fileID: 1686061189}
   - component: {fileID: 1686061190}
+  - component: {fileID: 1686061191}
   m_Layer: 0
   m_Name: Vagoneta
   m_TagString: Vagoneta
@@ -553,6 +553,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CartMount
   seatPoint: {fileID: 380383737}
   cartMovement: {fileID: 1686061189}
+--- !u!114 &1686061191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1686061183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd132626c7548dc40a496606c132549b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CartDecisionController
+  cart: {fileID: 0}
+  generator: {fileID: 0}
 --- !u!1 &1854954950
 GameObject:
   m_ObjectHideFlags: 0

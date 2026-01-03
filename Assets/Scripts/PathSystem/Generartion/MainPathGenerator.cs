@@ -20,7 +20,7 @@ public class MainPathGenerator
 
     public List<PathNode> Generate(int seed, int maxLength)
     {
-        Vector3 start = GetClosestPoint(cart.position);
+        Vector3 start = cart.position;
         Random.InitState(seed);
 
         List<Vector3> raw = GenerateDFS(start, maxLength);
@@ -84,23 +84,6 @@ public class MainPathGenerator
             if (!visited.Contains(n))
                 result.Add(n);
         return result;
-    }
-
-    private Vector3 GetClosestPoint(Vector3 pos)
-    {
-        Vector3 closest = grid.points[0];
-        float min = Vector3.Distance(pos, closest);
-
-        foreach (var p in grid.points)
-        {
-            float d = Vector3.Distance(pos, p);
-            if (d < min)
-            {
-                min = d;
-                closest = p;
-            }
-        }
-        return closest;
     }
 
     private void Connect(PathNode a, PathNode b)

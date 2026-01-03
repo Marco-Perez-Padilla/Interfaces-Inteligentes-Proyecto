@@ -1,70 +1,49 @@
 using System.Collections.Generic;
-using UnityEngine;
 
+/**
+ * @file DecisionResolver.cs
+ * @brief Determina qué nodos son decisiones jugables reales.
+ *
+ * REGLAS:
+ * - Debe tener >1 salida válida (excluyendo retorno)
+ * - NO puede ser:
+ *   - primordial
+ *   - DP
+ *   - bloqueado por cooldown
+ */
 public static class DecisionResolver
 {
-  private const float HEIGHT_EPSILON = 0.01f;
-  private const float DIR_DOT = 0.9f;
-
   public static void Resolve(PathGraph graph)
   {
-    Process(graph.mainPath);
-
-    foreach (var sub in graph.subPaths)
-      Process(sub);
-  }
-
-  private static void Process(List<PathNode> path)
-  {
-    if (path == null)
+    if (graph == null || graph.nodes == null)
       return;
 
-    foreach (var n in path)
-      Evaluate(n);
+    foreach (var node in graph.nodes.Values)
+    {
+      node.isDecisionNode = IsValidDecisionNode(node);
+    }
   }
 
-  private static void Evaluate(PathNode node)
+  // ======================================================
+  // CORE
+  // ======================================================
+
+  private static bool IsValidDecisionNode(PathNode node)
   {
-    node.isDecisionNode = false;
-    node.decisionExits.Clear();
+    // Restricciones duras
+    if (node.isPrimordial)
+      return false;
 
-    if (node.connections.Count < 2)
-      return;
+    if (node.isDP)
+      return false;
 
-    float y = node.position.y;
-    List<PathNode> sameLevel = new();
+    if (!node.canStartSubPath && !node.canReceiveSubPath)
+      return false;
 
-    foreach (var c in node.connections)
-    {
-      if (Mathf.Abs(c.position.y - y) < HEIGHT_EPSILON)
-        sameLevel.Add(c);
-    }
+    // Geometría: ¿hay bifurcación real?
+    int validExits = node.connections.Count;
 
-    List<Vector3> dirs = new();
-
-    foreach (var c in sameLevel)
-    {
-      Vector3 d = (c.position - node.position).normalized;
-      d.y = 0f;
-
-      bool unique = true;
-      foreach (var u in dirs)
-      {
-        if (Vector3.Dot(u, d) > DIR_DOT)
-        {
-          unique = false;
-          break;
-        }
-      }
-
-      if (unique)
-      {
-        dirs.Add(d);
-        node.decisionExits.Add(c);
-      }
-    }
-
-    if (node.decisionExits.Count >= 2)
-      node.isDecisionNode = true;
+    return validExits > 2;
+    // >2 porque una es de entrada
   }
 }

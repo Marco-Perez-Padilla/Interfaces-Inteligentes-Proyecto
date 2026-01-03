@@ -353,7 +353,7 @@ MonoBehaviour:
   debugMode: 0
   mainNodeRadius: 0.5
   subNodeRadius: 0.2
-  subPathOffset: 0.15
+  subPathOffset: 0.05
 --- !u!114 &1125221323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -370,16 +370,16 @@ MonoBehaviour:
   width: 10
   height: 10
   spacing: 6
-  maxMainLength: 30
+  maxMainLength: 10
   minSubLength: 5
   maxHeight: 10
-  climbChance: 0.25
+  climbChance: 0.22
   flatStartLength: 3
   flatSubStartLength: 3
   primordialNodes: 3
   subPathCooldown: 3
-  useRandomSeed: 1
-  seed: 13735234
+  useRandomSeed: 0
+  seed: 1234
   regenerateInEditor: 1
 --- !u!1 &1686061183
 GameObject:

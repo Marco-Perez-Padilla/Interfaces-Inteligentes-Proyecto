@@ -2,60 +2,56 @@ using UnityEngine;
 
 /**
  * @file CartMovement.cs
- * @brief Maneja el movimiento de la vagoneta a lo largo del main path.
+ * @brief Movimiento de la vagoneta sobre el grafo.
  *
- * Este script:
- * - Mueve la vagoneta
- * - NO toma decisiones
- * - NO toca CartDecisionController
+ * - Avanza automáticamente
+ * - SOLO se detiene en bifurcaciones reales
+ * - Mantiene nodo anterior para lógica de decisiones
  */
 public class CartMovement : MonoBehaviour
 {
     [Header("References")]
     public PathGenerator pathGenerator;
 
-    [Header("Movement Settings")]
+    [Header("Movement")]
     public float speed = 2f;
-    public float rotationSpeed = 6f;
+    public float rotationSpeed = 8f;
 
+    private PathNode previousNode;
     private PathNode currentNode;
     private PathNode targetNode;
-    public bool allowAdvance = true;
+
+    public bool isWaitingDecision;
 
     void Start()
     {
-        if (!Application.isPlaying)
-            return;
-
-        if (pathGenerator.graph.mainPath.Count < 2)
-        {
-            enabled = false;
-            return;
-        }
-
-        currentNode = pathGenerator.graph.mainPath[0];
-        targetNode = pathGenerator.graph.mainPath[1];
-
+        var main = pathGenerator.graph.mainPath;
+        currentNode = main[0];
+        targetNode = main[1];
         transform.position = currentNode.position;
     }
 
     void Update()
     {
-        if (!allowAdvance)
+        if (isWaitingDecision || targetNode == null)
             return;
 
-        MoveTowardsTarget();
+        Move();
     }
 
-    private void MoveTowardsTarget()
+    private void Move()
     {
-        Vector3 dir = (targetNode.position - transform.position).normalized;
+        Vector3 dir = (targetNode.position - transform.position);
+        Vector3 flatDir = new Vector3(dir.x, 0, dir.z);
 
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            Quaternion.LookRotation(dir),
-            rotationSpeed * Time.deltaTime
-        );
+        if (flatDir.sqrMagnitude > 0.001f)
+        {
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                Quaternion.LookRotation(flatDir),
+                rotationSpeed * Time.deltaTime
+            );
+        }
 
         transform.position = Vector3.MoveTowards(
             transform.position,
@@ -64,17 +60,54 @@ public class CartMovement : MonoBehaviour
         );
 
         if (Vector3.Distance(transform.position, targetNode.position) < 0.05f)
-            AdvanceToNextNode();
+            Arrive();
     }
 
-    private void AdvanceToNextNode()
+    private void Arrive()
     {
-        int index = pathGenerator.graph.mainPath.IndexOf(targetNode);
-        if (index >= 0 && index + 1 < pathGenerator.graph.mainPath.Count)
+        previousNode = currentNode;
+        currentNode = targetNode;
+
+        var exits = GetValidExits();
+
+        if (exits.Count > 1)
         {
-            currentNode = targetNode;
-            targetNode = pathGenerator.graph.mainPath[index + 1];
+            isWaitingDecision = true;
+            targetNode = null;
+            return;
         }
+
+        // Continuar automáticamente
+        targetNode = exits.Count == 1 ? exits[0] : null;
     }
-    public PathNode GetCurrentNode() => currentNode;
+
+    // ======================================================
+    // API
+    // ======================================================
+
+    public void Choose(PathNode next)
+    {
+        targetNode = next;
+        isWaitingDecision = false;
+    }
+
+    public PathNode Current => currentNode;
+    public PathNode Previous => previousNode;
+
+    // ======================================================
+    // UTIL
+    // ======================================================
+
+    private System.Collections.Generic.List<PathNode> GetValidExits()
+    {
+        var list = new System.Collections.Generic.List<PathNode>();
+
+        foreach (var n in currentNode.connections)
+        {
+            if (n != previousNode)
+                list.Add(n);
+        }
+
+        return list;
+    }
 }

@@ -32,9 +32,9 @@ public class SubPathGenerator
             minLength
         );
 
+        // Validación estricta
         if (raw == null || raw.Count < 2)
             return null;
-
 
         if (raw[0] != pi.position)
             return null;
@@ -50,11 +50,8 @@ public class SubPathGenerator
             sub.Add(node);
         }
 
-        // Conectar secuencia interna
         for (int i = 0; i < sub.Count - 1; i++)
-        {
             Connect(sub[i], sub[i + 1]);
-        }
 
         return sub;
     }

@@ -44,3 +44,8 @@ AddressableAssetsData/*/*.bin*
 .idea/
 .vs/
 Proyecto.sln/
+
+Assets/Plugins/
+Assets/MetaXR/
+Assets/XR/
+Assets/XRI/

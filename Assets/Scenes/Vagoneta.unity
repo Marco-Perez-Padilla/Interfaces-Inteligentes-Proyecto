@@ -162,7 +162,7 @@ GameObject:
   - component: {fileID: 804551021}
   - component: {fileID: 804551020}
   - component: {fileID: 804551023}
-  - component: {fileID: 804551024}
+  - component: {fileID: 804551025}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -288,7 +288,7 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!114 &804551024
+--- !u!114 &804551025
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -297,7 +297,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 804551019}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05e28dd8097853d4f81e338607aa48b0, type: 3}
+  m_Script: {fileID: 11500000, guid: 8e372526f59488d4489f1c235ff6b7b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraShake
   enableShake: 0
@@ -313,8 +313,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1125221321}
-  - component: {fileID: 1125221323}
-  - component: {fileID: 1125221322}
+  - component: {fileID: 1125221325}
+  - component: {fileID: 1125221324}
   m_Layer: 0
   m_Name: Path
   m_TagString: Untagged
@@ -337,7 +337,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1125221322
+--- !u!114 &1125221324
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -346,15 +346,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1125221319}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3145e0f70fb30bc41a4f0ff28f6d8520, type: 3}
+  m_Script: {fileID: 11500000, guid: f160ed0864522254ead4ccc8fff7a737, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PathGizmosDrawer
-  generator: {fileID: 1125221323}
+  generator: {fileID: 1125221325}
   debugMode: 0
-  mainNodeRadius: 0.5
+  mainNodeRadius: 0.3
   subNodeRadius: 0.2
-  subPathOffset: 0.05
---- !u!114 &1125221323
+  subPathOffset: 0.15
+--- !u!114 &1125221325
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -363,24 +363,84 @@ MonoBehaviour:
   m_GameObject: {fileID: 1125221319}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a3a42a2a03875547bd937acb0c8cef7, type: 3}
+  m_Script: {fileID: 11500000, guid: bc37325e94568de4eb3f1969c76ef123, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PathGenerator
   cartTransform: {fileID: 1686061188}
   width: 10
   height: 10
   spacing: 6
-  maxMainLength: 10
-  minSubLength: 5
-  maxHeight: 10
-  climbChance: 0.22
-  flatStartLength: 3
-  flatSubStartLength: 3
+  maxMainLength: 40
+  minSubLength: 4
+  maxHeight: 6
+  climbChance: 0.25
+  flatStartLength: 5
+  flatSubStartLength: 2
   primordialNodes: 3
-  subPathCooldown: 3
+  subPathCooldown: 5
   useRandomSeed: 0
-  seed: 1234
+  seed: 12345
   regenerateInEditor: 1
+--- !u!1 &1292533481
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1292533483}
+  - component: {fileID: 1292533482}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1292533482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1292533481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07ff999aaff2a194086bd43b8d5d4cd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PieceApplier
+  pathGenerator: {fileID: 1125221325}
+  straightPiece: {fileID: 7639173868753737122, guid: 4929108bee1e76b47aad8f82d3e8dde9, type: 3}
+  leftPiece: {fileID: 4419460888781984095, guid: 7a604b90d732e09468bab6cf6968578a, type: 3}
+  rightPiece: {fileID: 7470541209180793408, guid: 0d0a980c9a11bc8409d5c235bfb647a1, type: 3}
+  upPiece: {fileID: 4132784354541415810, guid: 33167919ae5261c498390f3eafdafb01, type: 3}
+  downPiece: {fileID: 3768520310319555545, guid: 43799757a5e7ed149baeed3981ee8d16, type: 3}
+  upLeftPiece: {fileID: 7785069674243388974, guid: 2fd5c475da9abc94e8849df98851a614, type: 3}
+  upRightPiece: {fileID: 541747033858168443, guid: 3035a50b186cf504181d8247bb7a1c66, type: 3}
+  downRightPiece: {fileID: 8893643592021536609, guid: 176cc82dfbed57f4eb25637ac5002ba6, type: 3}
+  downLeftPiece: {fileID: 5964765388458598127, guid: 41379acfebae31445b85ad40b9a88054, type: 3}
+  forkLeftRight: {fileID: 8825539492579444973, guid: 21cb7d11af0738f4ba13e71a591f7202, type: 3}
+  forkLeftStraight: {fileID: 8825539492579444973, guid: 7659acd17914fc64f946d354c09f632f, type: 3}
+  forkRightStraight: {fileID: 8825539492579444973, guid: 5a60d81d18ba7f74081e9277011b4e83, type: 3}
+  upCorridor: {fileID: 5995449263546798300, guid: d7cae231919feb54da157e49a9100482, type: 3}
+  downCorridor: {fileID: 5586882984509291576, guid: 43399004394f16c4ab4060ef868f1454, type: 3}
+  straightCorridor: {fileID: 7639173868753737122, guid: 4929108bee1e76b47aad8f82d3e8dde9, type: 3}
+--- !u!4 &1292533483
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1292533481}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.87632, y: 0.06171, z: 6.28214}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1686061183
 GameObject:
   m_ObjectHideFlags: 0
@@ -394,8 +454,9 @@ GameObject:
   - component: {fileID: 1686061186}
   - component: {fileID: 1686061185}
   - component: {fileID: 1686061184}
-  - component: {fileID: 1686061189}
-  - component: {fileID: 1686061190}
+  - component: {fileID: 1686061192}
+  - component: {fileID: 1686061191}
+  - component: {fileID: 1686061193}
   m_Layer: 0
   m_Name: Vagoneta
   m_TagString: Vagoneta
@@ -523,7 +584,7 @@ Transform:
   - {fileID: 380383737}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1686061189
+--- !u!114 &1686061191
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -532,27 +593,40 @@ MonoBehaviour:
   m_GameObject: {fileID: 1686061183}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e4786ea65743e34693aa8a666b9dec0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CartMovement
-  pathGenerator: {fileID: 1125221323}
-  speed: 2
-  rotationSpeed: 3
-  allowAdvance: 1
---- !u!114 &1686061190
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1686061183}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75c178edac30e934aa0b4536ef7b1f73, type: 3}
+  m_Script: {fileID: 11500000, guid: 8cdaab21b3c44dd42af2000ac3014aea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CartMount
   seatPoint: {fileID: 380383737}
-  cartMovement: {fileID: 1686061189}
+  cartMovement: {fileID: 1686061192}
+--- !u!114 &1686061192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1686061183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee2e6d7f06d92fc4e85e7266b74ffea8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CartMovement
+  pathGenerator: {fileID: 1125221325}
+  speed: 2
+  rotationSpeed: 8
+  isWaitingDecision: 0
+--- !u!114 &1686061193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1686061183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f88f5bbe0e26024f9951133b8c2b1ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CartDecisionController
+  cart: {fileID: 1686061192}
 --- !u!1 &1854954950
 GameObject:
   m_ObjectHideFlags: 0
@@ -802,3 +876,4 @@ SceneRoots:
   - {fileID: 1686061188}
   - {fileID: 1936713247}
   - {fileID: 1125221321}
+  - {fileID: 1292533483}

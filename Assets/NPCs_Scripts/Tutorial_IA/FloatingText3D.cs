@@ -6,6 +6,7 @@ public class FloatingText3D : MonoBehaviour
     public Transform target;            
     public Vector3 offset = new Vector3(0, 100, -50); 
     private TextMeshPro textMesh;
+    public Camera cam; 
 
     void Awake()
     {
@@ -18,7 +19,7 @@ public class FloatingText3D : MonoBehaviour
 
         transform.position = target.position + offset;
 
-        transform.rotation = Quaternion.LookRotation(transform.position - Camera.main.transform.position);
+        transform.rotation = Quaternion.LookRotation(transform.position - cam.transform.position);
     }
 
     public void SetText(string message)

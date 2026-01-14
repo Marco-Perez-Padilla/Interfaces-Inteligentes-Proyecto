@@ -9,7 +9,7 @@ public class NPCChasingEvent : MonoBehaviour
     [Header("Movement")]
     public float speedMultiplier = 1.5f;          
     public float rotationSpeed = 360f;   
-    
+
     [Header("Chase Control")]
     public float chaseDuration = 5f;
     public float speedTreshold = 1f;
@@ -27,30 +27,32 @@ public class NPCChasingEvent : MonoBehaviour
 
     void OnEnable()
     {
-        if (triggerZone != null) {
-            triggerZone.OnPlayerEntered += OnPlayerEnteredTrigger;
-            triggerZone.OnPlayerExited  += StopChase;
-        }
+        if (triggerZone == null) return;
+
+        triggerZone.OnPlayerEntered += OnPlayerEnteredTrigger;
+
+        // Solo escuchamos la salida si NO hay temporizador
+        if (chaseDuration < 1f)
+            triggerZone.OnPlayerExited += StopChase;
     }
 
     void OnDisable()
     {
-        if (triggerZone != null) {
-            triggerZone.OnPlayerEntered -= OnPlayerEnteredTrigger;
-            triggerZone.OnPlayerExited  -= StopChase;
-        }
+        if (triggerZone == null) return;
+
+        triggerZone.OnPlayerEntered -= OnPlayerEnteredTrigger;
+        triggerZone.OnPlayerExited  -= StopChase;
     }
 
     void Update()
     {
-        if (!chasing || chaseDuration <= 0f)
+        // Solo cuenta el tiempo si hay temporizador
+        if (!chasing || chaseDuration < 1f)
             return;
 
         chaseTimer -= Time.deltaTime;
         if (chaseTimer <= 0f)
-        {
             StopChase();
-        }
     }
 
     void FixedUpdate()
@@ -58,12 +60,9 @@ public class NPCChasingEvent : MonoBehaviour
         if (!chasing || player == null)
             return;
 
-        Vector3 toPlayer = player.position - transform.position;
-        Vector3 direction = toPlayer.normalized;
-
+        Vector3 direction = (player.position - transform.position).normalized;
         rb.linearVelocity = direction * npcSpeed;
 
-        // Rotation towards the player
         Quaternion targetRotation = Quaternion.LookRotation(direction);
         rb.MoveRotation(Quaternion.RotateTowards(
             rb.rotation,
@@ -83,19 +82,22 @@ public class NPCChasingEvent : MonoBehaviour
 
         float playerSpeedAtEntry = GetPlayerSpeed();
         npcSpeed = Mathf.Max(playerSpeedAtEntry * speedMultiplier, speedTreshold);
+
         StartChase();
     }
 
     void StartChase()
     {
         chasing = true;
-        if (chaseDuration > 0f)
+
+        if (chaseDuration >= 1f)
             chaseTimer = chaseDuration;
     }
 
     public void StopChase()
     {
         chasing = false;
+        chaseTimer = 0f;
         rb.linearVelocity = Vector3.zero;
     }
 

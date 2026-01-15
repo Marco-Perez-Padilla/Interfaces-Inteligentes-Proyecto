@@ -520,19 +520,30 @@ MonoBehaviour:
   isOn: 1
   positionOffset: {x: 0, y: 0, z: 0}
   rotationOffset: {x: 0, y: 0, z: 0}
-  useSimulatorController: 1
-  rightControllerSimulator: {fileID: 1691279898}
-  leftControllerSimulator: {fileID: 1888325920}
---- !u!4 &1691279898 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2453908687963199984, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
-  m_PrefabInstance: {fileID: 753741974}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1888325920 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3090365601253761274, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
-  m_PrefabInstance: {fileID: 753741974}
-  m_PrefabAsset: {fileID: 0}
+  toggleFlashlightAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Toggle Flashlight
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 7a55c5bb-ef17-4ae6-aaec-ee27957fc051
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 6508881073943862928, guid: 98a94127af0d0e4439287b753b395bb3, type: 3}
+  switchHandAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Switch Hand
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 01a0e4d9-7ecb-4992-9132-5ef3ba8e2e94
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 3417727696069940325, guid: 98a94127af0d0e4439287b753b395bb3, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

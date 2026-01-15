@@ -137,7 +137,7 @@ public partial class @FlashlightControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""d7b83543-fda6-4f72-9424-d58cb4002d0f"",
-                    ""path"": ""<XRController>{RightHand}/triggerButton"",
+                    ""path"": ""<XRController>{LeftHand}/primaryButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -170,7 +170,7 @@ public partial class @FlashlightControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""8d52ff53-65b1-4576-b76e-26ffb10172ad"",
-                    ""path"": ""<XRController>{RightHand}/{GripButton}"",
+                    ""path"": ""<XRController>{LeftHand}/secondaryButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

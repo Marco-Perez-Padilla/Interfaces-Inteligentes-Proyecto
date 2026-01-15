@@ -96,7 +96,7 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                     ""name"": ""Impulse"",
                     ""type"": ""Button"",
                     ""id"": ""aaaaaaaa-1111-1111-1111-aaaaaaaaaaaa"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -105,7 +105,7 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                     ""name"": ""Brake"",
                     ""type"": ""Button"",
                     ""id"": ""bbbbbbbb-2222-2222-2222-bbbbbbbbbbbb"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -145,7 +145,7 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""WASD"",
-                    ""id"": ""wasd1111-1111-1111-1111-wasdwasdwasd"",
+                    ""id"": ""ded8bce1-307d-41c2-a467-655ddb2effc1"",
                     ""path"": ""2DVector"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -156,7 +156,7 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""up"",
-                    ""id"": ""wasd2222-2222-2222-2222-wasdwasdwasd"",
+                    ""id"": ""756e97cd-8fa0-4d83-a1a5-fef2544f2f93"",
                     ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -167,7 +167,7 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""down"",
-                    ""id"": ""wasd3333-3333-3333-3333-wasdwasdwasd"",
+                    ""id"": ""3619913d-e9f6-4666-bbfb-b03495df811d"",
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -178,7 +178,7 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""left"",
-                    ""id"": ""wasd4444-4444-4444-4444-wasdwasdwasd"",
+                    ""id"": ""3d69e2c9-a73a-4fe9-82d3-e8c0d295637f"",
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -189,7 +189,7 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""right"",
-                    ""id"": ""wasd5555-5555-5555-5555-wasdwasdwasd"",
+                    ""id"": ""b936deee-9060-40cf-ba63-9ef15591bd75"",
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -211,7 +211,7 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""gamepad1-1111-1111-1111-gamepadgamep"",
+                    ""id"": ""bc5c3775-5e34-4d8d-b86d-aeed713805c9"",
                     ""path"": ""<Gamepad>/rightTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -222,7 +222,7 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""gamepad2-2222-2222-2222-gamepadgamep"",
+                    ""id"": ""2c046b18-4d64-4d15-891a-3761d3886a13"",
                     ""path"": ""<Gamepad>/leftTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -233,7 +233,7 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""gggggggg-7777-7777-7777-gggggggggggg"",
+                    ""id"": ""fc958f36-0f02-4952-a131-7a81c266b58f"",
                     ""path"": ""<XRController>{RightHand}/triggerPressed"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -244,7 +244,7 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""hhhhhhhh-8888-8888-8888-hhhhhhhhhhhh"",
+                    ""id"": ""e27a6bd4-afbe-4534-ad3d-9e8968674691"",
                     ""path"": ""<XRController>{LeftHand}/triggerPressed"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -255,7 +255,7 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""iiiiiiii-9999-9999-9999-iiiiiiiiiiii"",
+                    ""id"": ""572642ec-95ce-4ca9-b3b1-f7694ac6bb26"",
                     ""path"": ""<XRController>{RightHand}/Primary2DAxis"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -266,7 +266,7 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""xr111111-aaaa-aaaa-aaaa-xrxrxrxrxrxr"",
+                    ""id"": ""d8b07d31-a29f-4b48-bb29-44cb9c2aa96f"",
                     ""path"": ""<XRController>{LeftHand}/Primary2DAxis"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -277,7 +277,7 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""xr222222-bbbb-bbbb-bbbb-xrxrxrxrxrxr"",
+                    ""id"": ""9f86c616-63eb-4d66-82a9-4768779c89bf"",
                     ""path"": ""<XRController>{RightHand}/gripPressed"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -288,7 +288,7 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""xr333333-cccc-cccc-cccc-xrxrxrxrxrxr"",
+                    ""id"": ""5479b15b-f17a-4576-a7c3-3cc9bae24d94"",
                     ""path"": ""<XRController>{LeftHand}/gripPressed"",
                     ""interactions"": """",
                     ""processors"": """",

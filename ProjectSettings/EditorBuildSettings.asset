@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Vagoneta.unity
+    path: Assets/Scenes/Vagoneta-Experimental.unity
     guid: 3c668d73770690d48a8847b90984d56e
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity

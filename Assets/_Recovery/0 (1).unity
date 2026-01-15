@@ -353,6 +353,7 @@ MonoBehaviour:
   debugMode: 0
   mainNodeRadius: 0.5
   subNodeRadius: 0.2
+  subPathOffset: 0.15
 --- !u!114 &1125221323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -536,9 +537,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CartMovement
   pathGenerator: {fileID: 1125221323}
+  cameraShake: {fileID: 0}
+  engineAudio: {fileID: 0}
   speed: 2
   rotationSpeed: 3
-  allowAdvance: 1
+  impulseStrength: 2.5
+  brakeStrength: 6
+  impulseDecay: 3
+  hardBrakeThreshold: -1.5
+  isWaitingDecision: 0
 --- !u!114 &1686061190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -566,7 +573,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CartDecisionController
   cart: {fileID: 0}
-  generator: {fileID: 0}
 --- !u!1 &1854954950
 GameObject:
   m_ObjectHideFlags: 0

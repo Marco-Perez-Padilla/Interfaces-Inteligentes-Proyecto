@@ -4,7 +4,11 @@
 TagManager:
   serializedVersion: 3
   tags:
+<<<<<<< HEAD
   - Enemy
+=======
+  - Vagoneta
+>>>>>>> origin/Alvaro
   layers:
   - Default
   - TransparentFX

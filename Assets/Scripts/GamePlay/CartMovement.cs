@@ -188,6 +188,16 @@ public class CartMovement : MonoBehaviour
         return list;
     }
 
+    // ======================================================
+    // API
+    // ======================================================
+
+    public void Choose(PathNode next)
+    {
+        targetNode = next;
+        isWaitingDecision = false;
+    }
+    
     public PathNode Current => currentNode;
     public PathNode Previous => previousNode;
 }

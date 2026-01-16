@@ -4,7 +4,9 @@ using System.Collections.Generic;
 public class PieceApplier : MonoBehaviour
 {
 
-    List<PathNode> mainPath;
+    // ======================================================
+    // REFERENCES
+    // ======================================================
 
     [SerializeField] PathGenerator pathGenerator;
     PathGraph pathGraph;
@@ -46,6 +48,7 @@ public class PieceApplier : MonoBehaviour
 
         ApplyPiecesToPath(mainPath, 0);
 
+        subPaths = pathGraph.subPaths;
     }
 
     GameObject GetPieceBasedOnDirection(Vector3 previousPosition, Vector3 currentPosition, Vector3 nextPosition)
@@ -270,14 +273,14 @@ public class PieceApplier : MonoBehaviour
             if (numberOfSubPaths >= 1)
             {
 
-                //solución horrible pero así se queda
+                //soluciï¿½n horrible pero asï¿½ se queda
                 Vector3 positionB = Vector3.zero;
 
                 if (subPathB != null)
                 {
                     positionB = currentNode.connections[3].position;
                 }
-                //ahí termina la solución horrible
+                //ahï¿½ termina la soluciï¿½n horrible
 
                 Debug.Log(prevNode.position);
                 Debug.Log(position);

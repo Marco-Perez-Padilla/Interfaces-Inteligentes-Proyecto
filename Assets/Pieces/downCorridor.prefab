@@ -344,7 +344,7 @@ GameObject:
   - component: {fileID: 5911514027281855025}
   - component: {fileID: 8763361675486522484}
   m_Layer: 0
-  m_Name: downCorridor
+  m_Name: DownCorridor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

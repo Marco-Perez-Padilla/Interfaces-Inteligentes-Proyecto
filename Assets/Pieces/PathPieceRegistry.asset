@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dce9f11b0e694ba4cb820c8d135f2262, type: 3}
+  m_Name: PathPieceRegistry
+  m_EditorClassIdentifier: Assembly-CSharp::PathPieceRegistry
+  entries:
+  - type: 0
+    prefab: {fileID: 7639173868753737122, guid: 4929108bee1e76b47aad8f82d3e8dde9, type: 3}
+  - type: 1
+    prefab: {fileID: 4419460888781984095, guid: 7a604b90d732e09468bab6cf6968578a, type: 3}
+  - type: 2
+    prefab: {fileID: 7470541209180793408, guid: 0d0a980c9a11bc8409d5c235bfb647a1, type: 3}
+  - type: 3
+    prefab: {fileID: 4132784354541415810, guid: 33167919ae5261c498390f3eafdafb01, type: 3}
+  - type: 4
+    prefab: {fileID: 541747033858168443, guid: 3035a50b186cf504181d8247bb7a1c66, type: 3}
+  - type: 5
+    prefab: {fileID: 7785069674243388974, guid: 2fd5c475da9abc94e8849df98851a614, type: 3}
+  - type: 6
+    prefab: {fileID: 3768520310319555545, guid: 43799757a5e7ed149baeed3981ee8d16, type: 3}
+  - type: 7
+    prefab: {fileID: 8893643592021536609, guid: 176cc82dfbed57f4eb25637ac5002ba6, type: 3}
+  - type: 8
+    prefab: {fileID: 5964765388458598127, guid: 41379acfebae31445b85ad40b9a88054, type: 3}
+  - type: 9
+    prefab: {fileID: 8825539492579444973, guid: 21cb7d11af0738f4ba13e71a591f7202, type: 3}
+  - type: 10
+    prefab: {fileID: 8825539492579444973, guid: 7659acd17914fc64f946d354c09f632f, type: 3}
+  - type: 11
+    prefab: {fileID: 8825539492579444973, guid: 5a60d81d18ba7f74081e9277011b4e83, type: 3}
+  - type: 12
+    prefab: {fileID: 8193076359908469613, guid: e579bd2045540be4e9bd665df633a636, type: 3}
+  - type: 13
+    prefab: {fileID: 7639173868753737122, guid: 4929108bee1e76b47aad8f82d3e8dde9, type: 3}
+  - type: 14
+    prefab: {fileID: 5995449263546798300, guid: d7cae231919feb54da157e49a9100482, type: 3}
+  - type: 15
+    prefab: {fileID: 5586882984509291576, guid: 43399004394f16c4ab4060ef868f1454, type: 3}

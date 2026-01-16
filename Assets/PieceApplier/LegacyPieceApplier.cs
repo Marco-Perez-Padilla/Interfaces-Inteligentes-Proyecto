@@ -1,13 +1,19 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class PieceApplier : MonoBehaviour
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+[ExecuteAlways]
+public class LegacyPieceApplier : MonoBehaviour
 {
 
     // ======================================================
     // REFERENCES
     // ======================================================
-
+    List<PathNode> mainPath;
+    List<List<PathNode>> subPaths;
     [SerializeField] PathGenerator pathGenerator;
     PathGraph pathGraph;
     [SerializeField] GameObject straightPiece;
@@ -244,7 +250,12 @@ public class PieceApplier : MonoBehaviour
 
     private void ApplyPiecesToPath(List<PathNode> path, int start)
     {
+        if (path == null || path.Count < 2)
+            return;
 
+        if (start < 0 || start + 1 >= path.Count)
+            return;
+            
         PathNode currentNode = path[start + 1];
         Debug.Log(currentNode.position);
         Debug.Log(lastNode.position);
@@ -340,5 +351,49 @@ public class PieceApplier : MonoBehaviour
 
 
     }
+
+#if UNITY_EDITOR
+
+    bool _pendingRebuild;
+
+    void OnValidate()
+    {
+        RequestEditorRebuild();
+    }
+
+    void OnEnable()
+    {
+        RequestEditorRebuild();
+    }
+
+    void RequestEditorRebuild()
+    {
+        if (Application.isPlaying)
+            return;
+
+        if (_pendingRebuild)
+            return;
+
+        _pendingRebuild = true;
+        EditorApplication.delayCall += EditorRebuild;
+    }
+
+    void EditorRebuild()
+    {
+        if (this == null)
+            return;
+
+        _pendingRebuild = false;
+
+        // limpiar hijos (visual)
+        for (int i = transform.childCount - 1; i >= 0; i--)
+            DestroyImmediate(transform.GetChild(i).gameObject);
+
+        // ⚠️ reutilizamos TU Start(), no tocamos lógica
+        Start();
+    }
+
+#endif
+
 }
 

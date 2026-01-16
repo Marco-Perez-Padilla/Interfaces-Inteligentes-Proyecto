@@ -342,7 +342,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2097921376524940818}
-  - component: {fileID: 4154092286167863274}
   m_Layer: 0
   m_Name: DownPiece
   m_TagString: Untagged
@@ -371,21 +370,6 @@ Transform:
   - {fileID: 349133736800435438}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4154092286167863274
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3768520310319555545}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6df56045ad77ccb49836c4b49ae05339, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Piece
-  path:
-  - {x: 0, y: -2.5, z: -2.5}
-  - {x: 0, y: -7.5, z: 2.5}
 --- !u!1 &4438874080627877802
 GameObject:
   m_ObjectHideFlags: 0

@@ -598,6 +598,67 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1256745026}
   m_CullTransparentMesh: 1
+--- !u!1 &1590953397
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1590953399}
+  - component: {fileID: 1590953398}
+  m_Layer: 0
+  m_Name: Generator_Blocks
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1590953398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1590953397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07ff999aaff2a194086bd43b8d5d4cd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PieceApplier
+  pathGenerator: {fileID: 1125221323}
+  straightPiece: {fileID: 7639173868753737122, guid: 4929108bee1e76b47aad8f82d3e8dde9, type: 3}
+  leftPiece: {fileID: 4419460888781984095, guid: 7a604b90d732e09468bab6cf6968578a, type: 3}
+  rightPiece: {fileID: 7470541209180793408, guid: 0d0a980c9a11bc8409d5c235bfb647a1, type: 3}
+  upPiece: {fileID: 4132784354541415810, guid: 33167919ae5261c498390f3eafdafb01, type: 3}
+  downPiece: {fileID: 3768520310319555545, guid: 43799757a5e7ed149baeed3981ee8d16, type: 3}
+  upLeftPiece: {fileID: 7785069674243388974, guid: 2fd5c475da9abc94e8849df98851a614, type: 3}
+  upRightPiece: {fileID: 541747033858168443, guid: 3035a50b186cf504181d8247bb7a1c66, type: 3}
+  downRightPiece: {fileID: 8893643592021536609, guid: 176cc82dfbed57f4eb25637ac5002ba6, type: 3}
+  downLeftPiece: {fileID: 5964765388458598127, guid: 41379acfebae31445b85ad40b9a88054, type: 3}
+  forkLeftRight: {fileID: 8825539492579444973, guid: 21cb7d11af0738f4ba13e71a591f7202, type: 3}
+  forkLeftStraight: {fileID: 8825539492579444973, guid: 7659acd17914fc64f946d354c09f632f, type: 3}
+  forkRightStraight: {fileID: 8825539492579444973, guid: 5a60d81d18ba7f74081e9277011b4e83, type: 3}
+  forkTriple: {fileID: 8193076359908469613, guid: e579bd2045540be4e9bd665df633a636, type: 3}
+  upCorridor: {fileID: 5995449263546798300, guid: d7cae231919feb54da157e49a9100482, type: 3}
+  downCorridor: {fileID: 5586882984509291576, guid: 43399004394f16c4ab4060ef868f1454, type: 3}
+  straightCorridor: {fileID: 7639173868753737122, guid: 4929108bee1e76b47aad8f82d3e8dde9, type: 3}
+--- !u!4 &1590953399
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1590953397}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1610270862
 GameObject:
   m_ObjectHideFlags: 0
@@ -1142,3 +1203,4 @@ SceneRoots:
   - {fileID: 1936713247}
   - {fileID: 1125221321}
   - {fileID: 1610270866}
+  - {fileID: 1590953399}

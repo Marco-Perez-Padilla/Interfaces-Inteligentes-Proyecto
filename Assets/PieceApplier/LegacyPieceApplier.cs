@@ -1,36 +1,21 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
-[ExecuteAlways]
 public class LegacyPieceApplier : MonoBehaviour
 {
 
-    // ======================================================
-    // REFERENCES
-    // ======================================================
     List<PathNode> mainPath;
-    List<List<PathNode>> subPaths;
+
     [SerializeField] PathGenerator pathGenerator;
     PathGraph pathGraph;
     [SerializeField] GameObject straightPiece;
     [SerializeField] GameObject leftPiece;
     [SerializeField] GameObject rightPiece;
-    [SerializeField] GameObject upPiece;
-    [SerializeField] GameObject downPiece;
-
-    [SerializeField] GameObject upLeftPiece;
-    [SerializeField] GameObject upRightPiece;
-    [SerializeField] GameObject downRightPiece;
-    [SerializeField] GameObject downLeftPiece;
 
     [SerializeField] GameObject forkLeftRight;
     [SerializeField] GameObject forkLeftStraight;
     [SerializeField] GameObject forkRightStraight;
-    
+
     [SerializeField] GameObject forkTriple;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -39,10 +24,7 @@ public class LegacyPieceApplier : MonoBehaviour
     [SerializeField] GameObject downCorridor;
     [SerializeField] GameObject straightCorridor;
 
-
     List<Vector3> alreadyAppliedPieces;
-
-    PathNode lastNode;
 
     void Start()
     {
@@ -50,11 +32,16 @@ public class LegacyPieceApplier : MonoBehaviour
         mainPath = pathGraph.mainPath;
         alreadyAppliedPieces = new List<Vector3>();
 
-        lastNode = mainPath[mainPath.Count - 1];
+        ApplyPiecesToPath(mainPath, Color.white);
 
-        ApplyPiecesToPath(mainPath, 0);
+        //ApplyPiecesToPath(pathGraph.subPaths[1], Color.blue);
+        //ApplyPiecesToPath(pathGraph.subPaths[2], Color.green);
+        
+        foreach (List<PathNode> currentPath in pathGraph.subPaths)
+        {
+            ApplyPiecesToPath(currentPath, Color.red);
+        }
 
-        subPaths = pathGraph.subPaths;
     }
 
     GameObject GetPieceBasedOnDirection(Vector3 previousPosition, Vector3 currentPosition, Vector3 nextPosition)
@@ -80,7 +67,7 @@ public class LegacyPieceApplier : MonoBehaviour
         // left turn
         if (angle < 0)
             return leftPiece;
-        
+
         return new GameObject();
     }
 
@@ -165,7 +152,7 @@ public class LegacyPieceApplier : MonoBehaviour
         subPathB = null;
         indexA = -1;
         indexB = -1;
-        
+
         if (node.connections.Count <= 1)
         {
 
@@ -175,19 +162,16 @@ public class LegacyPieceApplier : MonoBehaviour
         if (node.connections.Count == 3)
         {
 
-            Debug.Log("una bifurcacion");
             foreach (List<PathNode> currentSubgraph in pathGraph.subPaths)
             {
-                Debug.Log("siguiente subgrafo");
 
                 for (int i = 0; i < currentSubgraph.Count; i++)
                 {
                     PathNode currentNode = currentSubgraph[i];
-                    Debug.Log("siguiente nodo");
 
                     if (Approximately(currentNode.position, node.position))
                     {
-                        
+
                         subPathA = currentSubgraph;
                         subPathB = null;
                         indexA = i;
@@ -222,7 +206,6 @@ public class LegacyPieceApplier : MonoBehaviour
 
                         subPathB = currentSubgraph;
                         indexB = i;
-                        Debug.Log("asda");
                         return 2;
                     }
                 }
@@ -248,20 +231,81 @@ public class LegacyPieceApplier : MonoBehaviour
         return false;
     }
 
-    private void ApplyPiecesToPath(List<PathNode> path, int start)
-    {
-        if (path == null || path.Count < 2)
-            return;
 
-        if (start < 0 || start + 1 >= path.Count)
-            return;
-            
-        PathNode currentNode = path[start + 1];
-        Debug.Log(currentNode.position);
-        Debug.Log(lastNode.position);
-        while (currentNode.position != lastNode.position)
+    PathNode ApplyFirstPiece(PathNode currentNode)
+    {
+        PathNode nextNode = currentNode.connections[0];
+
+        if (IsCurrentNodeAlreadyApplied(currentNode))
+            return nextNode;
+
+        Vector3 position = currentNode.position;
+
+        int numberOfSubPaths = currentNode.connections.Count - 2;
+        float scaleFactor = 1f / 5f;
+
+        Vector3 direction = (nextNode.position - position).normalized;
+        direction.y = 0;
+
+        GameObject currentPiece;
+
+        Vector3 fakePrevious = position - direction;
+
+        if (numberOfSubPaths == 1)
         {
-            currentNode = currentNode.connections[1];
+            currentPiece = GetForkPieceBasedOnDirection(
+                fakePrevious, // fake previous
+                position,
+                nextNode.position,
+                currentNode.connections[2].position,
+                Vector3.zero
+            );
+        }
+        else if (numberOfSubPaths == 2)
+        {
+            currentPiece = GetForkPieceBasedOnDirection(
+                position - direction,
+                position,
+                nextNode.position,
+                currentNode.connections[2].position,
+                currentNode.connections[3].position
+            );
+        }
+        else
+        {
+            currentPiece = GetPieceBasedOnDirection(
+                position - direction,
+                position,
+                nextNode.position
+            );
+        }
+
+        GameObject pieceObject = Instantiate(currentPiece);
+        pieceObject.transform.position = position;
+        pieceObject.transform.forward = direction;
+        pieceObject.transform.localScale = Vector3.one * scaleFactor;
+
+
+        // corridor
+        GameObject corridor = Instantiate(GetCorridorBasedOnDirection(position, nextNode.position));
+        corridor.transform.position = position + direction;
+        corridor.transform.forward = direction;
+        corridor.transform.localScale = Vector3.one * scaleFactor;
+
+        return nextNode;
+    }
+
+    private void ApplyPiecesToPath(List<PathNode> path, Color color)
+    {
+        ApplyFirstPiece(path[0]);
+
+        PathNode currentNode = path[1];
+
+        float scaleFactor = (1f / 5f) * (3f);
+        for (int i = 1; i < path.Count; i++)
+        {
+
+            currentNode = path[i];
             PathNode prevNode = currentNode.connections[0];
             PathNode nextNode = currentNode.connections[1];
 
@@ -270,44 +314,61 @@ public class LegacyPieceApplier : MonoBehaviour
                 continue;
             }
 
+            alreadyAppliedPieces.Add(currentNode.position);
+
             Vector3 position = currentNode.position;
-
-            List<PathNode> subPathA;
-            List<PathNode> subPathB;
-            int indexA;
-            int indexB;
-            int numberOfSubPaths = TryGetCurrentNodeSubPaths(currentNode, out subPathA, out indexA, out subPathB, out indexB);
-
             Vector3 direction = (position - prevNode.position).normalized;
-            float scaleFactor = (1 / 5f);
+            direction.y = 0;
 
+        int numberOfWayouts = currentNode.connections.Count - 1;
+            GameObject currentPiece;
+
+            if (numberOfWayouts == 1)
+            {
+                currentPiece = GetPieceBasedOnDirection(prevNode.position, position, nextNode.position);
+            }
+            else if (numberOfWayouts == 2)
+            {
+                currentPiece = GetForkPieceBasedOnDirection(
+                    prevNode.position,
+                    position,
+                    nextNode.position,
+                    currentNode.connections[2].position,
+                    Vector3.zero);
+            }
+            else
+            {
+                currentPiece = GetForkPieceBasedOnDirection(
+                       prevNode.position,
+                       position,
+                       nextNode.position,
+                       currentNode.connections[2].position,
+                    currentNode.connections[3].position);
+
+
+            }
+            GameObject pieceObject = GameObject.Instantiate(currentPiece);
+            pieceObject.transform.forward = new Vector3(direction.x, 0, direction.z);
+            pieceObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+            pieceObject.transform.position = position;
+
+            /*
             if (numberOfSubPaths >= 1)
             {
 
-                //soluci�n horrible pero as� se queda
+                //solución horrible pero así se queda
                 Vector3 positionB = Vector3.zero;
 
                 if (subPathB != null)
                 {
                     positionB = currentNode.connections[3].position;
                 }
-                //ah� termina la soluci�n horrible
-
-                Debug.Log(prevNode.position);
-                Debug.Log(position);
-                Debug.Log(nextNode.position);
-                Debug.Log(subPathA);
-                Debug.Log(positionB);
+                //ahí termina la solución horrible
 
 
-                GameObject forkPiece = GetForkPieceBasedOnDirection(
-                    prevNode.position, 
-                    position, 
-                    nextNode.position,
-                    currentNode.connections[2].position, 
-                    positionB);
-                GameObject forkPieceObject = Instantiate(forkPiece);
 
+
+                GameObject forkPieceObject = pieceGenerator.GetPiece(forkPiece);
                 forkPieceObject.transform.forward = new Vector3(direction.x, 0, direction.z);
                 forkPieceObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
                 forkPieceObject.transform.position = position;
@@ -321,23 +382,17 @@ public class LegacyPieceApplier : MonoBehaviour
             else
             {
 
-                GameObject currentPiece = GetPieceBasedOnDirection(prevNode.position, position, nextNode.position);
-                //GameObject currentPiece = straightPiece;
 
-                GameObject pieceObject = Instantiate(currentPiece);
-                pieceObject.transform.forward = new Vector3(direction.x, 0, direction.z);
-                pieceObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
-                pieceObject.transform.position = position;
             }
-
+            */
 
             GameObject currentCorridor = GetCorridorBasedOnDirection(position, nextNode.position);
             Vector3 corridorDirection = (nextNode.position - position).normalized;
             corridorDirection.y = 0;
-            GameObject corridorObject = Instantiate(currentCorridor);
+            GameObject corridorObject = GameObject.Instantiate(currentCorridor);
             corridorObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
             corridorObject.transform.forward = new Vector3(corridorDirection.x, 0, corridorDirection.z);
-            corridorObject.transform.position = position + corridorDirection.normalized;
+            corridorObject.transform.position = position + (corridorDirection.normalized * scaleFactor);
 
 
         }
@@ -351,49 +406,5 @@ public class LegacyPieceApplier : MonoBehaviour
 
 
     }
-
-#if UNITY_EDITOR
-
-    bool _pendingRebuild;
-
-    void OnValidate()
-    {
-        RequestEditorRebuild();
-    }
-
-    void OnEnable()
-    {
-        RequestEditorRebuild();
-    }
-
-    void RequestEditorRebuild()
-    {
-        if (Application.isPlaying)
-            return;
-
-        if (_pendingRebuild)
-            return;
-
-        _pendingRebuild = true;
-        EditorApplication.delayCall += EditorRebuild;
-    }
-
-    void EditorRebuild()
-    {
-        if (this == null)
-            return;
-
-        _pendingRebuild = false;
-
-        // limpiar hijos (visual)
-        for (int i = transform.childCount - 1; i >= 0; i--)
-            DestroyImmediate(transform.GetChild(i).gameObject);
-
-        // ⚠️ reutilizamos TU Start(), no tocamos lógica
-        Start();
-    }
-
-#endif
-
 }
 

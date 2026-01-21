@@ -1,18 +1,28 @@
 using UnityEngine;
 
+/**
+ * @file: VisualChasing.cs
+ * @brief: Script de persecución para NPCs que implementa la mecánica "Weeping Angel": el NPC persigue
+ * al jugador pero se detiene si este lo está mirando. La persecución puede configurarse por tiempo
+ * fijo o mientras el jugador esté en la zona trigger.
+ *
+ * Notas: Si chaseDuration < 1s, la persecución se detiene al salir del trigger. Si chaseDuration >= 1s,
+ * la persecución continúa hasta que termine el tiempo independientemente del trigger. El script añade
+ * automáticamente un Rigidbody al NPC si no lo tiene.
+ */
 public class VisualChasing : MonoBehaviour
 {
     [Header("References")]
-    public TriggerNotificator triggerZone;
-    public Transform player;
+    public TriggerNotificator triggerZone;          // Zona trigger que activa la persecución
+    public Transform player;                        // Transform del jugador
 
     [Header("Movement")]
-    public float npcSpeedWhileChasing = 1.5f; 
-    public float rotationSpeed = 360f;
-    public float viewAngle = 60f; 
+    public float npcSpeedWhileChasing = 1.5f;       // Velocidad de persecución
+    public float rotationSpeed = 360f;              // Velocidad de rotación hacia el jugador
+    public float viewAngle = 60f;                   // Ángulo de visión del jugador (para detección)
 
     [Header("Chase Control")]
-    public float chaseDuration = 5f;
+    public float chaseDuration = 5f;                // Duración de la persecución en segundos
 
     private Rigidbody rb;
     private bool chasing = false;
@@ -20,31 +30,41 @@ public class VisualChasing : MonoBehaviour
 
     void Awake()
     {
+        // Añadir Rigidbody si no existe
         rb = GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            rb = gameObject.AddComponent<Rigidbody>();
+        }
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
     }
 
+    // Suscripción a eventos del trigger
     void OnEnable()
     {
-        if (triggerZone != null)
-        {
-            triggerZone.OnPlayerEntered += OnPlayerEnteredTrigger;
-            triggerZone.OnPlayerExited  += StopChase;
-        }
+        if (triggerZone == null) return;
+
+        triggerZone.OnPlayerEntered += OnPlayerEnteredTrigger;
+
+        // Solo escuchamos la salida si NO hay temporizador
+        if (chaseDuration < 1f)
+            triggerZone.OnPlayerExited += StopChase;
     }
 
+    // Desuscripción de eventos del trigger
     void OnDisable()
     {
-        if (triggerZone != null)
-        {
-            triggerZone.OnPlayerEntered -= OnPlayerEnteredTrigger;
-            triggerZone.OnPlayerExited  -= StopChase;
-        }
+        if (triggerZone == null) return;
+
+        triggerZone.OnPlayerEntered -= OnPlayerEnteredTrigger;
+        triggerZone.OnPlayerExited -= StopChase;
     }
 
+    // Cuenta regresiva del temporizador de persecución
     void Update()
     {
-        if (!chasing || chaseDuration <= 0f)
+        // Solo cuenta el tiempo si hay temporizador
+        if (!chasing || chaseDuration < 1f)
             return;
 
         chaseTimer -= Time.deltaTime;
@@ -52,6 +72,7 @@ public class VisualChasing : MonoBehaviour
             StopChase();
     }
 
+    // Lógica de movimiento y persecución
     void FixedUpdate()
     {
         if (!chasing || player == null)
@@ -60,17 +81,21 @@ public class VisualChasing : MonoBehaviour
         Vector3 toPlayer = player.position - transform.position;
         Vector3 direction = toPlayer.normalized;
 
+        // Verificar si el jugador está mirando al NPC
         bool playerLooking = IsPlayerLookingAtNPC(transform, player, viewAngle);
 
         if (playerLooking)
         {
+            // Mecánica Weeping Angel: si te mira, te quedas quieto
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
         }
         else
         {
+            // Movimiento hacia el jugador
             rb.linearVelocity = direction * npcSpeedWhileChasing;
 
+            // Rotación hacia el jugador
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             rb.MoveRotation(Quaternion.RotateTowards(
                 rb.rotation,
@@ -80,6 +105,7 @@ public class VisualChasing : MonoBehaviour
         }
     }
 
+    // Callback cuando el jugador entra en el trigger
     void OnPlayerEnteredTrigger()
     {
         if (player == null)
@@ -92,13 +118,16 @@ public class VisualChasing : MonoBehaviour
         StartChase();
     }
 
-    void StartChase()
+    // Iniciar persecución
+    public void StartChase() 
     {
         chasing = true;
-        if (chaseDuration > 0f)
+        
+        if (chaseDuration >= 1f)
             chaseTimer = chaseDuration;
     }
 
+    // Detener persecución
     public void StopChase()
     {
         chasing = false;
@@ -106,6 +135,7 @@ public class VisualChasing : MonoBehaviour
         rb.angularVelocity = Vector3.zero;
     }
 
+    // Detectar si el jugador está mirando al NPC
     bool IsPlayerLookingAtNPC(Transform npc, Transform player, float viewAngle = 60f)
     {
         Vector3 toNPC = npc.position - player.position;

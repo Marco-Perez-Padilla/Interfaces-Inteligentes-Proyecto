@@ -119,6 +119,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &278753346
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 278753347}
+  m_Layer: 0
+  m_Name: Pieces
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &278753347
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 278753346}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 13.76467, y: 11.40446, z: 41.74072}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &380383736
 GameObject:
   m_ObjectHideFlags: 0
@@ -369,8 +400,8 @@ MonoBehaviour:
   cartTransform: {fileID: 1686061188}
   width: 10
   height: 10
-  spacing: 6
-  maxMainLength: 40
+  spacing: 10
+  maxMainLength: 50
   minSubLength: 4
   maxHeight: 6
   climbChance: 0.25
@@ -813,6 +844,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1999078967
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1999078969}
+  - component: {fileID: 1999078968}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1999078968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1999078967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: befbc89ca1ab22f409ba200c07abcb07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LegacyPieceApplier
+  pathGenerator: {fileID: 1125221323}
+  pieces: {fileID: 1999078967}
+  straightPiece: {fileID: 7639173868753737122, guid: 4929108bee1e76b47aad8f82d3e8dde9, type: 3}
+  leftPiece: {fileID: 4419460888781984095, guid: 7a604b90d732e09468bab6cf6968578a, type: 3}
+  rightPiece: {fileID: 7470541209180793408, guid: 0d0a980c9a11bc8409d5c235bfb647a1, type: 3}
+  forkLeftRight: {fileID: 8825539492579444973, guid: 21cb7d11af0738f4ba13e71a591f7202, type: 3}
+  forkLeftStraight: {fileID: 8825539492579444973, guid: 7659acd17914fc64f946d354c09f632f, type: 3}
+  forkRightStraight: {fileID: 8825539492579444973, guid: 5a60d81d18ba7f74081e9277011b4e83, type: 3}
+  forkTriple: {fileID: 8193076359908469613, guid: e579bd2045540be4e9bd665df633a636, type: 3}
+  endPiece: {fileID: 7639173868753737122, guid: 4e9828c7e4997ac4ab7285ed807dcbda, type: 3}
+  upCorridor: {fileID: 5995449263546798300, guid: d7cae231919feb54da157e49a9100482, type: 3}
+  downCorridor: {fileID: 5586882984509291576, guid: 43399004394f16c4ab4060ef868f1454, type: 3}
+  straightCorridor: {fileID: 7639173868753737122, guid: 283c38599f72cbb48a6c913b40124dcb, type: 3}
+--- !u!4 &1999078969
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1999078967}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.15256, y: -3.73583, z: 6.19575}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -822,3 +910,5 @@ SceneRoots:
   - {fileID: 1686061188}
   - {fileID: 1936713247}
   - {fileID: 1125221321}
+  - {fileID: 1999078969}
+  - {fileID: 278753347}

@@ -21,6 +21,8 @@ public class LegacyPieceApplier : MonoBehaviour
     [SerializeField] GameObject forkLeftStraight;
     [SerializeField] GameObject forkRightStraight;
     [SerializeField] GameObject forkTriple;
+    [Space]
+    [SerializeField] GameObject endPiece;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     [Header("Corridors")]
@@ -29,6 +31,7 @@ public class LegacyPieceApplier : MonoBehaviour
     [SerializeField] GameObject straightCorridor;
 
     List<Vector3> alreadyAppliedPieces;
+    private float scaleFactor;
 
     void Start()
     {
@@ -40,7 +43,7 @@ public class LegacyPieceApplier : MonoBehaviour
 
         //ApplyPiecesToPath(pathGraph.subPaths[1], Color.blue);
         //ApplyPiecesToPath(pathGraph.subPaths[2], Color.green);
-        
+
         foreach (List<PathNode> currentPath in pathGraph.subPaths)
         {
             ApplyPiecesToPath(currentPath, Color.red);
@@ -74,14 +77,13 @@ public class LegacyPieceApplier : MonoBehaviour
         return new GameObject();
     }
 
-    GameObject GetForkPieceBasedOnDirection(Vector3 previousPosition, Vector3 currentPosition, Vector3 nextPosition, Vector3 nextPositionA, Vector3 nextPositionB)
+    GameObject GetTwoForkPieceBasedOnDirection(Vector3 previousPosition, Vector3 currentPosition, Vector3 nextPosition, Vector3 nextPositionA)
     {
 
         previousPosition.y = 0;
         currentPosition.y = 0;
         nextPosition.y = 0;
         nextPositionA.y = 0;
-        nextPositionB.y = 0;
 
         Vector3 prev = (currentPosition - previousPosition).normalized;
 
@@ -91,7 +93,6 @@ public class LegacyPieceApplier : MonoBehaviour
 
         void Classify(Vector3 next)
         {
-            if (next == Vector3.zero) return; // means no way out
 
             float angle = Vector3.SignedAngle(prev, (next - currentPosition).normalized, Vector3.up);
 
@@ -102,10 +103,6 @@ public class LegacyPieceApplier : MonoBehaviour
 
         Classify(nextPosition);
         Classify(nextPositionA);
-        Classify(nextPositionB);
-
-        if (left == 1 && right == 1 && straight == 1)
-            return forkTriple;   // triple bifurcation
 
         if (left == 1 && right == 1)
             return forkLeftRight;
@@ -164,7 +161,6 @@ public class LegacyPieceApplier : MonoBehaviour
         Vector3 position = currentNode.position;
 
         int numberOfSubPaths = currentNode.connections.Count - 2;
-        float scaleFactor = 1f / 5f;
 
         Vector3 direction = (nextNode.position - position).normalized;
         direction.y = 0;
@@ -175,23 +171,16 @@ public class LegacyPieceApplier : MonoBehaviour
 
         if (numberOfSubPaths == 1)
         {
-            currentPiece = GetForkPieceBasedOnDirection(
+            currentPiece = GetTwoForkPieceBasedOnDirection(
                 fakePrevious, // fake previous
                 position,
                 nextNode.position,
-                currentNode.connections[2].position,
-                Vector3.zero
+                currentNode.connections[2].position
             );
         }
         else if (numberOfSubPaths == 2)
         {
-            currentPiece = GetForkPieceBasedOnDirection(
-                position - direction,
-                position,
-                nextNode.position,
-                currentNode.connections[2].position,
-                currentNode.connections[3].position
-            );
+            currentPiece = forkTriple;
         }
         else
         {
@@ -206,8 +195,8 @@ public class LegacyPieceApplier : MonoBehaviour
         pieceObject.transform.parent = pieces.transform;
         pieceObject.transform.position = position;
         pieceObject.transform.forward = direction;
-        pieceObject.transform.localScale = Vector3.one * scaleFactor;
 
+        pieceObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
 
         // corridor
         GameObject corridor = Instantiate(GetCorridorBasedOnDirection(position, nextNode.position));
@@ -215,21 +204,56 @@ public class LegacyPieceApplier : MonoBehaviour
         corridor.transform.forward = direction;
         corridor.transform.localScale = Vector3.one * scaleFactor;
 
+        corridor.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+
         return nextNode;
+    }
+
+
+    PathNode ApplyLastPiece(PathNode currentNode)
+    {
+        PathNode prevNode = currentNode.connections[0];
+
+        alreadyAppliedPieces.Add(currentNode.position);
+
+        Vector3 position = currentNode.position;
+
+        int numberOfSubPaths = currentNode.connections.Count - 2;
+
+        Vector3 direction = (position - prevNode.position).normalized;
+        direction.y = 0;
+
+        GameObject currentPiece = endPiece;
+
+        GameObject pieceObject = Instantiate(currentPiece);
+        pieceObject.transform.parent = pieces.transform;
+        pieceObject.transform.position = position;
+        pieceObject.transform.forward = direction;
+        pieceObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+
+        return null;
     }
 
     private void ApplyPiecesToPath(List<PathNode> path, Color color)
     {
         ApplyFirstPiece(path[0]);
 
+        scaleFactor = pathGenerator.spacing / 2 / 5;
         PathNode currentNode = path[1];
 
-        float scaleFactor = pathGenerator.spacing / 2 / 5;
         for (int i = 1; i < path.Count; i++)
         {
 
             currentNode = path[i];
             PathNode prevNode = currentNode.connections[0];
+
+            if (currentNode.connections.Count == 1)
+            {
+                Debug.Log("tuki");
+                ApplyLastPiece(currentNode);
+                continue;
+            }
+
             PathNode nextNode = currentNode.connections[1];
 
             Vector3 position = currentNode.position;
@@ -253,23 +277,15 @@ public class LegacyPieceApplier : MonoBehaviour
             }
             else if (numberOfWayouts == 2)
             {
-                currentPiece = GetForkPieceBasedOnDirection(
+                currentPiece = GetTwoForkPieceBasedOnDirection(
                     prevNode.position,
                     position,
                     nextNode.position,
-                    currentNode.connections[2].position,
-                    Vector3.zero);
+                    currentNode.connections[2].position);
             }
             else
             {
-                currentPiece = GetForkPieceBasedOnDirection(
-                       prevNode.position,
-                       position,
-                       nextNode.position,
-                       currentNode.connections[2].position,
-                    currentNode.connections[3].position);
-
-
+                currentPiece = forkTriple;
             }
             GameObject pieceObject = GameObject.Instantiate(currentPiece);
             pieceObject.transform.parent = pieces.transform;

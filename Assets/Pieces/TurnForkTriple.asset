@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ad97148d555f9e47a603e2c0ca8b95b, type: 3}
+  m_Name: TurnForkTriple
+  m_EditorClassIdentifier: Assembly-CSharp::Piece
+  original: {fileID: 8193076359908469613, guid: e579bd2045540be4e9bd665df633a636, type: 3}
+  variant0: {fileID: 8193076359908469613, guid: 1f3eddf16d9b0ce47a13195c74e324e7, type: 3}

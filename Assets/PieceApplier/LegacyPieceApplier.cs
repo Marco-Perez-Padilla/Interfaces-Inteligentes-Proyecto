@@ -12,23 +12,23 @@ public class LegacyPieceApplier : MonoBehaviour
     PathGraph pathGraph;
     
     [Header("Pieces")]
-    [SerializeField] GameObject straightPiece;
+    [SerializeField] Piece straightPiece;
     [Space]
-    [SerializeField] GameObject leftPiece;
-    [SerializeField] GameObject rightPiece;
+    [SerializeField] Piece leftPiece;
+    [SerializeField] Piece rightPiece;
     [Space]
-    [SerializeField] GameObject forkLeftRight;
-    [SerializeField] GameObject forkLeftStraight;
-    [SerializeField] GameObject forkRightStraight;
-    [SerializeField] GameObject forkTriple;
+    [SerializeField] Piece forkLeftRight;
+    [SerializeField] Piece forkLeftStraight;
+    [SerializeField] Piece forkRightStraight;
+    [SerializeField] Piece forkTriple;
     [Space]
-    [SerializeField] GameObject endPiece;
+    [SerializeField] Piece endPiece;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     [Header("Corridors")]
-    [SerializeField] GameObject upCorridor;
-    [SerializeField] GameObject downCorridor;
-    [SerializeField] GameObject straightCorridor;
+    [SerializeField] Piece upCorridor;
+    [SerializeField] Piece downCorridor;
+    [SerializeField] Piece straightCorridor;
 
     List<Vector3> alreadyAppliedPieces;
     private float scaleFactor;
@@ -50,7 +50,7 @@ public class LegacyPieceApplier : MonoBehaviour
         }
     }
 
-    GameObject GetPieceBasedOnDirection(Vector3 previousPosition, Vector3 currentPosition, Vector3 nextPosition)
+    Piece GetPieceBasedOnDirection(Vector3 previousPosition, Vector3 currentPosition, Vector3 nextPosition)
     {
 
         previousPosition.y = 0;
@@ -74,10 +74,10 @@ public class LegacyPieceApplier : MonoBehaviour
         if (angle < 0)
             return leftPiece;
 
-        return new GameObject();
+        return new Piece();
     }
 
-    GameObject GetTwoForkPieceBasedOnDirection(Vector3 previousPosition, Vector3 currentPosition, Vector3 nextPosition, Vector3 nextPositionA)
+    Piece GetTwoForkPieceBasedOnDirection(Vector3 previousPosition, Vector3 currentPosition, Vector3 nextPosition, Vector3 nextPositionA)
     {
 
         previousPosition.y = 0;
@@ -116,7 +116,7 @@ public class LegacyPieceApplier : MonoBehaviour
         return null;
     }
 
-    GameObject GetCorridorBasedOnDirection(Vector3 currentPosition, Vector3 nextPosition)
+    Piece GetCorridorBasedOnDirection(Vector3 currentPosition, Vector3 nextPosition)
     {
         if (nextPosition.y > currentPosition.y)
         {
@@ -165,7 +165,7 @@ public class LegacyPieceApplier : MonoBehaviour
         Vector3 direction = (nextNode.position - position).normalized;
         direction.y = 0;
 
-        GameObject currentPiece;
+        Piece currentPiece;
 
         Vector3 fakePrevious = position - direction;
 
@@ -191,7 +191,7 @@ public class LegacyPieceApplier : MonoBehaviour
             );
         }
 
-        GameObject pieceObject = Instantiate(currentPiece);
+        GameObject pieceObject = currentPiece.Instantiate();
         pieceObject.transform.parent = pieces.transform;
         pieceObject.transform.position = position;
         pieceObject.transform.forward = direction;
@@ -199,7 +199,7 @@ public class LegacyPieceApplier : MonoBehaviour
         pieceObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
 
         // corridor
-        GameObject corridor = Instantiate(GetCorridorBasedOnDirection(position, nextNode.position));
+        GameObject corridor = GetCorridorBasedOnDirection(position, nextNode.position).Instantiate();
         corridor.transform.position = position + direction;
         corridor.transform.forward = direction;
         corridor.transform.localScale = Vector3.one * scaleFactor;
@@ -223,9 +223,9 @@ public class LegacyPieceApplier : MonoBehaviour
         Vector3 direction = (position - prevNode.position).normalized;
         direction.y = 0;
 
-        GameObject currentPiece = endPiece;
+        Piece currentPiece = endPiece;
 
-        GameObject pieceObject = Instantiate(currentPiece);
+        GameObject pieceObject = currentPiece.Instantiate();
         pieceObject.transform.parent = pieces.transform;
         pieceObject.transform.position = position;
         pieceObject.transform.forward = direction;
@@ -249,7 +249,6 @@ public class LegacyPieceApplier : MonoBehaviour
 
             if (currentNode.connections.Count == 1)
             {
-                Debug.Log("tuki");
                 ApplyLastPiece(currentNode);
                 continue;
             }
@@ -269,7 +268,7 @@ public class LegacyPieceApplier : MonoBehaviour
             direction.y = 0;
 
             int numberOfWayouts = currentNode.connections.Count - 1;
-            GameObject currentPiece;
+            Piece currentPiece;
 
             if (numberOfWayouts == 1)
             {
@@ -287,8 +286,8 @@ public class LegacyPieceApplier : MonoBehaviour
             {
                 currentPiece = forkTriple;
             }
-            GameObject pieceObject = GameObject.Instantiate(currentPiece);
-            pieceObject.transform.parent = pieces.transform;
+            GameObject pieceObject = currentPiece.Instantiate();
+            //pieceObject.transform.parent = pieces.transform;
             pieceObject.transform.forward = new Vector3(direction.x, 0, direction.z);
             pieceObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
             pieceObject.transform.position = position;
@@ -312,13 +311,13 @@ public class LegacyPieceApplier : MonoBehaviour
 
     private void PlaceCorridor(float scaleFactor, PathNode nextNode, Vector3 position, string name)
     {
-        GameObject currentCorridor = GetCorridorBasedOnDirection(position, nextNode.position);
+        Piece currentCorridor = GetCorridorBasedOnDirection(position, nextNode.position);
         Vector3 corridorDirection = (nextNode.position - position).normalized;
         Vector3 middlePosition = position + (nextNode.position - position) * 0.5f;
         corridorDirection.y = 0;
         middlePosition.y = position.y;
 
-        GameObject corridorObject = GameObject.Instantiate(currentCorridor);
+        GameObject corridorObject = currentCorridor.Instantiate();
         corridorObject.name = name;
         corridorObject.transform.parent = pieces.transform;
         corridorObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);

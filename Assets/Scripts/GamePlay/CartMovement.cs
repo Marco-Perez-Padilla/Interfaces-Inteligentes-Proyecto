@@ -81,6 +81,14 @@ public class CartMovement : MonoBehaviour
         DecayImpulse();
         UpdateBrakeState();
 
+        if (moveAction != null)
+        {
+            Vector2 moveVal = moveAction.action.ReadValue<Vector2>();
+            if (moveVal.magnitude > 0.1f) // Solo cuando realmente se mueve
+            {
+                Debug.Log($"Move Action RAW Value: {moveVal}");
+            }
+        }
         if (!isWaitingDecision && targetNode != null && !brakeLocked)
             Move();
 
@@ -278,6 +286,7 @@ public class CartMovement : MonoBehaviour
         {
             isWaitingDecision = true;
             targetNode = null;
+            Debug.Log("--- MODO DECISIÓN ACTIVADO ---"); // Log crucial
             return;
         }
 
@@ -346,6 +355,8 @@ public class CartMovement : MonoBehaviour
         foreach (var n in currentNode.connections)
             if (n != previousNode)
                 list.Add(n);
+
+        Debug.Log($"Nodo en posición {currentNode.position} tiene {list.Count} salidas válidas.");
 
         return list;
     }

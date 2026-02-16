@@ -1,69 +1,97 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit;
 
-/**
- * @class CartMount
- * @brief Gestiona la entrada/salida del jugador en la vagoneta.
- */
 public class CartMount : MonoBehaviour
 {
+    [Header("References")]
     public Transform seatPoint;
     public CartMovement cartMovement;
+    public XRFollowCart xrFollower;
+    public GameObject locomotionSystem; // Opcional
 
-    private Transform player;
-    private Transform cam;
-    private CameraShake shake;
-    private bool mounted;
+    [Header("Input Action")]
+    public InputActionReference mountAction; // Arrastrar la acción aquí
+
+    private bool isMounted = false;
+
+    void OnEnable()
+    {
+        if (mountAction != null)
+        {
+            mountAction.action.Enable();
+            mountAction.action.performed += OnMountPerformed;
+        }
+    }
+
+    void OnDisable()
+    {
+        if (mountAction != null)
+        {
+            mountAction.action.performed -= OnMountPerformed;
+            mountAction.action.Disable();
+        }
+    }
 
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        cam = Camera.main.transform;
-        shake = cam.GetComponent<CameraShake>();
-
-        if (shake != null)
-            shake.enableShake = false;
-
-        cartMovement.enabled = false;
+        if (xrFollower != null) xrFollower.enabled = false;
+        if (cartMovement != null) cartMovement.enabled = false;
+        SetLocomotionActive(true);
     }
 
-    void Update()
+    private void OnMountPerformed(InputAction.CallbackContext context)
     {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            if (!mounted) Mount();
-            else Unmount();
-        }
+        if (!isMounted)
+            Mount();
+        else
+            Unmount();
     }
 
     void Mount()
     {
-        cam.SetParent(seatPoint);
-        cam.localPosition = Vector3.zero;
-        cam.localRotation = Quaternion.identity;
-
-        if (shake != null)
+        if (xrFollower != null)
         {
-            shake.ResetOriginalPosition();
-            shake.enableShake = true;
+            xrFollower.enabled = true;
+            xrFollower.TeleportToCart();
         }
 
-        cartMovement.enabled = true;
-        mounted = true;
+        if (cartMovement != null)
+            cartMovement.enabled = true;
+
+        SetLocomotionActive(false);
+        isMounted = true;
     }
 
     void Unmount()
     {
-        cam.SetParent(player);
-        cam.localPosition = new Vector3(0f, 1.6f, 0f);
-        cam.localRotation = Quaternion.identity;
+        if (xrFollower != null)
+            xrFollower.enabled = false;
 
-        if (shake != null)
+        if (cartMovement != null)
+            cartMovement.enabled = false;
+
+        SetLocomotionActive(true);
+        isMounted = false;
+    }
+
+    void SetLocomotionActive(bool active)
+    {
+        Debug.Log($"SetLocomotionActive: {active}");
+
+        var continuousMoves = FindObjectsOfType<ContinuousMoveProviderBase>(true);
+        foreach (var provider in continuousMoves)
         {
-            shake.ResetOriginalPosition();
-            shake.enableShake = false;
+            Debug.Log($"Provider {provider.name} enabled set to {active}");
+            provider.enabled = active;
         }
 
-        cartMovement.enabled = false;
-        mounted = false;
+        var teleports = FindObjectsOfType<UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation.TeleportationProvider>(true);
+        foreach (var provider in teleports)
+            provider.enabled = active;
+
+        var snapTurns = FindObjectsOfType<SnapTurnProviderBase>(true);
+        foreach (var provider in snapTurns)
+            provider.enabled = active;
     }
 }

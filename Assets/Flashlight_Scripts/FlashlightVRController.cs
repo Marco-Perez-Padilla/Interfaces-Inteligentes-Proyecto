@@ -7,18 +7,23 @@ public class FlashlightVRController : MonoBehaviour
     public Transform rightHandParent;
     public Transform leftHandParent;
     private Transform handVisual;
+    private bool isRightHand = true;
 
     [Header("Light Reference")]
     public Light flashlightLight;
     public bool isOn = true;
 
-    [Header("Grip Offset")]
-    public Vector3 positionOffset = Vector3.zero;
-    public Vector3 rotationOffset = Vector3.zero;
+    [Header("Offsets - Right Hand")]
+    public Vector3 rightPositionOffset = Vector3.zero;
+    public Vector3 rightRotationOffset = Vector3.zero;
+
+    [Header("Offsets - Left Hand")]
+    public Vector3 leftPositionOffset = Vector3.zero;
+    public Vector3 leftRotationOffset = Vector3.zero;
 
     [Header("Input Actions")]
-    public InputActionProperty toggleFlashlightAction; // tipo Button
-    public InputActionProperty switchHandAction;       // tipo Button
+    public InputActionProperty toggleFlashlightAction;
+    public InputActionProperty switchHandAction;
 
     void OnEnable()
     {
@@ -48,8 +53,11 @@ public class FlashlightVRController : MonoBehaviour
     {
         if (handVisual != null)
         {
-            transform.position = handVisual.position + handVisual.TransformVector(positionOffset);
-            transform.rotation = handVisual.rotation * Quaternion.Euler(rotationOffset);
+            Vector3 posOffset = isRightHand ? rightPositionOffset : leftPositionOffset;
+            Vector3 rotOffset = isRightHand ? rightRotationOffset : leftRotationOffset;
+
+            transform.position = handVisual.position + handVisual.TransformVector(posOffset);
+            transform.rotation = handVisual.rotation * Quaternion.Euler(rotOffset);
         }
     }
 
@@ -76,6 +84,7 @@ public class FlashlightVRController : MonoBehaviour
     public void SwitchHand(Transform handParent)
     {
         handVisual = GetHandVisual(handParent);
+        isRightHand = (handParent == rightHandParent);
     }
 
     private Transform GetHandVisual(Transform handParent)

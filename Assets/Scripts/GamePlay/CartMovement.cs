@@ -5,8 +5,8 @@ using System.Collections.Generic;
 /**
  * Movimiento de la vagoneta con:
  * - Toma de decisiones (nodos con múltiples salidas)
- * - Impulso (V)
- * - Freno bloqueante (X)
+ * - Impulso por pulsación (no continuo)
+ * - Freno continuo
  * - Sonido y cámara dependientes de velocidad
  */
 public class CartMovement : MonoBehaviour
@@ -20,20 +20,21 @@ public class CartMovement : MonoBehaviour
     public float speed = 2f;
     public float rotationSpeed = 8f;
 
-    [Header("Impulse")]
-    public float impulseStrength = 2.5f;
-    public float brakeStrength = 6f;
-    public float impulseDecay = 3f;
+    [Header("Impulse (por pulsación)")]
+    public float impulsePerPress = 5f;      // Cantidad fija que se añade por cada pulsación
+    public float impulseDecay = 3f;         // Decaimiento natural (por segundo)
 
-    [Header("Brake")]
-    public float hardBrakeThreshold = -1.5f; // bloqueo total
+    [Header("Brake (continuo)")]
+    public float brakeStrength = 6f;        // Fuerza de frenado por segundo
+    public float hardBrakeThreshold = -1.5f; // Bloqueo total
+    private bool wasBraking = false;
 
     [Header("Input Actions")]
-    public InputActionReference impulseAction;
-    public InputActionReference brakeAction;
-    public InputActionReference moveAction;
+    public InputActionReference impulseAction;  // Para detectar pulsaciones
+    public InputActionReference brakeAction;    // Para freno continuo
+    public InputActionReference moveAction;     // Para dirección
 
-    [Header("VR Controls")]
+    [Header("VR Controls (manos)")]
     public Transform rightHand;
     public Transform leftHand;
     public bool useVRHandControls = false;
@@ -55,6 +56,36 @@ public class CartMovement : MonoBehaviour
     private Vector3 lastLeftHandPos;
     private float lastHandActionTime;
 
+    // Eventos para feedback VR
+    public System.Action onImpulse; 
+    public System.Action onBrake;  
+
+    void OnEnable()
+    {
+        // Habilitar acciones y suscribirse a eventos
+        if (impulseAction != null)
+        {
+            impulseAction.action.Enable();
+            impulseAction.action.performed += OnImpulsePerformed;
+        }
+        if (brakeAction != null) brakeAction.action.Enable();
+        if (moveAction != null) moveAction.action.Enable();
+    }
+
+    void OnDisable()
+    {
+        // Desuscribirse y deshabilitar
+        if (impulseAction != null)
+        {
+            impulseAction.action.performed -= OnImpulsePerformed;
+            impulseAction.action.Disable();
+        }
+        if (brakeAction != null && brakeAction.action.enabled)
+            brakeAction.action.Disable();
+        if (moveAction != null && moveAction.action.enabled)
+            moveAction.action.Disable();
+    }
+
     void Start()
     {
         var main = pathGenerator.graph.mainPath;
@@ -62,12 +93,7 @@ public class CartMovement : MonoBehaviour
         targetNode = main[1];
         transform.position = currentNode.position;
 
-        // Enable input actions
-        if (impulseAction != null) impulseAction.action.Enable();
-        if (brakeAction != null) brakeAction.action.Enable();
-        if (moveAction != null) moveAction.action.Enable();
-
-        // Initialize VR hand positions
+        // Inicializar posiciones de manos para VR
         if (rightHand != null) lastRightHandPos = rightHand.position;
         if (leftHand != null) lastLeftHandPos = leftHand.position;
 
@@ -81,14 +107,16 @@ public class CartMovement : MonoBehaviour
         DecayImpulse();
         UpdateBrakeState();
 
+        // Log para ver el valor del joystick (solo debug)
         if (moveAction != null)
         {
             Vector2 moveVal = moveAction.action.ReadValue<Vector2>();
-            if (moveVal.magnitude > 0.1f) // Solo cuando realmente se mueve
+            if (moveVal.magnitude > 0.1f)
             {
                 Debug.Log($"Move Action RAW Value: {moveVal}");
             }
         }
+
         if (!isWaitingDecision && targetNode != null && !brakeLocked)
             Move();
 
@@ -102,66 +130,77 @@ public class CartMovement : MonoBehaviour
 
     private void HandleSpeedInput()
     {
-        float impulseInput = 0f;
         float brakeInput = 0f;
 
-        // 1. Input Actions (botones VR/teclado)
-        if (impulseAction != null)
-        {
-            impulseInput = impulseAction.action.ReadValue<float>();
-        }
-
+        // 1. Freno continuo desde Input Action
         if (brakeAction != null)
         {
             brakeInput = brakeAction.action.ReadValue<float>();
+            bool isBraking = brakeInput > 0.1f;
+            if (isBraking && !wasBraking)
+            {
+                if (onBrake != null) onBrake.Invoke();
+            }
+            wasBraking = isBraking;
         }
 
         // 2. Controles VR por movimiento de manos (si está habilitado)
         if (useVRHandControls && Time.time - lastHandActionTime > handCooldown)
         {
-            float handImpulse = GetHandImpulseInput();
+            float handImpulse = GetHandImpulseInput(); // 0 o 1
             float handBrake = GetHandBrakeInput();
 
-            impulseInput = Mathf.Max(impulseInput, handImpulse);
+            // Si hay impulso de manos, añadimos un pulso (como si fuera un botón)
+            if (handImpulse > 0.1f)
+            {
+                speedImpulse += impulsePerPress;
+                Debug.Log($"Impulse por manos: +{impulsePerPress}");
+            }
+
             brakeInput = Mathf.Max(brakeInput, handBrake);
         }
 
-        // 3. Controles de teclado tradicionales (backward compatibility)
-        if (Input.GetKey(KeyCode.V))
+        // 3. Controles de teclado tradicionales
+        if (Input.GetKeyDown(KeyCode.V))
         {
-            impulseInput = 1f;
+            speedImpulse += impulsePerPress;
+            Debug.Log($"Impulse por tecla V: +{impulsePerPress}");
         }
-
         if (Input.GetKey(KeyCode.X))
         {
             brakeInput = 1f;
         }
 
-        // Aplicar impulso y freno
-        speedImpulse += impulseInput * impulseStrength * Time.deltaTime;
+        // Aplicar freno (continuo)
         speedImpulse -= brakeInput * brakeStrength * Time.deltaTime;
 
         // 4. Sistema de dirección con Input Action (para decisiones)
-        if (moveAction != null && isWaitingDecision)
-        {
-            Vector2 moveInput = moveAction.action.ReadValue<Vector2>();
-            HandleDirectionInput(moveInput);
-        }
+        // if (moveAction != null && isWaitingDecision)
+        // {
+        //     Vector2 moveInput = moveAction.action.ReadValue<Vector2>();
+        //     HandleDirectionInput(moveInput);
+        // }
 
         // Actualizar posiciones de manos para VR
         if (rightHand != null) lastRightHandPos = rightHand.position;
         if (leftHand != null) lastLeftHandPos = leftHand.position;
     }
 
+    // Evento llamado cuando se pulsa el botón de impulso (VR o teclado)
+    private void OnImpulsePerformed(InputAction.CallbackContext context)
+    {
+        speedImpulse += impulsePerPress;
+        Debug.Log($"Impulse pulsado! speedImpulse = {speedImpulse}");
+        if (onImpulse != null) onImpulse.Invoke();
+    }
+
     private float GetHandImpulseInput()
     {
         if (rightHand == null || leftHand == null) return 0f;
 
-        // Detectar empuje hacia adelante con ambas manos
         Vector3 rightHandDelta = transform.InverseTransformDirection(rightHand.position - lastRightHandPos);
         Vector3 leftHandDelta = transform.InverseTransformDirection(leftHand.position - lastLeftHandPos);
 
-        // Empuje con la mano derecha (adelante) o ambas manos
         bool rightHandPush = rightHandDelta.z > handPushThreshold;
         bool leftHandPush = leftHandDelta.z > handPushThreshold;
 
@@ -178,15 +217,11 @@ public class CartMovement : MonoBehaviour
     {
         if (rightHand == null || leftHand == null) return 0f;
 
-        // Detectar tirón hacia atrás con ambas manos
         Vector3 rightHandDelta = transform.InverseTransformDirection(rightHand.position - lastRightHandPos);
         Vector3 leftHandDelta = transform.InverseTransformDirection(leftHand.position - lastLeftHandPos);
 
-        // Tirón hacia atrás con las manos
         bool rightHandPull = rightHandDelta.z < -handPullThreshold;
         bool leftHandPull = leftHandDelta.z < -handPullThreshold;
-
-        // También considerar movimiento lateral rápido como freno de mano
         bool rightHandSwipe = Mathf.Abs(rightHandDelta.x) > handPullThreshold * 1.5f;
         bool leftHandSwipe = Mathf.Abs(leftHandDelta.x) > handPullThreshold * 1.5f;
 
@@ -203,24 +238,21 @@ public class CartMovement : MonoBehaviour
     {
         if (input.magnitude < 0.1f) return;
 
-        // Solo procesar cuando estamos en un nodo de decisión
         if (!isWaitingDecision || currentNode == null) return;
 
         var exits = GetValidExits();
         if (exits.Count <= 1) return;
 
-        // Determinar dirección basada en input
         PathNode selectedNode = null;
-        
+
         if (exits.Count == 2)
         {
-            // Para 2 salidas: izquierda/derecha
             Vector3 exit1Dir = (exits[0].position - currentNode.position).normalized;
             Vector3 exit2Dir = (exits[1].position - currentNode.position).normalized;
-            
+
             float angle1 = Vector3.SignedAngle(transform.forward, exit1Dir, Vector3.up);
             float angle2 = Vector3.SignedAngle(transform.forward, exit2Dir, Vector3.up);
-            
+
             if (input.x < -0.5f) // Izquierda
             {
                 selectedNode = Mathf.Abs(angle1) > Mathf.Abs(angle2) ? exits[0] : exits[1];
@@ -286,7 +318,7 @@ public class CartMovement : MonoBehaviour
         {
             isWaitingDecision = true;
             targetNode = null;
-            Debug.Log("--- MODO DECISIÓN ACTIVADO ---"); // Log crucial
+            Debug.Log("--- MODO DECISIÓN ACTIVADO ---");
             return;
         }
 
@@ -363,17 +395,6 @@ public class CartMovement : MonoBehaviour
 
     public PathNode Current => currentNode;
     public PathNode Previous => previousNode;
-
-    void OnDisable()
-    {
-        // Disable input actions when disabled
-        if (impulseAction != null && impulseAction.action.enabled)
-            impulseAction.action.Disable();
-        if (brakeAction != null && brakeAction.action.enabled)
-            brakeAction.action.Disable();
-        if (moveAction != null && moveAction.action.enabled)
-            moveAction.action.Disable();
-    }
 
     public void Choose(PathNode next)
     {

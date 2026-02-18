@@ -126,7 +126,7 @@ public partial class @FlashlightControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""c2338f4b-fc89-442a-9dc1-30e0e9de9857"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""path"": ""<Gamepad>/dpad/thumbstickDpadDown"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -159,7 +159,7 @@ public partial class @FlashlightControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""d3435b7b-c29a-42e6-887d-8d4f82f9189a"",
-                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""path"": ""<Gamepad>/dpad/thumbstickDpadRight"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

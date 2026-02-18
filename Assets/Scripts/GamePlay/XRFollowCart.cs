@@ -12,6 +12,7 @@ public class XRFollowCart : MonoBehaviour
     public float rotationLerpSpeed = 5f;
 
     private Vector3 initialOffset;       // Offset global entre XR Origin y carrito al montar
+    public Vector3 rotationOffset = Vector3.zero;
     private bool isInitialized = false;
 
     void Start()
@@ -82,7 +83,7 @@ public class XRFollowCart : MonoBehaviour
         if (seatPoint != null)
         {
             xrOrigin.position = seatPoint.position;
-            xrOrigin.rotation = cart.transform.rotation;
+            xrOrigin.rotation = cart.transform.rotation * Quaternion.Euler(rotationOffset);
         }
         else
         {

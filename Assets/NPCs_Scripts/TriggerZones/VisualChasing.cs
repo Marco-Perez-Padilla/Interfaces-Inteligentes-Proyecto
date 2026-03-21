@@ -108,8 +108,8 @@ public class VisualChasing : MonoBehaviour
 
     bool IsPlayerLookingAtNPC(Transform npc, Transform player, float viewAngle = 60f)
     {
-        Vector3 toNPC = npc.position - player.position;
-        Vector3 playerForward = player.forward;
+        Vector3 toNPC = npc.position - Camera.main.transform.position;
+        Vector3 playerForward = Camera.main.transform.forward;
 
         float angle = Vector3.Angle(playerForward, toNPC);
         return angle < viewAngle / 2f;

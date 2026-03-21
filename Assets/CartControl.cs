@@ -111,15 +111,6 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Confirm"",
-                    ""type"": ""Button"",
-                    ""id"": ""7c96d9c5-646a-4098-bfea-37e069f06cf9"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Brake"",
                     ""type"": ""Button"",
                     ""id"": ""478c0e74-a055-4b93-b82e-d7bba0aaa453"",
@@ -169,39 +160,6 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Mount"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""ddd17c71-df1c-4b69-8352-7c3628fd466a"",
-                    ""path"": ""<Gamepad>/buttonEast"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Confirm"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""3e0caa58-1cdd-4568-abc4-762d6b190e30"",
-                    ""path"": ""<XRController>{RightHand}/{SecondaryButton}"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Confirm"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""7e205264-543e-4404-b2f5-c4eb05a56c1a"",
-                    ""path"": ""<Keyboard>/#(C)"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Confirm"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -412,7 +370,6 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Mount = m_Player.FindAction("Mount", throwIfNotFound: true);
-        m_Player_Confirm = m_Player.FindAction("Confirm", throwIfNotFound: true);
         m_Player_Brake = m_Player.FindAction("Brake", throwIfNotFound: true);
         m_Player_Impulse = m_Player.FindAction("Impulse", throwIfNotFound: true);
     }
@@ -497,7 +454,6 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Mount;
-    private readonly InputAction m_Player_Confirm;
     private readonly InputAction m_Player_Brake;
     private readonly InputAction m_Player_Impulse;
     /// <summary>
@@ -519,10 +475,6 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Mount".
         /// </summary>
         public InputAction @Mount => m_Wrapper.m_Player_Mount;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/Confirm".
-        /// </summary>
-        public InputAction @Confirm => m_Wrapper.m_Player_Confirm;
         /// <summary>
         /// Provides access to the underlying input action "Player/Brake".
         /// </summary>
@@ -563,9 +515,6 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
             @Mount.started += instance.OnMount;
             @Mount.performed += instance.OnMount;
             @Mount.canceled += instance.OnMount;
-            @Confirm.started += instance.OnConfirm;
-            @Confirm.performed += instance.OnConfirm;
-            @Confirm.canceled += instance.OnConfirm;
             @Brake.started += instance.OnBrake;
             @Brake.performed += instance.OnBrake;
             @Brake.canceled += instance.OnBrake;
@@ -589,9 +538,6 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
             @Mount.started -= instance.OnMount;
             @Mount.performed -= instance.OnMount;
             @Mount.canceled -= instance.OnMount;
-            @Confirm.started -= instance.OnConfirm;
-            @Confirm.performed -= instance.OnConfirm;
-            @Confirm.canceled -= instance.OnConfirm;
             @Brake.started -= instance.OnBrake;
             @Brake.performed -= instance.OnBrake;
             @Brake.canceled -= instance.OnBrake;
@@ -652,13 +598,6 @@ public partial class @CartControl: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMount(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "Confirm" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnConfirm(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Brake" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

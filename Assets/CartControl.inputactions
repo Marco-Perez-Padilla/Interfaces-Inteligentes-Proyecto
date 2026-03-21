@@ -25,15 +25,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Confirm",
-                    "type": "Button",
-                    "id": "7c96d9c5-646a-4098-bfea-37e069f06cf9",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Brake",
                     "type": "Button",
                     "id": "478c0e74-a055-4b93-b82e-d7bba0aaa453",
@@ -83,39 +74,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Mount",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "ddd17c71-df1c-4b69-8352-7c3628fd466a",
-                    "path": "<Gamepad>/buttonEast",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Confirm",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "3e0caa58-1cdd-4568-abc4-762d6b190e30",
-                    "path": "<XRController>{RightHand}/{SecondaryButton}",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Confirm",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "7e205264-543e-4404-b2f5-c4eb05a56c1a",
-                    "path": "<Keyboard>/#(C)",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Confirm",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

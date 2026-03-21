@@ -18,6 +18,7 @@
 using UnityEngine;
 using System;
 using System.Linq;
+using UnityEngine.Android;
 
 public class NoiseDetector : MonoBehaviour
 {
@@ -46,6 +47,11 @@ public class NoiseDetector : MonoBehaviour
         GetComponent<Collider>().isTrigger = true;
     }
 
+    void Start()
+    {
+        if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
+            Permission.RequestUserPermission(Permission.Microphone);
+    }
     void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Player")) return;
@@ -62,6 +68,7 @@ public class NoiseDetector : MonoBehaviour
 
     void StartRecording()
     {
+        if (!Permission.HasUserAuthorizedPermission(Permission.Microphone)) return;
         if (Microphone.devices.Length == 0) return;
         micName = Microphone.devices[0];
         clip = Microphone.Start(micName, true, recordTime, sampleRate);
@@ -80,8 +87,9 @@ public class NoiseDetector : MonoBehaviour
         if (!isRecording || clip == null) return;
 
         float[] samples = new float[windowSize];
-        int startSample = Mathf.Max(clip.samples - windowSize, 0);
-        clip.GetData(samples, startSample);
+        int micPos = Microphone.GetPosition(micName) - windowSize;
+        if (micPos < 0) return; // buffer aún no llenado
+        clip.GetData(samples, micPos);
 
         float rms = Mathf.Sqrt(samples.Average(s => s * s));
 

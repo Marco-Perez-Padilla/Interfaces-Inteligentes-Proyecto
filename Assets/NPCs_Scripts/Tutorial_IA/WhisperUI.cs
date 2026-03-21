@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.Networking;
 using System.Collections;
-using System.IO;
+using UnityEngine.Android;
 
 public class WhisperUI : MonoBehaviour
 {
@@ -16,6 +16,9 @@ public class WhisperUI : MonoBehaviour
     public string whisperUrl = "http://gpu2.esit.ull.es:8000/v1/audio/transcriptions";
     public string model = "medium";
 
+    [Header("VR Input")]
+    public InputActionReference recordAction;
+
     public delegate void WhisperError();
     public event WhisperError OnWhisperError;
     public delegate void WhisperTranscription();
@@ -26,41 +29,73 @@ public class WhisperUI : MonoBehaviour
     private bool isRecording = false;
     private const int sampleRate = 16000;
 
+    private const string RECORD_CONTROLS = "Grabar/Parar: Grip izq, \'X\' o Button East\n\n";
+
     void Start()
     {
+        if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
+            Permission.RequestUserPermission(Permission.Microphone);
+
         selectedMic = Microphone.devices.Length > 0 ? Microphone.devices[0] : null;
-        recordButton.onClick.AddListener(ToggleRecording);
-        statusText.text = "Listo (pulsa V para iniciar grabación)";
+
+        if (recordButton != null)
+            recordButton.onClick.AddListener(ToggleRecording);
+
+        SetStatus("Listo");
+    }
+
+    void OnEnable()
+    {
+        if (recordAction != null)
+        {
+            recordAction.action.performed += OnRecordPressed;
+            recordAction.action.Enable();
+        }
+    }
+
+    void OnDisable()
+    {
+        if (recordAction != null)
+        {
+            recordAction.action.performed -= OnRecordPressed;
+            recordAction.action.Disable();
+        }
     }
 
     void Update()
     {
         if (Keyboard.current == null) return;
-
         if (Keyboard.current.vKey.wasPressedThisFrame)
-        {
-            if (!isRecording)
-                StartRecording();
-            else
-                StopRecording();
-        }
+            ToggleRecording();
     }
+
+    private void OnRecordPressed(InputAction.CallbackContext context) => ToggleRecording();
 
     void ToggleRecording()
     {
-        if (!isRecording)
-            StartRecording();
-        else
-            StopRecording();
+        if (!isRecording) StartRecording();
+        else StopRecording();
+    }
+
+    void SetStatus(string status)
+    {
+        if (statusText != null)
+            statusText.text = RECORD_CONTROLS + status;
     }
 
     void StartRecording()
     {
-        if (isRecording || selectedMic == null) return;
+        if (isRecording) return;
+        if (!Permission.HasUserAuthorizedPermission(Permission.Microphone)) return;
+        if (selectedMic == null)
+        {
+            selectedMic = Microphone.devices.Length > 0 ? Microphone.devices[0] : null;
+            if (selectedMic == null) return;
+        }
 
         recordedClip = Microphone.Start(selectedMic, false, 10, sampleRate);
         isRecording = true;
-        statusText.text = "Grabando...";
+        SetStatus("Grabando...");
     }
 
     void StopRecording()
@@ -69,7 +104,7 @@ public class WhisperUI : MonoBehaviour
 
         Microphone.End(selectedMic);
         isRecording = false;
-        statusText.text = "Procesando...";
+        SetStatus("Procesando...");
 
         StartCoroutine(SendToWhisper(recordedClip));
     }
@@ -89,17 +124,17 @@ public class WhisperUI : MonoBehaviour
 
         if (request.result != UnityWebRequest.Result.Success)
         {
-            statusText.text = "Error del servidor.";
             OnWhisperError?.Invoke();
             Debug.LogError(request.error);
+            SetStatus("Error del servidor.");
         }
         else
         {
             string json = request.downloadHandler.text;
-            statusText.text = "Transcrito";
             outputText = json;
             Debug.LogError(json);
             OnWhisperTranscription?.Invoke();
+            SetStatus("Transcrito");
         }
     }
 }

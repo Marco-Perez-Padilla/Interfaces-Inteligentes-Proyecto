@@ -125,6 +125,7 @@ public class LegacyPieceApplier : MonoBehaviour
 
         if (nextPosition.y < currentPosition.y)
         {
+            Debug.Log("adsad");
             return downCorridor;
         }
         return straightCorridor;
@@ -196,15 +197,25 @@ public class LegacyPieceApplier : MonoBehaviour
         pieceObject.transform.position = position;
         pieceObject.transform.forward = direction;
 
-        pieceObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+        Vector3 prevScale = pieceObject.transform.localScale;
+        pieceObject.transform.localScale = new Vector3(
+            scaleFactor * prevScale.x,
+            scaleFactor * prevScale.y,
+            scaleFactor * prevScale.z
+        );
 
         // corridor
         GameObject corridor = GetCorridorBasedOnDirection(position, nextNode.position).Instantiate();
-        corridor.transform.position = position + direction;
+        Vector3 midPosition = (position + nextNode.position) / 2;
+        midPosition.y = position.y;
+        corridor.transform.position = midPosition;
         corridor.transform.forward = direction;
-        corridor.transform.localScale = Vector3.one * scaleFactor;
-
-        corridor.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+        Vector3 prevCorridorScale = corridor.transform.localScale;
+        corridor.transform.localScale = new Vector3(
+            scaleFactor * prevCorridorScale.x,
+            scaleFactor * prevCorridorScale.y,
+            scaleFactor * prevCorridorScale.z
+        );
 
         return nextNode;
     }
@@ -229,16 +240,18 @@ public class LegacyPieceApplier : MonoBehaviour
         pieceObject.transform.parent = pieces.transform;
         pieceObject.transform.position = position;
         pieceObject.transform.forward = direction;
-        pieceObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+        Vector3 prevScale = pieceObject.transform.localScale;
+        pieceObject.transform.localScale = new Vector3(scaleFactor * prevScale.x, scaleFactor * prevScale.y, scaleFactor * prevScale.z);
 
         return null;
     }
 
     private void ApplyPiecesToPath(List<PathNode> path, Color color)
     {
+        scaleFactor = pathGenerator.spacing / 4 / 6;
+
         ApplyFirstPiece(path[0]);
 
-        scaleFactor = pathGenerator.spacing / 2 / 5;
         PathNode currentNode = path[1];
 
         for (int i = 1; i < path.Count; i++)
@@ -287,42 +300,41 @@ public class LegacyPieceApplier : MonoBehaviour
                 currentPiece = forkTriple;
             }
             GameObject pieceObject = currentPiece.Instantiate();
-            //pieceObject.transform.parent = pieces.transform;
+            pieceObject.transform.parent = pieces.transform;
             pieceObject.transform.forward = new Vector3(direction.x, 0, direction.z);
-            pieceObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+            Vector3 prevScale = pieceObject.transform.localScale;
+            pieceObject.transform.localScale = new Vector3(scaleFactor * prevScale.x, scaleFactor * prevScale.y, scaleFactor * prevScale.z);
             pieceObject.transform.position = position;
 
-            foreach(PathNode connection in currentNode.connections)
+            foreach(PathNode currentConnection in currentNode.connections)
             {
-
-
-                if (IsCurrentNodeAlreadyApplied(connection))
+                if (IsCurrentNodeAlreadyApplied(currentConnection))
                 {
                     continue;
                 }
-
                 string name = i + "/" + path.Count;
-                PlaceCorridor(scaleFactor, connection, position, name);
+                PlaceCorridor(currentConnection, position, name);
             }
 
 
         }
     }
 
-    private void PlaceCorridor(float scaleFactor, PathNode nextNode, Vector3 position, string name)
+    private void PlaceCorridor(PathNode nextNode, Vector3 position, string name)
     {
         Piece currentCorridor = GetCorridorBasedOnDirection(position, nextNode.position);
         Vector3 corridorDirection = (nextNode.position - position).normalized;
-        Vector3 middlePosition = position + (nextNode.position - position) * 0.5f;
         corridorDirection.y = 0;
-        middlePosition.y = position.y;
+        Vector3 corridorPosition = (nextNode.position + position) / 2;
+        corridorPosition.y = position.y;
 
         GameObject corridorObject = currentCorridor.Instantiate();
-        corridorObject.name = name;
+        //corridorObject.name = name;
         corridorObject.transform.parent = pieces.transform;
-        corridorObject.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+        Vector3 prevScale = corridorObject.transform.localScale;
+        corridorObject.transform.localScale = new Vector3(scaleFactor * prevScale.x, scaleFactor * prevScale.y, scaleFactor * prevScale.z);
         corridorObject.transform.forward = new Vector3(corridorDirection.x, 0, corridorDirection.z);
-        corridorObject.transform.position = middlePosition;
+        corridorObject.transform.position = corridorPosition;
     }
 
     private void OnDrawGizmos()

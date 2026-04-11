@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ad97148d555f9e47a603e2c0ca8b95b, type: 3}
   m_Name: TurnForkTriple
   m_EditorClassIdentifier: Assembly-CSharp::Piece
-  original: {fileID: 8193076359908469613, guid: e579bd2045540be4e9bd665df633a636, type: 3}
-  variant0: {fileID: 8193076359908469613, guid: 1f3eddf16d9b0ce47a13195c74e324e7, type: 3}
+  original: {fileID: 3609767481913347897, guid: 411cd3ae0025daa4c9b22acf7b7a8741, type: 3}
+  originalChance: 0.8
+  variant0: {fileID: 3609767481913347897, guid: 946d22b1ba545604dad0f768cf2e6545, type: 3}
+  variant0Chance: 0.2

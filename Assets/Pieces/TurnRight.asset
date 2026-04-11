@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ad97148d555f9e47a603e2c0ca8b95b, type: 3}
   m_Name: TurnRight
   m_EditorClassIdentifier: Assembly-CSharp::Piece
-  original: {fileID: 7470541209180793408, guid: 0d0a980c9a11bc8409d5c235bfb647a1, type: 3}
-  variant0: {fileID: 7470541209180793408, guid: 8891cb45b88ff9345914892ece7c869f, type: 3}
+  original: {fileID: 2617652493368990176, guid: 1c84e2d21e6f80f41b1a4c370cf6fc75, type: 3}
+  originalChance: 0.8
+  variant0: {fileID: 2617652493368990176, guid: 275492050cfb6704dba7c070811fc5fd, type: 3}
+  variant0Chance: 0.2

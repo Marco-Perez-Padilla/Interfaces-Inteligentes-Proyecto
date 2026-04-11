@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ad97148d555f9e47a603e2c0ca8b95b, type: 3}
   m_Name: Corridor
   m_EditorClassIdentifier: Assembly-CSharp::Piece
-  original: {fileID: 7639173868753737122, guid: 283c38599f72cbb48a6c913b40124dcb, type: 3}
-  variant0: {fileID: 7639173868753737122, guid: eb1732a96d824714abd6c0d932a715b6, type: 3}
+  original: {fileID: 7984055764837731289, guid: f4d33a13a193b5f48973481ebd3cce5f, type: 3}
+  originalChance: 0.8
+  variant0: {fileID: 7984055764837731289, guid: f4d33a13a193b5f48973481ebd3cce5f, type: 3}
+  variant0Chance: 0.2

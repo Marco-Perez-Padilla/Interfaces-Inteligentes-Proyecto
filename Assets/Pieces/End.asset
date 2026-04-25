@@ -12,5 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ad97148d555f9e47a603e2c0ca8b95b, type: 3}
   m_Name: End
   m_EditorClassIdentifier: Assembly-CSharp::Piece
-  original: {fileID: 7639173868753737122, guid: 4e9828c7e4997ac4ab7285ed807dcbda, type: 3}
-  variant0: {fileID: 7639173868753737122, guid: 9775e41e260012844ac3a2a41115b866, type: 3}
+  variants:
+  - prefab: {fileID: 895098911278694066, guid: 67e74c381887d6c4aaa32806662c122d, type: 3}
+    chance: 0.8
+  - prefab: {fileID: 895098911278694066, guid: 4045768d76927ac42ba5e59c77ef95e5, type: 3}
+    chance: 0.2
+  - prefab: {fileID: 895098911278694066, guid: 2fca957efdcc6924f8daed193a4c60ec, type: 3}
+    chance: 0.1
+  - prefab: {fileID: 895098911278694066, guid: 0f690d07b319dcc4399853ae58ae4a76, type: 3}
+    chance: 0.1

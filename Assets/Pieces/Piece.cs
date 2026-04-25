@@ -1,20 +1,38 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 [CreateAssetMenu(fileName = "Piece", menuName = "Scriptable Objects/Piece")]
 public class Piece : ScriptableObject
 {
-    public GameObject original;
-    [SerializeField] float originalChance = 0.8f;
-    public GameObject variant0;
-    [SerializeField] float variant0Chance = 0.2f;
+    [System.Serializable]
+    private class Variant
+    {
+        public GameObject prefab;
+        public float chance = 1;
+    }
+
+    [SerializeField] List<Variant> variants = new List<Variant>();
 
     public GameObject Instantiate()
     {
-        float randomValue = Random.value;
+        float total = 0f;
 
-        if (randomValue <= originalChance || variant0 == null)
-            return GameObject.Instantiate(original);
-        else
-            return GameObject.Instantiate(variant0);
+        foreach (Variant variant in variants)
+            if (variant.prefab != null)
+                total += variant.chance;
+
+        float randomValue = Random.value * total;
+
+        for (int i = 0; i < variants.Count; i++)
+        {
+            if (variants[i].prefab == null) continue;
+
+            if (randomValue < variants[i].chance)
+                return Instantiate(variants[i].prefab);
+
+            randomValue -= variants[i].chance;
+        }
+
+        return null;
     }
 }

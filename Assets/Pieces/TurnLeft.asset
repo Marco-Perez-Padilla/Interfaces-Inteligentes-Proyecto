@@ -12,7 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ad97148d555f9e47a603e2c0ca8b95b, type: 3}
   m_Name: TurnLeft
   m_EditorClassIdentifier: Assembly-CSharp::Piece
-  original: {fileID: 3099593770550722393, guid: 387b60966273708499912c9b8e14dae0, type: 3}
-  originalChance: 0.8
-  variant0: {fileID: 3099593770550722393, guid: 01ba74c212aa7924e81c7b4ed400e360, type: 3}
-  variant0Chance: 0.2
+  variants:
+  - prefab: {fileID: 3099593770550722393, guid: 387b60966273708499912c9b8e14dae0, type: 3}
+    chance: 0.8
+  - prefab: {fileID: 3099593770550722393, guid: 9bebf41d56f4f3a4ebd9df0d4b9ff419, type: 3}
+    chance: 0.2
+  - prefab: {fileID: 3099593770550722393, guid: 2c7ad422ce06dd941bf2740481beef19, type: 3}
+    chance: 0.1
+  - prefab: {fileID: 3099593770550722393, guid: 01ba74c212aa7924e81c7b4ed400e360, type: 3}
+    chance: 0.1

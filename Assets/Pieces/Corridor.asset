@@ -12,7 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ad97148d555f9e47a603e2c0ca8b95b, type: 3}
   m_Name: Corridor
   m_EditorClassIdentifier: Assembly-CSharp::Piece
-  original: {fileID: 7984055764837731289, guid: f4d33a13a193b5f48973481ebd3cce5f, type: 3}
-  originalChance: 0.8
-  variant0: {fileID: 7984055764837731289, guid: f4d33a13a193b5f48973481ebd3cce5f, type: 3}
-  variant0Chance: 0.2
+  variants:
+  - prefab: {fileID: 7984055764837731289, guid: f4d33a13a193b5f48973481ebd3cce5f, type: 3}
+    chance: 0.8
+  - prefab: {fileID: 7984055764837731289, guid: d87cf9becc355e54ab1bbc5f885b39c0, type: 3}
+    chance: 0.2
+  - prefab: {fileID: 7984055764837731289, guid: 2563c528a3041c245b5eeed15dd5df01, type: 3}
+    chance: 0.1
+  - prefab: {fileID: 7984055764837731289, guid: 0e9b24846bb085741b61991547eb176d, type: 3}
+    chance: 0.1

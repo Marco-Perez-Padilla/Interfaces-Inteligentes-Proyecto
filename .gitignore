@@ -57,8 +57,3 @@ Packages/com.unity.*
 Packages/com.company.*
 Packages/net.*
 Packages/io.*
-
-# ======================
-# .meta files
-# ======================
-*.meta

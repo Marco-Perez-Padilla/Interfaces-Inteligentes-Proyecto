@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ad97148d555f9e47a603e2c0ca8b95b, type: 3}
+  m_Name: TurnForkLeftRight
+  m_EditorClassIdentifier: Assembly-CSharp::Piece
+  variants:
+  - prefab: {fileID: 6721540463572864386, guid: 85efe012ac2248b46b34f55957060c90, type: 3}
+    chance: 0.8
+  - prefab: {fileID: 6721540463572864386, guid: c0a791605a2de8440b53d7d2a0616f16, type: 3}
+    chance: 0.2
+  - prefab: {fileID: 6721540463572864386, guid: 73f6ef1ab1434ae468f62dcebf3283b7, type: 3}
+    chance: 0.1
+  - prefab: {fileID: 6721540463572864386, guid: abe3d37f09686f649aaefa8d81cc0f15, type: 3}
+    chance: 0.1

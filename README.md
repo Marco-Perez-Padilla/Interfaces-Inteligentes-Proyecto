@@ -316,6 +316,135 @@ No afecta en ningún caso a la lógica del sistema.
 
 ---
 
+## Encargado
+**Ezequiel Juan Canale Oliva**
+
+### Puntos de desarrollo acordados
+1. Generación procedural del túnel, incluyendo la optimización mediante la reducción de la distancia de visión para mejorar el rendimiento.  
+2. Implementación de una linterna dinámica, que podrá asignarse tanto a la mano del jugador como a la cabeza, según el dispositivo utilizado.  
+3. Integración de un sensor de temperatura ambiental, mostrando la información en una interfaz de usuario cuando el dispositivo lo permita (por ejemplo, en dispositivos móviles compatibles). 
+4. Desarrollo de bloques de construcción y elementos del escenario, coordinados con la parte correspondiente del trabajo de Álvaro, asegurando coherencia visual y funcional.  
+5. Implementación y ajuste del sistema de iluminación del entorno, con especial énfasis en la linterna como principal fuente de luz interactiva.
+
+# 1B. Sistema de colocación de piezas en el laberinto.
+
+Una vez generado el laberinto con los nodos, este sistema toma el grafo y lo convierte en geometría 3D visible usando piezas prefabricadas.
+
+Recorre cada ruta (principal y secundarias) y, en cada nodo, coloca una pieza según cómo continúa el camino en ese punto:
+
+- si sigue recto → pieza recta
+- si cambia de dirección → giro
+- si se divide → bifurcación
+- si termina → pieza final
+
+Además de las piezas en los nodos, el sistema construye las conexiones físicas entre ellos mediante pasillos. Cada vez que dos nodos están conectados, se coloca un pasillo entre ambos:
+- se posiciona justo en el punto medio
+- se orienta en la dirección del camino
+- si hay diferencia de altura entre las dos piezas, se usan pasillos especiales que suben o bajan
+
+Para evitar errores, el sistema controla qué nodos ya han sido procesados, de forma que no se instancien piezas duplicadas cuando varias rutas comparten puntos.
+
+ ## ```Start()```
+
+- Obtiene el grafo (pathGraph) desde PathGenerator.
+- Guarda la ruta principal (mainPath) y las secundarias.
+- Inicializa la lista de posiciones ya usadas (alreadyAppliedPieces).
+- Llama a:
+  - ApplyPiecesToPath(mainPath)
+  - ApplyPiecesToPath para cada subruta
+
+Aquí empieza realmente la construcción del nivel.
+
+## ```ApplyPiecesToPath(path, color)```
+
+Función principal que construye una ruta completa.
+
+- Calcula el scaleFactor usando el spacing del generador.
+- Coloca la primera pieza:
+  - llama a ApplyFirstPiece(path[0])
+  - Recorre el resto de nodos de la ruta.
+
+Para cada nodo:
+
+  - Obtiene el nodo anterior (prevNode)
+  - Si solo tiene una conexión → es final:
+    - llama a ApplyLastPiece
+  - Si ya fue procesado: lo ignora ```(IsCurrentNodeAlreadyApplied)```
+  - Marca el nodo como procesado
+  - Calcula la dirección desde el nodo anterior t decide qué pieza colocar:
+    - 1 salida → ```GetPieceBasedOnDirection```
+    - 2 salidas → ```GetTwoForkPieceBasedOnDirection```
+    - 3+ → forkTriple
+  - Instancia la pieza ```(Piece.Instantiate)```
+
+Después conecta el nodo con sus vecinos:
+
+  - Para cada conexión no procesada:
+  - llama a ```PlaceCorridor```
+  - ApplyFirstPiece```(currentNode)```
+
+Caso especial: primer nodo de la ruta.
+
+ - Comprueba si ya fue usado ```(IsCurrentNodeAlreadyApplied)```
+ - Calcula la dirección hacia el siguiente nodo
+ - Como no hay nodo previo, crea uno “falso”
+
+ - Decide la pieza:
+
+   - 1 bifurcación → GetTwoForkPieceBasedOnDirection
+   - 2 bifurcaciones → forkTriple
+   - normal → GetPieceBasedOnDirection
+
+ - Instancia la pieza y ajusta transform.
+
+Luego:
+
+ - Crea el primer pasillo:
+ - usa ```GetCorridorBasedOnDirection```
+ - lo coloca en el punto medio
+ - ```ApplyLastPiece(currentNode)```
+
+ - Caso final de una ruta.
+
+   - Usa la dirección desde el nodo anterior
+   - Instancia endPiece
+   - Ajusta transform
+
+
+ ## ```PlaceCorridor(nextNode, position, name)```
+
+Se llama desde ApplyPiecesToPath.
+
+   - Calcula dirección entre nodos
+   - Calcula el punto medio
+   - Decide tipo de pasillo con ```GetCorridorBasedOnDirection```
+   - Instancia el prefab ```(Piece)```
+   - Ajusta posición, rotación y escala
+   - Funciones de decisión ```(usadas durante el recorrido)```
+
+## ```GetPieceBasedOnDirection(prev, current, next)```
+   - Calcula el ángulo entre segmentos
+   - Devuelve:
+     - recta
+     - giro izquierda
+     - giro derecha
+
+## ```GetTwoForkPieceBasedOnDirection(...)```
+   - Clasifica dos salidas:
+   - izquierda / derecha / recta
+   - Devuelve la bifurcación adecuada
+## ```GetCorridorBasedOnDirection(current, next)```
+   - Decide tipo de pasillo:
+     - sube
+     - baja
+     - recto
+   - Control de duplicados
+## ```IsCurrentNodeAlreadyApplied(node)```
+   - Comprueba si ya se colocó una pieza en ese nodo
+   - Usa:
+   - ```Approximately(a, b)```
+   - Comparación de posiciones con tolerancia
+---
 # 2. Sistema de Movimiento de la Vagoneta
 
 ## 2.1 CartMovement
@@ -396,14 +525,3 @@ El sistema está **completo y funcional** para:
 Cualquier extensión futura debe respetar esta separación de responsabilidades.
 
 ---
-
-## Encargado
-**Ezequiel Juan Canale Oliva**
-
-### Puntos de desarrollo acordados
-1. Generación procedural del túnel, incluyendo la optimización mediante la reducción de la distancia de visión para mejorar el rendimiento.  
-2. Implementación de una linterna dinámica, que podrá asignarse tanto a la mano del jugador como a la cabeza, según el dispositivo utilizado.  
-3. Integración de un sensor de temperatura ambiental, mostrando la información en una interfaz de usuario cuando el dispositivo lo permita (por ejemplo, en dispositivos móviles compatibles). 
-4. Desarrollo de bloques de construcción y elementos del escenario, coordinados con la parte correspondiente del trabajo de Álvaro, asegurando coherencia visual y funcional.  
-5. Implementación y ajuste del sistema de iluminación del entorno, con especial énfasis en la linterna como principal fuente de luz interactiva.
-

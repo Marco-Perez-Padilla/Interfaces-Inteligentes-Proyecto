@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: CorridorDown
   m_EditorClassIdentifier: Assembly-CSharp::Piece
   variants:
-  - prefab: {fileID: 6704124014535196067, guid: fa2f448fcd3971f44b0e34b2d25fe8d6, type: 3}
+  - prefab: {fileID: 2566613124199348531, guid: 27ab5e0f1754dd04a941d6825754fabb, type: 3}
     chance: 0.8
-  - prefab: {fileID: 6704124014535196067, guid: 73d2ca8fb95d4a94f92c5b567bbd28d2, type: 3}
+  - prefab: {fileID: 2566613124199348531, guid: 92bd36b54e41dd8439e8c48da8571eb0, type: 3}
     chance: 0.2
-  - prefab: {fileID: 6704124014535196067, guid: bf0e886c14599cf40a5991557ef79687, type: 3}
+  - prefab: {fileID: 2566613124199348531, guid: bdf71f11568b1d942abe9860236dac30, type: 3}
     chance: 0.1
-  - prefab: {fileID: 0}
+  - prefab: {fileID: 2566613124199348531, guid: db0930a3bb8c2084b9b5f1665988e7cd, type: 3}
     chance: 0.1

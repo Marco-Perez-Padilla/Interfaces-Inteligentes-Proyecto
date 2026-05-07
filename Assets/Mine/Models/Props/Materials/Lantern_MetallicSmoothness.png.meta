@@ -128,3 +128,13 @@ TextureImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+<<<<<<< HEAD
+=======
+AssetOrigin:
+  serializedVersion: 1
+  productId: 92461
+  packageName: Mine
+  packageVersion: 
+  assetPath: Assets/Mine/Models/Props/Materials/Lantern_MetallicSmoothness.png
+  uploadId: 0
+>>>>>>> juntar-ezequiel

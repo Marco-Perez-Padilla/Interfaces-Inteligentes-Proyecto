@@ -108,3 +108,13 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+<<<<<<< HEAD
+=======
+AssetOrigin:
+  serializedVersion: 1
+  productId: 92461
+  packageName: Mine
+  packageVersion: 
+  assetPath: Assets/Mine/Models/Props/Planks.fbx
+  uploadId: 0
+>>>>>>> juntar-ezequiel

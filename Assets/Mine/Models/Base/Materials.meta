@@ -1,9 +1,14 @@
 fileFormatVersion: 2
 guid: 517c6cb3c252ba649869a453df6b9f99
 folderAsset: yes
+<<<<<<< HEAD
 timeCreated: 1496444621
 licenseType: Store
 DefaultImporter:
+=======
+DefaultImporter:
+  externalObjects: {}
+>>>>>>> juntar-ezequiel
   userData: 
   assetBundleName: 
   assetBundleVariant: 

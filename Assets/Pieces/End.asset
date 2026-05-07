@@ -16,7 +16,7 @@ MonoBehaviour:
   - prefab: {fileID: 895098911278694066, guid: 67e74c381887d6c4aaa32806662c122d, type: 3}
     chance: 0.8
   - prefab: {fileID: 895098911278694066, guid: 4045768d76927ac42ba5e59c77ef95e5, type: 3}
-    chance: 0.2
+    chance: 0.8
   - prefab: {fileID: 895098911278694066, guid: 2fca957efdcc6924f8daed193a4c60ec, type: 3}
     chance: 0.1
   - prefab: {fileID: 895098911278694066, guid: 0f690d07b319dcc4399853ae58ae4a76, type: 3}

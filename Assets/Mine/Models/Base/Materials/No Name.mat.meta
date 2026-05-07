@@ -2,7 +2,11 @@ fileFormatVersion: 2
 guid: 3f437c316182c6941ae8f186503a455e
 NativeFormatImporter:
   externalObjects: {}
+<<<<<<< HEAD
   mainObjectFileID: 0
+=======
+  mainObjectFileID: 2100000
+>>>>>>> juntar-ezequiel
   userData: 
   assetBundleName: 
   assetBundleVariant: 

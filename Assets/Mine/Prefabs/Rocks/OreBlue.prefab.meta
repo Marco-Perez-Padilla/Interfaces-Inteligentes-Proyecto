@@ -1,7 +1,23 @@
 fileFormatVersion: 2
 guid: 318b816fee8dea44588d070c5a17f873
+<<<<<<< HEAD
 PrefabImporter:
   externalObjects: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+=======
+timeCreated: 1496613490
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 92461
+  packageName: Mine
+  packageVersion: 1.0
+  assetPath: Assets/Mine/Prefabs/Rocks/OreBlue.prefab
+  uploadId: 183947
+>>>>>>> juntar-ezequiel

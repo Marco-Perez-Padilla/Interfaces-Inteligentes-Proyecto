@@ -56,4 +56,8 @@ Assets/XRI/
 Packages/com.unity.*
 Packages/com.company.*
 Packages/net.*
+<<<<<<< HEAD
 Packages/io.*
+=======
+Packages/io.*
+>>>>>>> juntar-ezequiel

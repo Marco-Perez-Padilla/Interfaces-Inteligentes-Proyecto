@@ -6,3 +6,13 @@ NativeFormatImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+<<<<<<< HEAD
+=======
+AssetOrigin:
+  serializedVersion: 1
+  productId: 92461
+  packageName: Mine
+  packageVersion: 
+  assetPath: Assets/Mine/Models/Rocks/Materials/OreGreen.mat
+  uploadId: 0
+>>>>>>> juntar-ezequiel

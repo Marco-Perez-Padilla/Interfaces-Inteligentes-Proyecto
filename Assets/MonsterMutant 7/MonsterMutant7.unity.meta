@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 09724ba106b076047bb8ba8b2dd8704f
+guid: 3309cf4a93935bf40b6f240979cbe657
 DefaultImporter:
   externalObjects: {}
   userData: 
@@ -9,6 +9,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 188552
   packageName: Monster Mutant 7
-  packageVersion: 
+  packageVersion: 1.0
   assetPath: Assets/MonsterMutant 7/MonsterMutant7.unity
-  uploadId: 0
+  uploadId: 417307

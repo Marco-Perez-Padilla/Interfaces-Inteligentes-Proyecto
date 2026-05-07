@@ -1504,7 +1504,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9135f053cbd96346997203bd295f9ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TriggerZoneVisualizer
-  gizmoColor: {r: 0.9215541, g: 0, b: 1, a: 0.3}
+  zoneColor: {r: 0, g: 1, b: 0.5, a: 0.25}
+  zoneBorderColor: {r: 0, g: 1, b: 0.5, a: 0.9}
+  showLabel: 1
 --- !u!65 &695700358
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1981,7 +1983,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9135f053cbd96346997203bd295f9ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TriggerZoneVisualizer
-  gizmoColor: {r: 0, g: 0.22855878, b: 1, a: 0.3}
+  zoneColor: {r: 0, g: 1, b: 0.5, a: 0.25}
+  zoneBorderColor: {r: 0, g: 1, b: 0.5, a: 0.9}
+  showLabel: 1
 --- !u!65 &988535133
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2723,7 +2727,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9135f053cbd96346997203bd295f9ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TriggerZoneVisualizer
-  gizmoColor: {r: 1, g: 0, b: 0, a: 0.3}
+  zoneColor: {r: 0, g: 1, b: 0.5, a: 0.25}
+  zoneBorderColor: {r: 0, g: 1, b: 0.5, a: 0.9}
+  showLabel: 1
 --- !u!65 &1182980938
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2791,7 +2797,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9135f053cbd96346997203bd295f9ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TriggerZoneVisualizer
-  gizmoColor: {r: 1, g: 0.7744142, b: 0, a: 0.3}
+  zoneColor: {r: 0, g: 1, b: 0.5, a: 0.25}
+  zoneBorderColor: {r: 0, g: 1, b: 0.5, a: 0.9}
+  showLabel: 1
 --- !u!65 &1404846369
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3527,7 +3535,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9135f053cbd96346997203bd295f9ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TriggerZoneVisualizer
-  gizmoColor: {r: 0, g: 1, b: 0.59309816, a: 0.3}
+  zoneColor: {r: 0, g: 1, b: 0.5, a: 0.25}
+  zoneBorderColor: {r: 0, g: 1, b: 0.5, a: 0.9}
+  showLabel: 1
 --- !u!65 &1949147425
 BoxCollider:
   m_ObjectHideFlags: 0

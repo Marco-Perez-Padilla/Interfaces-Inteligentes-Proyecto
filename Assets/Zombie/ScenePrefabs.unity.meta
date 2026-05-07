@@ -1,7 +1,6 @@
 fileFormatVersion: 2
-guid: f323313fbd118514e9f39416bd6ebbb9
+guid: 51c2b7bc917069942a0ac4a10bcabf01
 DefaultImporter:
-  externalObjects: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
@@ -9,6 +8,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 30232
   packageName: Zombie
-  packageVersion: 
+  packageVersion: Draft 1.2
   assetPath: Assets/Zombie/ScenePrefabs.unity
-  uploadId: 0
+  uploadId: 334764

@@ -1,8 +1,8 @@
 fileFormatVersion: 2
-guid: 1bfb04ed2df476046b2e1a4a8f360506
+guid: 922934026949958468099adf2c5acaa6
 NativeFormatImporter:
   externalObjects: {}
-  mainObjectFileID: 0
+  mainObjectFileID: 7400000
   userData: 
   assetBundleName: 
   assetBundleVariant: 
@@ -10,6 +10,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 30232
   packageName: Zombie
-  packageVersion: 
+  packageVersion: Draft 1.2
   assetPath: Assets/Zombie/Animations/Z_Run.anim
-  uploadId: 0
+  uploadId: 334764

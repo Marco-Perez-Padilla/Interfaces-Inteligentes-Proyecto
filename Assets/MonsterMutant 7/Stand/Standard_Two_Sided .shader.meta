@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 2c61d8475a0389d4e913b101dffd8f66
+guid: 43d11ccca3659d14fa7e2ff58209b4b0
 ShaderImporter:
   externalObjects: {}
   defaultTextures: []
@@ -11,6 +11,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 188552
   packageName: Monster Mutant 7
-  packageVersion: 
+  packageVersion: 1.0
   assetPath: Assets/MonsterMutant 7/Stand/Standard_Two_Sided .shader
-  uploadId: 0
+  uploadId: 417307

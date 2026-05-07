@@ -5676,7 +5676,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6347845055732162374}
   - component: {fileID: 6347845055741718694}
-  - component: {fileID: 1405712963133774879}
+  - component: {fileID: -489139210314752475}
+  - component: {fileID: 3365056623016597556}
   m_Layer: 0
   m_Name: Base mesh MonsterMutant7 skin3
   m_TagString: Untagged
@@ -5724,7 +5725,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1405712963133774879
+--- !u!114 &-489139210314752475
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5733,7 +5734,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 6347845055732319078}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a13f399664f3864798105486a850bed, type: 3}
+  m_Script: {fileID: 11500000, guid: 3bdb8cdfd6e9a2342bb7a6fb5009e39f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NPCChasingEvent
+  triggerZone: {fileID: 0}
+  player: {fileID: 0}
+  speedMultiplier: 1.5
+  rotationSpeed: 360
+  chaseDuration: 5
+  speedTreshold: 1
+--- !u!114 &3365056623016597556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6347845055732319078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c347765e6e4f6184c8da1d0e1085ba1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyInitializer
   contactTriggerRadius: 0.6

@@ -1,8 +1,7 @@
 fileFormatVersion: 2
-guid: 3cc37327b44807549962c316eb4a4082
+guid: e7ed6772552b9e4488b1398f8282ed3b
 NativeFormatImporter:
-  externalObjects: {}
-  mainObjectFileID: 0
+  mainObjectFileID: -1
   userData: 
   assetBundleName: 
   assetBundleVariant: 
@@ -10,6 +9,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 30232
   packageName: Zombie
-  packageVersion: 
+  packageVersion: Draft 1.2
   assetPath: Assets/Zombie/Materials/Plane.mat
-  uploadId: 0
+  uploadId: 334764

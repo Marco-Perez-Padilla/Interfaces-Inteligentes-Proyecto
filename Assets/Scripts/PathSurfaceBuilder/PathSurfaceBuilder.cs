@@ -97,8 +97,29 @@ public class PathSurfaceBuilder : MonoBehaviour
   // UNITY
   // =====================================================
 
-  void OnEnable() => RequestRebuild();
-  void OnValidate() => RequestRebuild();
+  void OnEnable()
+  {
+    PathGenerator.OnGraphRegenerated += OnGraphRegenerated;
+    RequestRebuild();
+  }
+
+  void OnDisable()
+  {
+    PathGenerator.OnGraphRegenerated -= OnGraphRegenerated;
+  }
+
+  /// <summary>
+  /// Callback invocado cuando el PathGenerator termina de regenerar el grafo.
+  /// Solo reacciona si el evento viene del PathGenerator asignado a este builder.
+  /// </summary>
+  /// <param name="sender">PathGenerator que disparó el evento.</param>
+  void OnGraphRegenerated(PathGenerator sender)
+  {
+    if (sender != pathGenerator)
+      return;
+
+    RequestRebuild();
+  }
   void Start() => Rebuild();
 
 #if UNITY_EDITOR

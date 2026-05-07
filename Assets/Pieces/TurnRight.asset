@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: TurnRight
   m_EditorClassIdentifier: Assembly-CSharp::Piece
   variants:
-  - prefab: {fileID: 8275336193264703850, guid: 469fb5cc03a55834e8e51e3974c59949, type: 3}
+  - prefab: {fileID: 8831087108637033308, guid: bd364ece33749c64db3cd4eb23f2c351, type: 3}
     chance: 0.8
-  - prefab: {fileID: 8275336193264703850, guid: 6a7f4175fcf0d7945a0e2c095fb67746, type: 3}
+  - prefab: {fileID: 8831087108637033308, guid: bd364ece33749c64db3cd4eb23f2c351, type: 3}
     chance: 0.8
-  - prefab: {fileID: 8275336193264703850, guid: 31119f5fb6f5cad4ead7c018f4ff7c84, type: 3}
+  - prefab: {fileID: 8831087108637033308, guid: bd364ece33749c64db3cd4eb23f2c351, type: 3}
     chance: 0.1
-  - prefab: {fileID: 8275336193264703850, guid: 5f80dddce5274804797b6f428a8fd4fb, type: 3}
+  - prefab: {fileID: 8831087108637033308, guid: bd364ece33749c64db3cd4eb23f2c351, type: 3}
     chance: 0.1

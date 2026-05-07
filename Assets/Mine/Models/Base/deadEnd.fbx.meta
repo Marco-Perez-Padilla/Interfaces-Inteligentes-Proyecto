@@ -3,11 +3,6 @@ guid: f899f84d6dd4b434e84a59a264ca3014
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-<<<<<<< HEAD
-  externalObjects: {}
-  materials:
-    materialImportMode: 2
-=======
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -16,7 +11,6 @@ ModelImporter:
     second: {fileID: 2100000, guid: ed7e9c97e9f2dd840998071a478c0009, type: 2}
   materials:
     materialImportMode: 1
->>>>>>> juntar-ezequiel
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -41,11 +35,7 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations: []
-<<<<<<< HEAD
     isReadable: 0
-=======
-    isReadable: 1
->>>>>>> juntar-ezequiel
   meshes:
     lODScreenPercentages: []
     globalScale: 1
@@ -54,15 +44,9 @@ ModelImporter:
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
     importPhysicalCameras: 1
-<<<<<<< HEAD
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
-=======
-    importVisibility: 0
-    importBlendShapes: 1
-    importCameras: 0
->>>>>>> juntar-ezequiel
     importLights: 1
     nodeNameCollisionStrategy: 1
     fileIdsGeneration: 2
@@ -81,11 +65,7 @@ ModelImporter:
     meshLodGenerationFlags: 0
     maximumMeshLod: -1
     meshOptimizationFlags: -1
-<<<<<<< HEAD
     indexFormat: 0
-=======
-    indexFormat: 1
->>>>>>> juntar-ezequiel
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -99,13 +79,8 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
-<<<<<<< HEAD
     normalCalculationMode: 4
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
-=======
-    normalCalculationMode: 0
-    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
->>>>>>> juntar-ezequiel
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
   referencedClips: []
@@ -132,11 +107,7 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
-<<<<<<< HEAD
   importBlendShapeDeformPercent: 1
-=======
-  importBlendShapeDeformPercent: 0
->>>>>>> juntar-ezequiel
   remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0
   userData: 

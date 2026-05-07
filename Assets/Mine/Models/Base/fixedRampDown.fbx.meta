@@ -3,11 +3,6 @@ guid: c3fd4f37f3491d148bcbdcacc75df139
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-<<<<<<< HEAD
-  externalObjects: {}
-  materials:
-    materialImportMode: 2
-=======
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -16,7 +11,6 @@ ModelImporter:
     second: {fileID: 2100000, guid: ed7e9c97e9f2dd840998071a478c0009, type: 2}
   materials:
     materialImportMode: 1
->>>>>>> juntar-ezequiel
     materialName: 0
     materialSearch: 1
     materialLocation: 1

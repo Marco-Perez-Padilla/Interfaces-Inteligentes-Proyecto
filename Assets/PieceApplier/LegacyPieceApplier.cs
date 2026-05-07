@@ -65,15 +65,21 @@ public class LegacyPieceApplier : MonoBehaviour
 
         // straight
         if (Mathf.Approximately(angle, 0))
+        {
             return straightPiece;
+        }
         // right turn
         if (angle > 0)
+        {
             return rightPiece;
+        }
 
         // left turn
         if (angle < 0)
+        {
             return leftPiece;
-        
+        }
+        Debug.Log(angle);
         return new Piece();
     }
 
@@ -302,6 +308,7 @@ public class LegacyPieceApplier : MonoBehaviour
                 bool wayoutDuplicationError = otherNextNode.position == nextNode.position; 
                 if (wayoutDuplicationError)
                 {
+                    Debug.Log("single because of error");
                     currentPiece = GetPieceBasedOnDirection(prevNode.position, position, nextNode.position);
                 } else
                 {
@@ -311,19 +318,30 @@ public class LegacyPieceApplier : MonoBehaviour
                         nextNode.position,
                         otherNextNode.position);
                 }
-                
+                Debug.Log("double");
             }
             else
             {
                 currentPiece = forkTriple;
                 Debug.Log("triple");
             }
-            GameObject pieceObject = currentPiece.Instantiate();
-            pieceObject.transform.parent = pieces.transform;
-            pieceObject.transform.forward = new Vector3(direction.x, 0, direction.z);
-            Vector3 prevScale = pieceObject.transform.localScale;
-            pieceObject.transform.localScale = new Vector3(scaleFactor * prevScale.x, scaleFactor * prevScale.y, scaleFactor * prevScale.z);
-            pieceObject.transform.position = position;
+            try
+            {
+                GameObject pieceObject = currentPiece.Instantiate();
+                pieceObject.transform.parent = pieces.transform;
+                pieceObject.transform.forward = new Vector3(direction.x, 0, direction.z);
+                Vector3 prevScale = pieceObject.transform.localScale;
+                pieceObject.transform.localScale = new Vector3(scaleFactor * prevScale.x, scaleFactor * prevScale.y, scaleFactor * prevScale.z);
+                pieceObject.transform.position = position;
+            } catch (System.NullReferenceException err)
+            {
+                Debug.Log("No existe la pieza con nodos: ");
+                foreach (PathNode current in currentNode.connections)
+                {
+                    Debug.Log(current.position);
+                }
+            }
+
 
             foreach(PathNode currentConnection in currentNode.connections)
             {

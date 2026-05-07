@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4e689cbfada20664eb0f411dd49d6746
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 30232
+  packageName: Zombie
+  packageVersion: 
+  assetPath: Assets/Zombie/Animations/Zombie.controller
+  uploadId: 0

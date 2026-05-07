@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6e85bf166e46a64498ea53668a6df660
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 30232
+  packageName: Zombie
+  packageVersion: 
+  assetPath: Assets/Zombie/Animations/Z_Attack.anim
+  uploadId: 0

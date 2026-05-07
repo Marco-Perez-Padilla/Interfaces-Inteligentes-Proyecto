@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8abfc15465ceb2b448c7a8af1ccc408b
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 30232
+  packageName: Zombie
+  packageVersion: 
+  assetPath: Assets/Zombie/Materials/Zombie.mat
+  uploadId: 0

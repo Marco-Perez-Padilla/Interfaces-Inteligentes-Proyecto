@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8bf2710ba348f5744af8a9f566a0bc40
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 30232
+  packageName: Zombie
+  packageVersion: 
+  assetPath: Assets/Zombie/Animations/Z_Idle.anim
+  uploadId: 0

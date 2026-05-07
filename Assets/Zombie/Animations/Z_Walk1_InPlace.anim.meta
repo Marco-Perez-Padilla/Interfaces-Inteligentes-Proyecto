@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3f4db0c9f3e8b2849b07748433117e16
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 30232
+  packageName: Zombie
+  packageVersion: 
+  assetPath: Assets/Zombie/Animations/Z_Walk1_InPlace.anim
+  uploadId: 0

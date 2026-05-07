@@ -5,13 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Vagoneta
-  - Suelo
-  - ParedNorte
-  - ParedEste
-  - ParedSur
-  - ParedOeste
-  - Techo
-  - Viga
+  - Enemy
   layers:
   - Default
   - TransparentFX

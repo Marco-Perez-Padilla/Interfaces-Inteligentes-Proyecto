@@ -84,6 +84,16 @@ public class PathGenerator : MonoBehaviour
   private Grid2D grid;
 
   // ======================================================
+  // EVENTS
+  // ======================================================
+
+  /// <summary>
+  /// Disparado cada vez que Generate() completa con éxito.
+  /// Cualquier builder puede suscribirse para reconstruirse automáticamente.
+  /// </summary>
+  public static event System.Action<PathGenerator> OnGraphRegenerated;
+
+  // ======================================================
   // UNITY
   // ======================================================
 
@@ -209,6 +219,8 @@ public class PathGenerator : MonoBehaviour
     // RESOLUCIÓN FINAL
     // -------------------------
     DecisionResolver.Resolve(graph);
+
+    OnGraphRegenerated?.Invoke(this);
   }
 
   // ======================================================

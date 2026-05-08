@@ -24,8 +24,21 @@ public class TriggerNotificator : MonoBehaviour
 
     void Awake()
     {
-        // Asegura que el collider actúe como trigger
-        GetComponent<Collider>().isTrigger = true;
+        // Busca específicamente el BoxCollider añadido por PathSurfaceBuilder.
+        // El MeshCollider del prefab es cóncavo y no puede ser trigger.
+        BoxCollider boxCollider = GetComponent<BoxCollider>();
+
+        if (boxCollider != null)
+        {
+            boxCollider.isTrigger = true;
+            return;
+        }
+
+        Debug.LogWarning(
+          $"[TriggerNotificator] No se encontró BoxCollider en {gameObject.name}. " +
+          "Asegúrate de añadir un BoxCollider antes de añadir este componente.",
+          this
+        );
     }
 
     private void OnTriggerEnter(Collider other)

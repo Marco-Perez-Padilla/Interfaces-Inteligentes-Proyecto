@@ -33,6 +33,15 @@ public class LegacyPieceApplier : MonoBehaviour
     List<Vector3> alreadyAppliedPieces;
     private float scaleFactor;
 
+    // ======================================================
+    // EVENTS
+    // ======================================================
+
+    /// <summary>
+    /// Disparado cuando LegacyPieceApplier termina de instanciar
+    /// todas las piezas y sus TriggerNotificators estÃ¡n disponibles.
+    /// </summary>
+    public static event System.Action OnPiecesInstantiated;
     void Start()
     {
         pathGraph = pathGenerator.graph;
@@ -48,6 +57,7 @@ public class LegacyPieceApplier : MonoBehaviour
         {
             ApplyPiecesToPath(currentPath, Color.red);
         }
+        OnPiecesInstantiated?.Invoke();
     }
 
     Piece GetPieceBasedOnDirection(Vector3 previousPosition, Vector3 currentPosition, Vector3 nextPosition)
@@ -303,7 +313,7 @@ public class LegacyPieceApplier : MonoBehaviour
             {
 
                 PathNode otherNextNode = currentNode.connections[2];
-                //a veces el codigo de alvaro hace que un nodo que solo tiene una salida (o sea con forma de L) diga que tiene dos salidas con la misma posición
+                //a veces el codigo de alvaro hace que un nodo que solo tiene una salida (o sea con forma de L) diga que tiene dos salidas con la misma posiciï¿½n
                 //por lo que compruebo si pasa ese caso y hago como si hubiera una salida sola
                 bool wayoutDuplicationError = otherNextNode.position == nextNode.position; 
                 if (wayoutDuplicationError)

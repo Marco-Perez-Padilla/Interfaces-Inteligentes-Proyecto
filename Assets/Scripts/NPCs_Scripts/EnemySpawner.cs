@@ -70,12 +70,17 @@ public class EnemySpawner : MonoBehaviour
   // UNITY
   // =====================================================
 
-  /// <summary>
-  /// Start() en lugar de OnEnable() para garantizar que PathSurfaceBuilder
-  /// ya ha ejecutado su Start() y generado los TriggerNotificators.
-  /// El orden se refuerza con Script Execution Order en Project Settings.
-  /// </summary>
-  void Start()
+  void OnEnable()
+  {
+    LegacyPieceApplier.OnPiecesInstantiated += OnPiecesReady;
+  }
+
+  void OnDisable()
+  {
+    LegacyPieceApplier.OnPiecesInstantiated -= OnPiecesReady;
+  }
+
+  void OnPiecesReady()
   {
     SubscribeToAllTriggers();
     SubscribeToAllNoiseDetectors();

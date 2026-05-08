@@ -12,6 +12,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: chaseForTime
       objectReference: {fileID: 0}
+    - target: {fileID: 5163985887396958079, guid: 09f6f76d3931a1a48b02c911c8886fb0, type: 3}
+      propertyPath: zoneColor.b
+      value: 0.011764707
+      objectReference: {fileID: 0}
+    - target: {fileID: 5163985887396958079, guid: 09f6f76d3931a1a48b02c911c8886fb0, type: 3}
+      propertyPath: zoneColor.g
+      value: 0.011764707
+      objectReference: {fileID: 0}
+    - target: {fileID: 5163985887396958079, guid: 09f6f76d3931a1a48b02c911c8886fb0, type: 3}
+      propertyPath: zoneColor.r
+      value: 0.8117647
+      objectReference: {fileID: 0}
+    - target: {fileID: 5163985887396958079, guid: 09f6f76d3931a1a48b02c911c8886fb0, type: 3}
+      propertyPath: zoneBorderColor.b
+      value: 0.011764706
+      objectReference: {fileID: 0}
+    - target: {fileID: 5163985887396958079, guid: 09f6f76d3931a1a48b02c911c8886fb0, type: 3}
+      propertyPath: zoneBorderColor.g
+      value: 0.011764706
+      objectReference: {fileID: 0}
+    - target: {fileID: 5163985887396958079, guid: 09f6f76d3931a1a48b02c911c8886fb0, type: 3}
+      propertyPath: zoneBorderColor.r
+      value: 0.8117647
+      objectReference: {fileID: 0}
     - target: {fileID: 5333129379663035794, guid: 09f6f76d3931a1a48b02c911c8886fb0, type: 3}
       propertyPath: m_LocalScale.x
       value: 5.62

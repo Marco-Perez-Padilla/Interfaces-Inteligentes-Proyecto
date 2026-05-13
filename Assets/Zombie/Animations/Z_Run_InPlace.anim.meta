@@ -1,8 +1,15 @@
 fileFormatVersion: 2
-guid: 8c403a9ba4fbdc041aa5f710704393e0
+guid: fc9a62f9b1354f342bacfbbe077c503e
 NativeFormatImporter:
   externalObjects: {}
-  mainObjectFileID: 0
+  mainObjectFileID: 7400000
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 30232
+  packageName: Zombie
+  packageVersion: Draft 1.2
+  assetPath: Assets/Zombie/Animations/Z_Run_InPlace.anim
+  uploadId: 334764

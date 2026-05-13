@@ -102,6 +102,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: noisePlayer
       objectReference: {fileID: 0}
+    - target: {fileID: 1889845793608138734, guid: fa2cec1962450d04a890ee50e069d754, type: 3}
+      propertyPath: zoneColor.b
+      value: 0.13356353
+      objectReference: {fileID: 0}
+    - target: {fileID: 1889845793608138734, guid: fa2cec1962450d04a890ee50e069d754, type: 3}
+      propertyPath: zoneColor.g
+      value: 0.6377357
+      objectReference: {fileID: 0}
+    - target: {fileID: 1889845793608138734, guid: fa2cec1962450d04a890ee50e069d754, type: 3}
+      propertyPath: zoneColor.r
+      value: 0.62907755
+      objectReference: {fileID: 0}
+    - target: {fileID: 1889845793608138734, guid: fa2cec1962450d04a890ee50e069d754, type: 3}
+      propertyPath: zoneBorderColor.b
+      value: 0.13725491
+      objectReference: {fileID: 0}
+    - target: {fileID: 1889845793608138734, guid: fa2cec1962450d04a890ee50e069d754, type: 3}
+      propertyPath: zoneBorderColor.g
+      value: 0.6392157
+      objectReference: {fileID: 0}
+    - target: {fileID: 1889845793608138734, guid: fa2cec1962450d04a890ee50e069d754, type: 3}
+      propertyPath: zoneBorderColor.r
+      value: 0.6313726
+      objectReference: {fileID: 0}
     - target: {fileID: 7298804022834643167, guid: fa2cec1962450d04a890ee50e069d754, type: 3}
       propertyPath: m_LocalScale.y
       value: 24.53

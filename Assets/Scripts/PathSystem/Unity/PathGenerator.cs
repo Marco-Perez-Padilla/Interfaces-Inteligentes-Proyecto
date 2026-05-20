@@ -84,6 +84,7 @@ public class PathGenerator : MonoBehaviour
   private Grid2D grid;
 
   // ======================================================
+<<<<<<< HEAD
   // EVENTS
   // ======================================================
 
@@ -94,6 +95,8 @@ public class PathGenerator : MonoBehaviour
   public static event System.Action<PathGenerator> OnGraphRegenerated;
 
   // ======================================================
+=======
+>>>>>>> flashlight
   // UNITY
   // ======================================================
 
@@ -219,8 +222,11 @@ public class PathGenerator : MonoBehaviour
     // RESOLUCIÓN FINAL
     // -------------------------
     DecisionResolver.Resolve(graph);
+<<<<<<< HEAD
 
     OnGraphRegenerated?.Invoke(this);
+=======
+>>>>>>> flashlight
   }
 
   // ======================================================

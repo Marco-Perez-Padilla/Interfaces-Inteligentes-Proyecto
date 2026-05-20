@@ -4,7 +4,28 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
+<<<<<<< HEAD
   m_Scenes: []
   m_configObjects:
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 57c04a7a19d58e84e8a586846df48df0, type: 2}
+=======
+  m_Scenes:
+  - enabled: 0
+    path: Assets/Scenes/Vagoneta-Experimental.unity
+    guid: 600d3d30316bbac44ae4933af7a72167
+  - enabled: 0
+    path: Assets/Scenes/SampleScene.unity
+    guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 0
+    path: Assets/testvr1.unity
+    guid: 411fba197e698904e95e390c0e1c72d5
+  - enabled: 1
+    path: Assets/Scenes/NPCsScene.unity
+    guid: 9e9671345fb5b27448487cc24c203cab
+  m_configObjects:
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: efaf39f2bffd45a4cacb6bcd2fa64089, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 32b15c8203887e042800f08d9984d256, type: 2}
+    xr.sdk.mock-hmd.settings: {fileID: 11400000, guid: b5511edbbd17ca74e8492283e8e20242, type: 2}
+>>>>>>> flashlight
   m_UseUCBPForAssetBundles: 0

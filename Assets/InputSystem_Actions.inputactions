@@ -1,5 +1,4 @@
 {
-    "version": 1,
     "name": "InputSystem_Actions",
     "maps": [
         {
@@ -569,15 +568,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "HideMenu",
-                    "type": "Button",
-                    "id": "fbaec391-d8c5-4b57-ba7a-2883a2914d52",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -998,6 +988,7 @@
                     "action": "TrackedDeviceOrientation",
                     "isComposite": false,
                     "isPartOfComposite": false
+<<<<<<< HEAD
                 },
                 {
                     "name": "",
@@ -1031,6 +1022,8 @@
                     "action": "HideMenu",
                     "isComposite": false,
                     "isPartOfComposite": false
+=======
+>>>>>>> flashlight
                 }
             ]
         }

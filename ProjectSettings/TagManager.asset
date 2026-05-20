@@ -3,6 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
+<<<<<<< HEAD
   tags:
   - Vagoneta
   - Suelo
@@ -12,6 +13,9 @@ TagManager:
   - ParedOeste
   - Techo
   - Viga
+=======
+  tags: []
+>>>>>>> flashlight
   layers:
   - Default
   - TransparentFX
@@ -51,6 +55,7 @@ TagManager:
     locked: 0
   m_RenderingLayers:
   - Default
+<<<<<<< HEAD
   - Light Layer 1
   - Light Layer 2
   - Light Layer 3
@@ -58,3 +63,5 @@ TagManager:
   - Light Layer 5
   - Light Layer 6
   - Light Layer 7
+=======
+>>>>>>> flashlight

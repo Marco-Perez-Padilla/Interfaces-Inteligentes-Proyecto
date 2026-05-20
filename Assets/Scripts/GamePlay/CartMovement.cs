@@ -1,20 +1,12 @@
 using UnityEngine;
-<<<<<<< HEAD
-=======
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
->>>>>>> flashlight
 
 /**
  * Movimiento de la vagoneta con:
  * - Toma de decisiones (nodos con múltiples salidas)
-<<<<<<< HEAD
- * - Impulso (V)
- * - Freno bloqueante (X)
-=======
  * - Impulso por pulsación (no continuo)
  * - Freno continuo
->>>>>>> flashlight
  * - Sonido y cámara dependientes de velocidad
  */
 public class CartMovement : MonoBehaviour
@@ -28,15 +20,6 @@ public class CartMovement : MonoBehaviour
     public float speed = 2f;
     public float rotationSpeed = 8f;
 
-<<<<<<< HEAD
-    [Header("Impulse")]
-    public float impulseStrength = 2.5f;
-    public float brakeStrength = 6f;
-    public float impulseDecay = 3f;
-
-    [Header("Brake")]
-    public float hardBrakeThreshold = -1.5f; // bloqueo total
-=======
     [Header("Impulse (por pulsación)")]
     public float impulsePerPress = 5f;      // Cantidad fija que se añade por cada pulsación
     public float impulseDecay = 3f;         // Decaimiento natural (por segundo)
@@ -58,7 +41,6 @@ public class CartMovement : MonoBehaviour
     public float handPushThreshold = 0.2f;
     public float handPullThreshold = 0.15f;
     public float handCooldown = 0.3f;
->>>>>>> flashlight
 
     private float speedImpulse;
     private bool brakeLocked;
@@ -69,20 +51,17 @@ public class CartMovement : MonoBehaviour
 
     public bool isWaitingDecision;
 
-<<<<<<< HEAD
-=======
     // VR tracking variables
     private Vector3 lastRightHandPos;
     private Vector3 lastLeftHandPos;
     private float lastHandActionTime;
 
     // Eventos para feedback VR
-    public System.Action onImpulse; 
-    public System.Action onBrake;  
+    public System.Action onImpulse;
+    public System.Action onBrake;
 
     void OnEnable()
     {
-        // Habilitar acciones y suscribirse a eventos
         if (impulseAction != null)
         {
             impulseAction.action.Enable();
@@ -94,7 +73,6 @@ public class CartMovement : MonoBehaviour
 
     void OnDisable()
     {
-        // Desuscribirse y deshabilitar
         if (impulseAction != null)
         {
             impulseAction.action.performed -= OnImpulsePerformed;
@@ -106,7 +84,6 @@ public class CartMovement : MonoBehaviour
             moveAction.action.Disable();
     }
 
->>>>>>> flashlight
     void Start()
     {
         var main = pathGenerator.graph.mainPath;
@@ -114,13 +91,9 @@ public class CartMovement : MonoBehaviour
         targetNode = main[1];
         transform.position = currentNode.position;
 
-<<<<<<< HEAD
-=======
-        // Inicializar posiciones de manos para VR
         if (rightHand != null) lastRightHandPos = rightHand.position;
         if (leftHand != null) lastLeftHandPos = leftHand.position;
 
->>>>>>> flashlight
         if (engineAudio != null)
             engineAudio.loop = true;
     }
@@ -131,9 +104,6 @@ public class CartMovement : MonoBehaviour
         DecayImpulse();
         UpdateBrakeState();
 
-<<<<<<< HEAD
-=======
-        // Log para ver el valor del joystick (solo debug)
         if (moveAction != null)
         {
             Vector2 moveVal = moveAction.action.ReadValue<Vector2>();
@@ -143,7 +113,6 @@ public class CartMovement : MonoBehaviour
             }
         }
 
->>>>>>> flashlight
         if (!isWaitingDecision && targetNode != null && !brakeLocked)
             Move();
 
@@ -152,25 +121,13 @@ public class CartMovement : MonoBehaviour
     }
 
     // ======================================================
-<<<<<<< HEAD
-    // INPUT
-=======
     // INPUT - Sistema unificado (Teclado + VR)
->>>>>>> flashlight
     // ======================================================
 
     private void HandleSpeedInput()
     {
-<<<<<<< HEAD
-        if (Input.GetKey(KeyCode.V))
-            speedImpulse += impulseStrength * Time.deltaTime;
-
-        if (Input.GetKey(KeyCode.X))
-            speedImpulse -= brakeStrength * Time.deltaTime;
-=======
         float brakeInput = 0f;
 
-        // 1. Freno continuo desde Input Action
         if (brakeAction != null)
         {
             brakeInput = brakeAction.action.ReadValue<float>();
@@ -182,13 +139,11 @@ public class CartMovement : MonoBehaviour
             wasBraking = isBraking;
         }
 
-        // 2. Controles VR por movimiento de manos (si está habilitado)
         if (useVRHandControls && Time.time - lastHandActionTime > handCooldown)
         {
-            float handImpulse = GetHandImpulseInput(); // 0 o 1
+            float handImpulse = GetHandImpulseInput();
             float handBrake = GetHandBrakeInput();
 
-            // Si hay impulso de manos, añadimos un pulso (como si fuera un botón)
             if (handImpulse > 0.1f)
             {
                 speedImpulse += impulsePerPress;
@@ -198,7 +153,6 @@ public class CartMovement : MonoBehaviour
             brakeInput = Mathf.Max(brakeInput, handBrake);
         }
 
-        // 3. Controles de teclado tradicionales
         if (Input.GetKeyDown(KeyCode.V))
         {
             speedImpulse += impulsePerPress;
@@ -209,22 +163,12 @@ public class CartMovement : MonoBehaviour
             brakeInput = 1f;
         }
 
-        // Aplicar freno (continuo)
         speedImpulse -= brakeInput * brakeStrength * Time.deltaTime;
 
-        // 4. Sistema de dirección con Input Action (para decisiones)
-        // if (moveAction != null && isWaitingDecision)
-        // {
-        //     Vector2 moveInput = moveAction.action.ReadValue<Vector2>();
-        //     HandleDirectionInput(moveInput);
-        // }
-
-        // Actualizar posiciones de manos para VR
         if (rightHand != null) lastRightHandPos = rightHand.position;
         if (leftHand != null) lastLeftHandPos = leftHand.position;
     }
 
-    // Evento llamado cuando se pulsa el botón de impulso (VR o teclado)
     private void OnImpulsePerformed(InputAction.CallbackContext context)
     {
         speedImpulse += impulsePerPress;
@@ -275,7 +219,6 @@ public class CartMovement : MonoBehaviour
     private void HandleDirectionInput(Vector2 input)
     {
         if (input.magnitude < 0.1f) return;
-
         if (!isWaitingDecision || currentNode == null) return;
 
         var exits = GetValidExits();
@@ -291,18 +234,12 @@ public class CartMovement : MonoBehaviour
             float angle1 = Vector3.SignedAngle(transform.forward, exit1Dir, Vector3.up);
             float angle2 = Vector3.SignedAngle(transform.forward, exit2Dir, Vector3.up);
 
-            if (input.x < -0.5f) // Izquierda
-            {
+            if (input.x < -0.5f)
                 selectedNode = Mathf.Abs(angle1) > Mathf.Abs(angle2) ? exits[0] : exits[1];
-            }
-            else if (input.x > 0.5f) // Derecha
-            {
+            else if (input.x > 0.5f)
                 selectedNode = Mathf.Abs(angle1) < Mathf.Abs(angle2) ? exits[0] : exits[1];
-            }
-            else if (input.y > 0.5f) // Adelante
-            {
+            else if (input.y > 0.5f)
                 selectedNode = Mathf.Abs(angle1) < Mathf.Abs(angle2) ? exits[0] : exits[1];
-            }
         }
 
         if (selectedNode != null)
@@ -310,7 +247,6 @@ public class CartMovement : MonoBehaviour
             targetNode = selectedNode;
             isWaitingDecision = false;
         }
->>>>>>> flashlight
     }
 
     // ======================================================
@@ -357,10 +293,7 @@ public class CartMovement : MonoBehaviour
         {
             isWaitingDecision = true;
             targetNode = null;
-<<<<<<< HEAD
-=======
             Debug.Log("--- MODO DECISIÓN ACTIVADO ---");
->>>>>>> flashlight
             return;
         }
 
@@ -422,28 +355,14 @@ public class CartMovement : MonoBehaviour
     // UTIL
     // ======================================================
 
-<<<<<<< HEAD
-    private System.Collections.Generic.List<PathNode> GetValidExits()
-    {
-        var list = new System.Collections.Generic.List<PathNode>();
-=======
     private List<PathNode> GetValidExits()
     {
         var list = new List<PathNode>();
->>>>>>> flashlight
 
         foreach (var n in currentNode.connections)
             if (n != previousNode)
                 list.Add(n);
 
-<<<<<<< HEAD
-        return list;
-    }
-
-    // ======================================================
-    // API
-    // ======================================================
-=======
         Debug.Log($"Nodo en posición {currentNode.position} tiene {list.Count} salidas válidas.");
 
         return list;
@@ -451,18 +370,10 @@ public class CartMovement : MonoBehaviour
 
     public PathNode Current => currentNode;
     public PathNode Previous => previousNode;
->>>>>>> flashlight
 
     public void Choose(PathNode next)
     {
         targetNode = next;
         isWaitingDecision = false;
     }
-<<<<<<< HEAD
-    
-    public PathNode Current => currentNode;
-    public PathNode Previous => previousNode;
 }
-=======
-}
->>>>>>> flashlight

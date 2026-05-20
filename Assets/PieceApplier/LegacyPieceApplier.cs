@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 public class LegacyPieceApplier : MonoBehaviour
 {
@@ -395,6 +397,8 @@ public class LegacyPieceApplier : MonoBehaviour
 
         Dictionary<Vector3, int> drawCount = new Dictionary<Vector3, int>();
 
+    #if UNITY_EDITOR
+
         void DrawLabel(Vector3 pos, string text)
         {
             if (!drawCount.ContainsKey(pos))
@@ -414,18 +418,17 @@ public class LegacyPieceApplier : MonoBehaviour
             i++;
         }
 
-        int j = 0;
         foreach (List<PathNode> currentPath in pathGraph.subPaths)
         {
-            j++;
             i = 0;
+
             foreach (PathNode node in currentPath)
             {
                 DrawLabel(node.position, i + "/" + currentPath.Count);
                 i++;
             }
         }
+    #endif
     }
-
 }
 

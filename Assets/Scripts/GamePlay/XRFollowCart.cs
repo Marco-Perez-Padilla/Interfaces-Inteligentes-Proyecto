@@ -11,6 +11,7 @@ public class XRFollowCart : MonoBehaviour
     public float positionLerpSpeed = 10f;
     public float rotationLerpSpeed = 5f;
 
+    private Vector3 cameraLocalPosition; // offset de la cámara respecto al XR Origin
     private Vector3 initialOffset;       // Offset global entre XR Origin y carrito al montar
     public Vector3 rotationOffset = Vector3.zero;
     private bool isInitialized = false;
@@ -33,7 +34,28 @@ public class XRFollowCart : MonoBehaviour
             }
         }
 
+        // Busca la cámara principal dentro del XR Origin
+        Camera cam = xrOrigin.GetComponentInChildren<Camera>();
+        if (cam != null)
+            cameraLocalPosition = cam.transform.localPosition;
+        else
+            cameraLocalPosition = Vector3.up * 1.5f; // valor por defecto
         Initialize();
+    }
+
+    Vector3 GetTargetPosition()
+    {
+        if (seatPoint != null)
+        {
+            // El punto donde queremos que esté la cámara es seatPoint.position
+            // Pero nosotros movemos el rig → rig debe ir a seatPoint - cameraLocalOffset
+            return seatPoint.position - cameraLocalPosition;
+        }
+        else
+        {
+            // Sin seatPoint, usa el carrito + offset inicial (ajustado también)
+            return cart.transform.position + initialOffset;
+        }
     }
 
     Transform FindXROrigin()
@@ -56,17 +78,10 @@ public class XRFollowCart : MonoBehaviour
     {
         if (!isInitialized) return;
 
-        // Posición objetivo: si hay seatPoint, úsalo; si no, usa offset
-        Vector3 targetPos;
-        if (seatPoint != null)
-            targetPos = seatPoint.position;
-        else
-            targetPos = cart.transform.position + initialOffset;
-
-        // Interpolación suave de posición
+        Vector3 targetPos = GetTargetPosition();
         xrOrigin.position = Vector3.Lerp(xrOrigin.position, targetPos, positionLerpSpeed * Time.deltaTime);
-
-        // Rotación: solo eje Y
+        
+        // Rotación igual que antes
         float targetY = cart.transform.eulerAngles.y;
         float currentY = xrOrigin.eulerAngles.y;
         float newY = Mathf.LerpAngle(currentY, targetY, rotationLerpSpeed * Time.deltaTime);
@@ -79,20 +94,16 @@ public class XRFollowCart : MonoBehaviour
     {
         if (xrOrigin == null || cart == null) return;
 
-        // Si hay seatPoint, teletransporta allí; si no, usa offset
+        Vector3 targetPos = GetTargetPosition();
+        xrOrigin.position = targetPos;
+        
         if (seatPoint != null)
-        {
-            xrOrigin.position = seatPoint.position;
             xrOrigin.rotation = cart.transform.rotation * Quaternion.Euler(rotationOffset);
-        }
         else
-        {
-            xrOrigin.position = cart.transform.position + initialOffset;
             xrOrigin.rotation = cart.transform.rotation;
-        }
 
         // Recalcula offset para mantener coherencia
         initialOffset = xrOrigin.position - cart.transform.position;
-        Debug.Log("XR Origin teleportado al carrito");
+        Debug.Log($"XR Origin teleportado. Posición del rig: {targetPos}");
     }
 }

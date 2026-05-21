@@ -43,28 +43,26 @@ public class TriggerNotificator : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // Si ya se notificó y solo se permite una notificación, se ignora
-        //if (notified && notifyOnlyOnce)
-        //    return;
-
-        // Ignora cualquier objeto que no tenga la etiqueta objetivo
-        if (!other.CompareTag(targetTag))
+        if (!HasTargetTagInHierarchy(other.transform))
             return;
-
-        // Notifica entrada en el trigger
         OnPlayerEntered?.Invoke();
-
-        // Marca como notificado si se usa notifyOnlyOnce
-        //notified = true;
     }
 
     private void OnTriggerExit(Collider other)
     {
-        // Ignora cualquier objeto que no tenga la etiqueta objetivo
-        if (!other.CompareTag(targetTag))
+        if (!HasTargetTagInHierarchy(other.transform))
             return;
-
-        // Notifica salida del trigger
         OnPlayerExited?.Invoke();
+    }
+
+    private bool HasTargetTagInHierarchy(Transform t)
+    {
+        while (t != null)
+        {
+            if (t.CompareTag(targetTag))
+                return true;
+            t = t.parent;
+        }
+        return false;
     }
 }

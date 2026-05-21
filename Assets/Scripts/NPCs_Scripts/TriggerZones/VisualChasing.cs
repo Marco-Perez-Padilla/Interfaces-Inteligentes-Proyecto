@@ -7,9 +7,9 @@ public class VisualChasing : MonoBehaviour
     public Transform player;
 
     [Header("Movement")]
-    public float npcSpeedWhileChasing = 1.5f; 
+    public float npcSpeedWhileChasing = 1.5f;
     public float rotationSpeed = 360f;
-    public float viewAngle = 60f; 
+    public float viewAngle = 60f;
 
     [Header("Chase Control")]
     public float chaseDuration = 5f;
@@ -24,43 +24,43 @@ public class VisualChasing : MonoBehaviour
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
     }
 
-    void OnEnable()
+    void Start()
     {
         if (triggerZone != null)
         {
             triggerZone.OnPlayerEntered += OnPlayerEnteredTrigger;
-            triggerZone.OnPlayerExited  += StopChase;
+            if (chaseDuration < 1f)
+                triggerZone.OnPlayerExited += StopChase;
         }
+
+        // Perseguir inmediatamente si tenemos player
+        if (player != null)
+            StartChase();
     }
 
-    void OnDisable()
+    void OnDestroy()
     {
-        if (triggerZone != null)
-        {
-            triggerZone.OnPlayerEntered -= OnPlayerEnteredTrigger;
-            triggerZone.OnPlayerExited  -= StopChase;
-        }
+        if (triggerZone == null) return;
+        triggerZone.OnPlayerEntered -= OnPlayerEnteredTrigger;
+        triggerZone.OnPlayerExited -= StopChase;
     }
 
     void Update()
     {
-        if (!chasing || chaseDuration <= 0f)
-            return;
-
+        if (!chasing || chaseDuration < 1f) return;
         chaseTimer -= Time.deltaTime;
-        if (chaseTimer <= 0f)
-            StopChase();
+        if (chaseTimer <= 0f) StopChase();
     }
 
     void FixedUpdate()
     {
-        if (!chasing || player == null)
-            return;
+        if (!chasing || player == null) return;
 
-        Vector3 toPlayer = player.position - transform.position;
-        Vector3 direction = toPlayer.normalized;
+        Vector3 direction = (player.position - transform.position);
+        direction.y = 0f;
+        direction.Normalize();
 
-        bool playerLooking = IsPlayerLookingAtNPC(transform, player, viewAngle);
+        bool playerLooking = IsPlayerLookingAtNPC();
 
         if (playerLooking)
         {
@@ -69,14 +69,18 @@ public class VisualChasing : MonoBehaviour
         }
         else
         {
-            rb.linearVelocity = direction * npcSpeedWhileChasing;
+            Vector3 newPosition = rb.position + direction * npcSpeedWhileChasing * Time.fixedDeltaTime;
+            rb.MovePosition(newPosition);
 
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            rb.MoveRotation(Quaternion.RotateTowards(
-                rb.rotation,
-                targetRotation,
-                rotationSpeed * Time.fixedDeltaTime
-            ));
+            if (direction != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+                rb.MoveRotation(Quaternion.RotateTowards(
+                    rb.rotation,
+                    targetRotation,
+                    rotationSpeed * Time.fixedDeltaTime
+                ));
+            }
         }
     }
 
@@ -88,14 +92,13 @@ public class VisualChasing : MonoBehaviour
             if (p == null) return;
             player = p.transform;
         }
-
         StartChase();
     }
 
     public void StartChase()
     {
         chasing = true;
-        if (chaseDuration > 0f)
+        if (chaseDuration >= 1f)
             chaseTimer = chaseDuration;
     }
 
@@ -106,12 +109,13 @@ public class VisualChasing : MonoBehaviour
         rb.angularVelocity = Vector3.zero;
     }
 
-    bool IsPlayerLookingAtNPC(Transform npc, Transform player, float viewAngle = 60f)
+    bool IsPlayerLookingAtNPC()
     {
-        Vector3 toNPC = npc.position - Camera.main.transform.position;
-        Vector3 playerForward = Camera.main.transform.forward;
+        Camera cam = Camera.main;
+        if (cam == null) return false;
 
-        float angle = Vector3.Angle(playerForward, toNPC);
+        Vector3 toNPC = transform.position - cam.transform.position;
+        float angle = Vector3.Angle(cam.transform.forward, toNPC);
         return angle < viewAngle / 2f;
     }
 }

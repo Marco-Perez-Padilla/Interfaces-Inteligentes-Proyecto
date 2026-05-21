@@ -2,25 +2,46 @@ using UnityEngine;
 
 /**
  * @file: PlayerEnemyCollisionEvent.cs
- * @brief: Detecta colisiones entre el jugador y enemigos. Al colisionar con un objeto
- * con la etiqueta "Enemy", dispara el evento de Game Over en el GameManager.
- *
- * Notas: Se basa en la etiqueta de los NPCs para determinar si son enemigos. No requiere
- * suscripciones ni referencias adicionales, solo que GameManager.Instance exista en escena.
+ * @brief: Detecta colisiones entre el jugador y enemigos mediante OnTriggerEnter,
+ * compatible con NPCs kinematic que usan SphereCollider trigger.
+ * Requiere contacto sostenido durante holdTime segundos para disparar Game Over.
  */
 public class PlayerEnemyCollisionEvent : MonoBehaviour
 {
     [Header("Tags")]
-    public string enemyTag = "Enemy";   // Tag que identifica a los enemigos
+    public string enemyTag = "Enemy";
 
-    // Detecta colisiones físicas con otros colliders
-    void OnCollisionEnter(Collision collision)
+    [Header("Hold Time")]
+    [Tooltip("Segundos de contacto sostenido antes de Game Over")]
+    public float holdTime = 25f;
+
+    private float contactTimer = 0f;
+    private bool inContact = false;
+
+    void Update()
     {
-        // Si el objeto colisionado no tiene la etiqueta "Enemy", no hacemos nada
-        if (!collision.gameObject.CompareTag(enemyTag))
-            return;
+        if (!inContact) return;
 
-        // Llamada al GameManager para mostrar la pantalla de Game Over
-        GameManager.Instance.GameOver();
+        contactTimer += Time.deltaTime;
+        if (contactTimer >= holdTime)
+        {
+            inContact = false;
+            contactTimer = 0f;
+            GameManager.Instance.GameOver();
+        }
+    }
+
+    // NPCs tienen SphereCollider isTrigger — usar OnTriggerEnter/Exit
+    void OnTriggerEnter(Collider other)
+    {
+        if (!other.CompareTag(enemyTag)) return;
+        inContact = true;
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag(enemyTag)) return;
+        inContact = false;
+        contactTimer = 0f;
     }
 }

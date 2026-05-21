@@ -7,303 +7,283 @@ using System.Collections.Generic;
 ///
 ///   1. El jugador entra en una TriggerZone → aparece un enemigo que lo persigue.
 ///   2. El jugador hace mucho ruido en una NoiseZone → aparecen varios enemigos.
-///
-/// La suscripción a triggers se hace en Start() para garantizar que
-/// PathSurfaceBuilder ya los ha generado. Las referencias a los delegados
-/// se guardan en un diccionario para poder desuscribirse correctamente.
 /// </summary>
 public class EnemySpawner : MonoBehaviour
 {
-  [Header("Prefabs de enemigos")]
-  [Tooltip("Prefabs de NPC disponibles. Deben tener EnemyInitializer.")]
-  [SerializeField] private GameObject[] enemyPrefabs;
+    [Header("Prefabs de enemigos")]
+    [SerializeField] private GameObject[] enemyPrefabs;
 
-  [Header("Spawn por TriggerZone")]
-  [Tooltip("Cuántos enemigos aparecen al entrar en una trigger zone.")]
-  [SerializeField] private int enemiesPerTrigger = 1;
+    [Header("Player Reference")]
+    [Tooltip("Arrastra aquí el XR Origin o el objeto que se mueve en escena.")]
+    [SerializeField] private Transform playerTransform;
 
-  [Tooltip("Radio de offset aleatorio respecto al trigger al spawnear.")]
-  [SerializeField] private float triggerSpawnOffsetRadius = 2f;
+    [Header("Spawn por TriggerZone")]
+    [SerializeField] private int enemiesPerTrigger = 1;
+    [SerializeField] private float triggerSpawnOffsetRadius = 2f;
 
-  [Header("Spawn por Ruido")]
-  [Tooltip("Cuántos enemigos aparecen al detectarse ruido alto.")]
-  [SerializeField] private int enemiesPerNoise = 2;
+    [Header("Spawn por Ruido")]
+    [SerializeField] private int enemiesPerNoise = 2;
+    [SerializeField] private float noiseSpawnRadius = 5f;
+    [SerializeField] private float noiseInnerExclusionRadius = 2f;
+    [SerializeField] private float noiseSpawnCooldown = 2f;
+    [SerializeField] private Transform vagonetaTransform;
+    [Range(0f, 180f)]
+    [SerializeField] private float coneExclusionAngle = 60f;
 
-  [Tooltip("Radio de spawn alrededor del jugador al detectarse ruido.")]
-  [SerializeField] private float noiseSpawnRadius = 5f;
+    [Header("Offset en Y")]
+    [SerializeField] private float spawnHeightOffset = 0.1f;
 
-  [Tooltip("Radio de exclusión interna: ningún enemigo aparece más cerca que esto del jugador.")]
-  [SerializeField] private float noiseInnerExclusionRadius = 2f;
+    [Header("Debug")]
+    [SerializeField] private bool spawnOnStartForDebug = false;
+    [SerializeField] private int debugSpawnCount = 5;
 
-  [Tooltip("Cooldown en segundos entre spawns por ruido.")]
-  [SerializeField] private float noiseSpawnCooldown = 2f;
+    private float lastNoiseSpawnTime = float.MinValue;
 
-  [Tooltip("Transform de la vagoneta para calcular el cono de exclusión frontal.")]
-  [SerializeField] private Transform vagonetaTransform;
+    private Dictionary<TriggerNotificator, TriggerNotificator.TriggerEvent> triggerDelegates
+        = new Dictionary<TriggerNotificator, TriggerNotificator.TriggerEvent>();
 
-  [Tooltip("Ángulo del cono de exclusión frontal de la vagoneta en grados.")]
-  [Range(0f, 180f)]
-  [SerializeField] private float coneExclusionAngle = 60f;
+    // =====================================================
+    // UNITY
+    // =====================================================
 
-  [Header("Offset en Y")]
-  [Tooltip("Offset vertical al instanciar para no spawnear dentro del suelo.")]
-  [SerializeField] private float spawnHeightOffset = 0.1f;
-
-  [Header("Debug")]
-  [Tooltip("Si true, spawnea enemigos al inicio para poder verlos sin esperar eventos.")]
-  [SerializeField] private bool spawnOnStartForDebug = false;
-
-  [Tooltip("Cuántos enemigos spawnear al inicio en modo debug.")]
-  [SerializeField] private int debugSpawnCount = 5;
-
-  private float lastNoiseSpawnTime = float.MinValue;
-
-  /// <summary>
-  /// Diccionario que guarda el delegado concreto asociado a cada TriggerNotificator.
-  /// Necesario para poder desuscribirse correctamente: las lambdas anónimas
-  /// crean una instancia nueva cada vez y += / -= nunca coincidirían.
-  /// </summary>
-  private Dictionary<TriggerNotificator, TriggerNotificator.TriggerEvent> triggerDelegates
-      = new Dictionary<TriggerNotificator, TriggerNotificator.TriggerEvent>();
-
-  // =====================================================
-  // UNITY
-  // =====================================================
-
-  void OnEnable()
-  {
-    LegacyPieceApplier.OnPiecesInstantiated += OnPiecesReady;
-  }
-
-  void OnDisable()
-  {
-    LegacyPieceApplier.OnPiecesInstantiated -= OnPiecesReady;
-  }
-
-  void OnPiecesReady()
-  {
-    SubscribeToAllTriggers();
-    SubscribeToAllNoiseDetectors();
-
-    if (spawnOnStartForDebug)
-      SpawnDebugEnemies();
-  }
-
-  void OnDestroy()
-  {
-    UnsubscribeFromAllTriggers();
-    UnsubscribeFromAllNoiseDetectors();
-  }
-
-  // =====================================================
-  // SUSCRIPCIONES — TRIGGERS
-  // =====================================================
-
-  /// <summary>
-  /// Suscribe un delegado nombrado a cada TriggerNotificator de la escena
-  /// y lo guarda en el diccionario para poder desuscribirse después.
-  /// </summary>
-  private void SubscribeToAllTriggers()
-  {
-    TriggerNotificator[] allTriggers = FindObjectsByType<TriggerNotificator>(FindObjectsSortMode.None);
-
-    if (allTriggers.Length == 0)
+    void OnEnable()
     {
-      Debug.LogWarning("[EnemySpawner] No se encontró ningún TriggerNotificator en la escena.");
-      return;
+        LegacyPieceApplier.OnPiecesInstantiated += OnPiecesReady;
     }
 
-    foreach (TriggerNotificator trigger in allTriggers)
+    void OnDisable()
     {
-      // Captura la variable local para que el delegado apunte
-      // al trigger correcto en cada iteración del foreach.
-      TriggerNotificator capturedTrigger = trigger;
-      TriggerNotificator.TriggerEvent triggerDelegate = () => OnTriggerZoneEntered(capturedTrigger);
-
-      triggerDelegates[trigger] = triggerDelegate;
-      trigger.OnPlayerEntered += triggerDelegate;
+        LegacyPieceApplier.OnPiecesInstantiated -= OnPiecesReady;
     }
 
-    Debug.Log($"[EnemySpawner] Suscrito a {allTriggers.Length} TriggerNotificators.");
-  }
-
-  private void UnsubscribeFromAllTriggers()
-  {
-    foreach (KeyValuePair<TriggerNotificator, TriggerNotificator.TriggerEvent> entry in triggerDelegates)
+    void OnPiecesReady()
     {
-      if (entry.Key != null)
-        entry.Key.OnPlayerEntered -= entry.Value;
+        // Si no se asignó el player manualmente, buscar por tag
+        if (playerTransform == null)
+        {
+            GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+            if (playerObject != null)
+                playerTransform = playerObject.transform;
+            else
+                Debug.LogWarning("[EnemySpawner] No se encontró objeto con tag Player. Asígnalo en el Inspector.");
+        }
+
+        SubscribeToAllTriggers();
+        SubscribeToAllNoiseDetectors();
+
+        if (spawnOnStartForDebug)
+            SpawnDebugEnemies();
     }
 
-    triggerDelegates.Clear();
-  }
-
-  // =====================================================
-  // SUSCRIPCIONES — RUIDO
-  // =====================================================
-
-  private void SubscribeToAllNoiseDetectors()
-  {
-    NoiseDetector[] allDetectors = FindObjectsByType<NoiseDetector>(FindObjectsSortMode.None);
-    foreach (NoiseDetector detector in allDetectors)
-      detector.OnHighNoiseDetected += OnHighNoiseDetected;
-  }
-
-  private void UnsubscribeFromAllNoiseDetectors()
-  {
-    NoiseDetector[] allDetectors = FindObjectsByType<NoiseDetector>(FindObjectsSortMode.None);
-    foreach (NoiseDetector detector in allDetectors)
-      detector.OnHighNoiseDetected -= OnHighNoiseDetected;
-  }
-
-  // =====================================================
-  // CALLBACKS
-  // =====================================================
-
-  /// <summary>
-  /// Llamado cuando el jugador entra en una TriggerZone.
-  /// Instancia enemigos cerca del trigger que lo perseguirán.
-  /// </summary>
-  private void OnTriggerZoneEntered(TriggerNotificator sourceTrigger)
-  {
-    for (int i = 0; i < enemiesPerTrigger; i++)
+    void OnDestroy()
     {
-      Vector2 offset = Random.insideUnitCircle * triggerSpawnOffsetRadius;
-      Vector3 spawnPosition = sourceTrigger.transform.position
-                            + new Vector3(offset.x, spawnHeightOffset, offset.y);
-
-      SpawnEnemy(spawnPosition, sourceTrigger);
-    }
-  }
-
-  /// <summary>
-  /// Llamado cuando se detecta ruido alto en una NoiseZone.
-  /// Instancia enemigos alrededor del jugador respetando el cono de exclusión.
-  /// </summary>
-  private void OnHighNoiseDetected(Vector3 noisePosition, float intensity)
-  {
-    if (Time.time - lastNoiseSpawnTime < noiseSpawnCooldown)
-      return;
-
-    lastNoiseSpawnTime = Time.time;
-
-    Vector3 vagonetaForward = vagonetaTransform != null
-        ? Vector3.ProjectOnPlane(vagonetaTransform.forward, Vector3.up).normalized
-        : Vector3.forward;
-
-    int spawnedCount = 0;
-    int safetyCounter = 0;
-    int maxAttempts = enemiesPerNoise * 10;
-
-    while (spawnedCount < enemiesPerNoise && safetyCounter < maxAttempts)
-    {
-      safetyCounter++;
-
-      Vector2 randomCircle = Random.insideUnitCircle * noiseSpawnRadius;
-      Vector3 candidatePos = noisePosition + new Vector3(randomCircle.x, spawnHeightOffset, randomCircle.y);
-
-      float distanceToPlayer = Vector3.Distance(candidatePos, noisePosition);
-      if (distanceToPlayer < noiseInnerExclusionRadius)
-        continue;
-
-      Vector3 directionToCandidate = Vector3.ProjectOnPlane(
-          (candidatePos - noisePosition).normalized, Vector3.up
-      );
-
-      float angleWithVagoneta = Vector3.Angle(vagonetaForward, directionToCandidate);
-      if (angleWithVagoneta <= coneExclusionAngle * 0.5f)
-        continue;
-
-      TriggerNotificator nearestTrigger = FindNearestTrigger(candidatePos);
-      SpawnEnemy(candidatePos, nearestTrigger);
-      spawnedCount++;
-    }
-  }
-
-  // =====================================================
-  // SPAWN
-  // =====================================================
-
-  /// <summary>
-  /// Instancia un prefab de enemigo aleatorio en la posición indicada
-  /// y deja que EnemyInitializer lo configure automáticamente.
-  /// </summary>
-  private void SpawnEnemy(Vector3 position, TriggerNotificator nearestTrigger)
-  {
-    if (enemyPrefabs == null || enemyPrefabs.Length == 0)
-    {
-      Debug.LogError("[EnemySpawner] No hay prefabs de enemigos asignados.");
-      return;
+        UnsubscribeFromAllTriggers();
+        UnsubscribeFromAllNoiseDetectors();
     }
 
-    GameObject prefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
-    GameObject spawnedEnemy = Instantiate(prefab, position, Quaternion.identity, GetOrCreateNPCContainer());
+    // =====================================================
+    // SUSCRIPCIONES — TRIGGERS
+    // =====================================================
 
-    EnemyInitializer initializer = spawnedEnemy.GetComponent<EnemyInitializer>();
-    if (initializer != null)
-      initializer.OverrideNearestTrigger(nearestTrigger);
-  }
-
-  /// <summary>
-  /// Instancia enemigos distribuidos entre los triggers disponibles al inicio.
-  /// Solo para depuración visual en play mode.
-  /// </summary>
-  private void SpawnDebugEnemies()
-  {
-    TriggerNotificator[] allTriggers = FindObjectsByType<TriggerNotificator>(FindObjectsSortMode.None);
-
-    if (allTriggers.Length == 0)
+    private void SubscribeToAllTriggers()
     {
-      Debug.LogWarning("[EnemySpawner] Sin triggers para debug spawn.");
-      return;
+        TriggerNotificator[] allTriggers = FindObjectsByType<TriggerNotificator>(FindObjectsSortMode.None);
+
+        if (allTriggers.Length == 0)
+        {
+            Debug.LogWarning("[EnemySpawner] No se encontró ningún TriggerNotificator en la escena.");
+            return;
+        }
+
+        foreach (TriggerNotificator trigger in allTriggers)
+        {
+            TriggerNotificator capturedTrigger = trigger;
+            TriggerNotificator.TriggerEvent triggerDelegate = () => OnTriggerZoneEntered(capturedTrigger);
+            triggerDelegates[trigger] = triggerDelegate;
+            trigger.OnPlayerEntered += triggerDelegate;
+        }
+
+        Debug.Log($"[EnemySpawner] Suscrito a {allTriggers.Length} TriggerNotificators.");
     }
 
-    for (int i = 0; i < debugSpawnCount; i++)
+    private void UnsubscribeFromAllTriggers()
     {
-      TriggerNotificator randomTrigger = allTriggers[Random.Range(0, allTriggers.Length)];
-      Vector2 offset = Random.insideUnitCircle * triggerSpawnOffsetRadius;
-      Vector3 spawnPosition = randomTrigger.transform.position
-                                       + new Vector3(offset.x, spawnHeightOffset, offset.y);
-
-      SpawnEnemy(spawnPosition, randomTrigger);
-    }
-  }
-
-  // =====================================================
-  // HELPERS
-  // =====================================================
-
-  private TriggerNotificator FindNearestTrigger(Vector3 position)
-  {
-    TriggerNotificator[] allTriggers = FindObjectsByType<TriggerNotificator>(FindObjectsSortMode.None);
-
-    TriggerNotificator nearest = null;
-    float nearestDistance = float.MaxValue;
-
-    foreach (TriggerNotificator candidate in allTriggers)
-    {
-      float distance = Vector3.Distance(position, candidate.transform.position);
-      if (distance < nearestDistance)
-      {
-        nearestDistance = distance;
-        nearest = candidate;
-      }
+        foreach (var entry in triggerDelegates)
+            if (entry.Key != null)
+                entry.Key.OnPlayerEntered -= entry.Value;
+        triggerDelegates.Clear();
     }
 
-    return nearest;
-  }
+    // =====================================================
+    // SUSCRIPCIONES — RUIDO
+    // =====================================================
 
-  private Transform GetOrCreateNPCContainer()
-  {
-    Transform container = transform.Find("NPCs_Instanciados");
-
-    if (container == null)
+    private void SubscribeToAllNoiseDetectors()
     {
-      GameObject containerObject = new GameObject("NPCs_Instanciados");
-      containerObject.transform.SetParent(transform);
-      container = containerObject.transform;
+        NoiseDetector[] allDetectors = FindObjectsByType<NoiseDetector>(FindObjectsSortMode.None);
+        foreach (NoiseDetector detector in allDetectors)
+            detector.OnHighNoiseDetected += OnHighNoiseDetected;
     }
 
-    return container;
-  }
+    private void UnsubscribeFromAllNoiseDetectors()
+    {
+        NoiseDetector[] allDetectors = FindObjectsByType<NoiseDetector>(FindObjectsSortMode.None);
+        foreach (NoiseDetector detector in allDetectors)
+            detector.OnHighNoiseDetected -= OnHighNoiseDetected;
+    }
+
+    // =====================================================
+    // CALLBACKS
+    // =====================================================
+
+    private void OnTriggerZoneEntered(TriggerNotificator sourceTrigger)
+    {
+        for (int i = 0; i < enemiesPerTrigger; i++)
+        {
+            Vector3 spawnPosition = FindSafeSpawnPosition(sourceTrigger.transform.position);
+            SpawnEnemy(spawnPosition, sourceTrigger);
+        }
+    }
+
+    private Vector3 FindSafeSpawnPosition(Vector3 origin)
+    {
+        float minDistanceFromPlayer = 3f; // configúralo en el inspector si quieres
+        int maxAttempts = 20;
+
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            Vector2 offset = Random.insideUnitCircle * triggerSpawnOffsetRadius;
+            Vector3 candidate = origin + new Vector3(offset.x, spawnHeightOffset, offset.y);
+
+            if (playerTransform == null || 
+                Vector3.Distance(candidate, playerTransform.position) >= minDistanceFromPlayer)
+                return candidate;
+        }
+
+        // Fallback: detrás del jugador
+        Vector3 behindPlayer = playerTransform != null
+            ? playerTransform.position - playerTransform.forward * minDistanceFromPlayer
+            : origin;
+        return behindPlayer + Vector3.up * spawnHeightOffset;
+    }
+
+    private void OnHighNoiseDetected(Vector3 noisePosition, float intensity)
+    {
+        if (Time.time - lastNoiseSpawnTime < noiseSpawnCooldown)
+            return;
+
+        lastNoiseSpawnTime = Time.time;
+
+        Vector3 vagonetaForward = vagonetaTransform != null
+            ? Vector3.ProjectOnPlane(vagonetaTransform.forward, Vector3.up).normalized
+            : Vector3.forward;
+
+        int spawnedCount = 0;
+        int safetyCounter = 0;
+        int maxAttempts = enemiesPerNoise * 10;
+
+        while (spawnedCount < enemiesPerNoise && safetyCounter < maxAttempts)
+        {
+            safetyCounter++;
+
+            Vector2 randomCircle = Random.insideUnitCircle * noiseSpawnRadius;
+            Vector3 candidatePos = noisePosition + new Vector3(randomCircle.x, spawnHeightOffset, randomCircle.y);
+
+            if (Vector3.Distance(candidatePos, noisePosition) < noiseInnerExclusionRadius)
+                continue;
+
+            Vector3 dirToCandidate = Vector3.ProjectOnPlane((candidatePos - noisePosition).normalized, Vector3.up);
+            if (Vector3.Angle(vagonetaForward, dirToCandidate) <= coneExclusionAngle * 0.5f)
+                continue;
+
+            TriggerNotificator nearestTrigger = FindNearestTrigger(candidatePos);
+            SpawnEnemy(candidatePos, nearestTrigger);
+            spawnedCount++;
+        }
+    }
+
+    // =====================================================
+    // SPAWN
+    // =====================================================
+
+    private void SpawnEnemy(Vector3 position, TriggerNotificator nearestTrigger)
+    {
+        if (enemyPrefabs == null || enemyPrefabs.Length == 0)
+        {
+            Debug.LogError("[EnemySpawner] No hay prefabs de enemigos asignados.");
+            return;
+        }
+
+        GameObject prefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+        GameObject spawnedEnemy = Instantiate(prefab, position, Quaternion.identity, GetOrCreateNPCContainer());
+
+        // Añadir EnemyInitializer si el prefab no lo tiene
+        EnemyInitializer initializer = spawnedEnemy.GetComponent<EnemyInitializer>();
+        if (initializer == null)
+            initializer = spawnedEnemy.AddComponent<EnemyInitializer>();
+
+        initializer.OverrideNearestTrigger(nearestTrigger);
+
+        // Inyectar player directamente si lo tenemos
+        if (playerTransform != null)
+            initializer.OverridePlayerTransform(playerTransform);
+
+        Debug.Log($"[EnemySpawner] Spawned: {spawnedEnemy.name}");
+    }
+
+    private void SpawnDebugEnemies()
+    {
+        TriggerNotificator[] allTriggers = FindObjectsByType<TriggerNotificator>(FindObjectsSortMode.None);
+
+        if (allTriggers.Length == 0)
+        {
+            Debug.LogWarning("[EnemySpawner] Sin triggers para debug spawn.");
+            return;
+        }
+
+        for (int i = 0; i < debugSpawnCount; i++)
+        {
+            TriggerNotificator randomTrigger = allTriggers[Random.Range(0, allTriggers.Length)];
+            Vector2 offset = Random.insideUnitCircle * triggerSpawnOffsetRadius;
+            Vector3 spawnPosition = randomTrigger.transform.position
+                                             + new Vector3(offset.x, spawnHeightOffset, offset.y);
+            SpawnEnemy(spawnPosition, randomTrigger);
+        }
+    }
+
+    // =====================================================
+    // HELPERS
+    // =====================================================
+
+    private TriggerNotificator FindNearestTrigger(Vector3 position)
+    {
+        TriggerNotificator[] allTriggers = FindObjectsByType<TriggerNotificator>(FindObjectsSortMode.None);
+
+        TriggerNotificator nearest = null;
+        float nearestDistance = float.MaxValue;
+
+        foreach (TriggerNotificator candidate in allTriggers)
+        {
+            float distance = Vector3.Distance(position, candidate.transform.position);
+            if (distance < nearestDistance)
+            {
+                nearestDistance = distance;
+                nearest = candidate;
+            }
+        }
+
+        return nearest;
+    }
+
+    private Transform GetOrCreateNPCContainer()
+    {
+        Transform container = transform.Find("NPCs_Instanciados");
+        if (container == null)
+        {
+            GameObject containerObject = new GameObject("NPCs_Instanciados");
+            containerObject.transform.SetParent(transform);
+            container = containerObject.transform;
+        }
+        return container;
+    }
 }

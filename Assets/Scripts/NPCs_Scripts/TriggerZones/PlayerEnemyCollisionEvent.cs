@@ -1,10 +1,10 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /**
  * @file: PlayerEnemyCollisionEvent.cs
- * @brief: Detecta colisiones entre el jugador y enemigos mediante OnTriggerEnter,
- * compatible con NPCs kinematic que usan SphereCollider trigger.
- * Requiere contacto sostenido durante holdTime segundos para disparar Game Over.
+ * @brief: Detecta contacto sostenido entre el jugador y enemigos.
+ * Tras holdTime segundos de contacto continuo, reinicia la escena.
  */
 public class PlayerEnemyCollisionEvent : MonoBehaviour
 {
@@ -12,8 +12,8 @@ public class PlayerEnemyCollisionEvent : MonoBehaviour
     public string enemyTag = "Enemy";
 
     [Header("Hold Time")]
-    [Tooltip("Segundos de contacto sostenido antes de Game Over")]
-    public float holdTime = 25f;
+    [Tooltip("Segundos de contacto sostenido antes de reiniciar")]
+    public float holdTime = 3f;
 
     private float contactTimer = 0f;
     private bool inContact = false;
@@ -24,14 +24,9 @@ public class PlayerEnemyCollisionEvent : MonoBehaviour
 
         contactTimer += Time.deltaTime;
         if (contactTimer >= holdTime)
-        {
-            inContact = false;
-            contactTimer = 0f;
-            GameManager.Instance.GameOver();
-        }
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    // NPCs tienen SphereCollider isTrigger — usar OnTriggerEnter/Exit
     void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag(enemyTag)) return;

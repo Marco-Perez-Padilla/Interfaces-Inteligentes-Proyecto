@@ -12,58 +12,39 @@ using UnityEngine;
  */
 public class FlickeringLightOnNoiseEvent : MonoBehaviour
 {
-    [Header("References")]
-    public NoiseDetector noiseDetector;      // Detector de ruido al que se suscribe la luz
-
     [Header("Reaction")]
-    public float reactionRadius = 5f;        // Radio de reacción al ruido
-    public float flickerDuration = 1.5f;    // Duración del parpadeo en segundos
-    public float flickerSpeed = 20f;        // Velocidad del parpadeo (Perlin Noise)
+    public float reactionRadius = 5f;
+    public float flickerDuration = 3f;
+    public float flickerSpeed = 50f;
 
     [Header("Light Settings")]
-    public Light controlledLight;           // Luz que será controlada
-    public float baseIntensity = 1f;        // Intensidad normal de la luz
-    public float maxIntensity = 3f;         // Intensidad máxima durante el parpadeo
+    public Light controlledLight;
+    public float maxIntensity = 10f;
 
-    private float flickerTimer = 0f;        // Temporizador del parpadeo
-    private bool flickering = false;        // Estado de parpadeo
+    private float baseIntensity;
+    private float flickerTimer = 0f;
+    private bool flickering = false;
 
-    // Suscripción al evento de ruido al activar el script
-    void OnEnable()
-    {
-        if (noiseDetector != null)
-            noiseDetector.OnNoiseDetected += OnNoiseHeard;
-    }
-
-    // Desuscripción al evento al desactivar el script
-    void OnDisable()
-    {
-        if (noiseDetector != null)
-            noiseDetector.OnNoiseDetected -= OnNoiseHeard;
-    }
-
-    // Inicialización
-    void Awake()
+    void Start()
     {
         if (controlledLight == null)
-            controlledLight = GetComponent<Light>();   // Busca automáticamente la luz si no se asignó
+            controlledLight = GetComponent<Light>();
 
-        baseIntensity = controlledLight.intensity;    // Guardar intensidad base
+        baseIntensity = controlledLight.intensity;
     }
 
-    // Actualización cada frame para manejar el parpadeo
+    void OnEnable()  => NoiseDetector.OnAnyNoiseDetected += OnNoiseHeard;
+    void OnDisable() => NoiseDetector.OnAnyNoiseDetected -= OnNoiseHeard;
+
     void Update()
     {
-        if (!flickering)
-            return;
+        if (!flickering) return;
 
         flickerTimer -= Time.deltaTime;
 
-        // Parpadeo utilizando Perlin Noise para variar suavemente la intensidad
         float noise = Mathf.PerlinNoise(Time.time * flickerSpeed, 0f);
-        controlledLight.intensity = Mathf.Lerp(baseIntensity, maxIntensity, noise);
+        controlledLight.intensity = Mathf.Lerp(0, maxIntensity, noise);
 
-        // Fin del parpadeo
         if (flickerTimer <= 0f)
         {
             flickering = false;
@@ -71,12 +52,10 @@ public class FlickeringLightOnNoiseEvent : MonoBehaviour
         }
     }
 
-    // Callback cuando se detecta ruido.
-    public void OnNoiseHeard(Vector3 noisePos, float intensity)
+    void OnNoiseHeard(Vector3 noisePos, float intensity)
     {
         float distance = Vector3.Distance(transform.position, noisePos);
-        if (distance > reactionRadius)
-            return;
+        if (distance > reactionRadius) return;
 
         flickering = true;
         flickerTimer = flickerDuration;

@@ -36,6 +36,7 @@ public class NoiseDetector : MonoBehaviour
     public delegate void NoiseEvent(Vector3 position, float intensity);
     public event NoiseEvent OnNoiseDetected;
     public event NoiseEvent OnHighNoiseDetected;
+    public static event System.Action<Vector3, float> OnAnyNoiseDetected;
 
     private AudioClip clip;
     private string micName;
@@ -106,6 +107,7 @@ public class NoiseDetector : MonoBehaviour
         {
             Vector3 noisePosition = playerTransform != null ? playerTransform.position : transform.position;
             OnNoiseDetected?.Invoke(noisePosition, frequencyFilteredRMS);
+            OnAnyNoiseDetected?.Invoke(noisePosition, frequencyFilteredRMS);
         }
     }
 }

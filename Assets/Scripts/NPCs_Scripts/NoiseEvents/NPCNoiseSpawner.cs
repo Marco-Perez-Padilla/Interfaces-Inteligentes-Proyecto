@@ -13,22 +13,22 @@ using UnityEngine;
 public class NPCNoiseSpawner : MonoBehaviour
 {
     [Header("NPC Settings")]
-    [SerializeField] private GameObject npcPrefab;
-    [SerializeField] private int npcCount = 2;
-    [SerializeField] private float spawnRadius = 5f;
-    [SerializeField] private float maxDistanceToPlayer = 50f;
+    private GameObject npcPrefab;
+    private int npcCount = 2;
+    private float spawnRadius = 5f;
+    private float maxDistanceToPlayer = 50f;
 
     [Header("Noise Settings")]
-    [SerializeField] private float minIntensity = 0.1f;
+    private float minIntensity = 0.1f;
 
     [Header("Cooldown Settings")]
-    [SerializeField] private float spawnCooldown = 2f;
+    private float spawnCooldown = 2f;
 
     [Header("Cone Exclusion Settings")]
     [SerializeField, Range(0f, 180f)] private float coneAngle = 60f;
-    [SerializeField] private Transform vagonetaTransform;
-    [SerializeField] private float innerExclusionRadius = 2f;
-    [SerializeField] private float chaseStartDelay = 0.25f;
+    private Transform vagonetaTransform;
+    private float innerExclusionRadius = 2f;
+    private float chaseStartDelay = 0.25f;
 
     private float lastSpawnTime = 0f;
 
@@ -176,57 +176,68 @@ public class NPCNoiseSpawner : MonoBehaviour
         chasing.StartChase();
     }
 
-// Pintar en un Gizmos el cono de exclusión y círculos -- Debug
-#if UNITY_EDITOR
-    private void OnDrawGizmosSelected()
+    public void Setup(GameObject prefab, Transform vagoneta, int count, float radius, float cooldown, float cone, float innerRadius)
     {
-        if (vagonetaTransform == null) return;
-
-        Vector3 origin = transform.position;
-        Vector3 forward = vagonetaTransform.forward;
-        forward.y = 0f;
-        forward.Normalize();
-
-        // Cono de exclusión (rojo)
-        Gizmos.color = Color.red;
-        Gizmos.DrawRay(origin, forward * spawnRadius);
-
-        float halfAngle = coneAngle * 0.5f;
-        Vector3 left = Quaternion.Euler(0, -halfAngle, 0) * forward;
-        Vector3 right = Quaternion.Euler(0, halfAngle, 0) * forward;
-
-        Gizmos.DrawRay(origin, left * spawnRadius);
-        Gizmos.DrawRay(origin, right * spawnRadius);
-
-        // Círculo interno de exclusión (rojo)
-        Gizmos.color = Color.red;
-        DrawCircle(origin, innerExclusionRadius, 32);
-
-        // Radio de spawn (amarillo)
-        Gizmos.color = Color.yellow;
-        DrawCircle(origin, spawnRadius, 32);
-
-        // Radio de detección máximo (azul)
-        Gizmos.color = Color.blue;
-        DrawCircle(origin, maxDistanceToPlayer, 32);
+        npcPrefab = prefab;
+        vagonetaTransform = vagoneta;
+        npcCount = count;
+        spawnRadius = radius;
+        spawnCooldown = cooldown;
+        coneAngle = cone;
+        innerExclusionRadius = innerRadius;
     }
 
-    private void DrawCircle(Vector3 center, float radius, int segments)
-    {
-        float angleStep = 360f / segments;
-        Vector3 prevPoint = center + new Vector3(radius, 0, 0);
-        
-        for (int i = 1; i <= segments; i++)
+    // Pintar en un Gizmos el cono de exclusión y círculos -- Debug
+    #if UNITY_EDITOR
+        private void OnDrawGizmosSelected()
         {
-            float angle = i * angleStep * Mathf.Deg2Rad;
-            Vector3 newPoint = center + new Vector3(
-                Mathf.Cos(angle) * radius, 
-                0, 
-                Mathf.Sin(angle) * radius
-            );
-            Gizmos.DrawLine(prevPoint, newPoint);
-            prevPoint = newPoint;
+            if (vagonetaTransform == null) return;
+
+            Vector3 origin = transform.position;
+            Vector3 forward = vagonetaTransform.forward;
+            forward.y = 0f;
+            forward.Normalize();
+
+            // Cono de exclusión (rojo)
+            Gizmos.color = Color.red;
+            Gizmos.DrawRay(origin, forward * spawnRadius);
+
+            float halfAngle = coneAngle * 0.5f;
+            Vector3 left = Quaternion.Euler(0, -halfAngle, 0) * forward;
+            Vector3 right = Quaternion.Euler(0, halfAngle, 0) * forward;
+
+            Gizmos.DrawRay(origin, left * spawnRadius);
+            Gizmos.DrawRay(origin, right * spawnRadius);
+
+            // Círculo interno de exclusión (rojo)
+            Gizmos.color = Color.red;
+            DrawCircle(origin, innerExclusionRadius, 32);
+
+            // Radio de spawn (amarillo)
+            Gizmos.color = Color.yellow;
+            DrawCircle(origin, spawnRadius, 32);
+
+            // Radio de detección máximo (azul)
+            Gizmos.color = Color.blue;
+            DrawCircle(origin, maxDistanceToPlayer, 32);
         }
-    }
-#endif
+
+        private void DrawCircle(Vector3 center, float radius, int segments)
+        {
+            float angleStep = 360f / segments;
+            Vector3 prevPoint = center + new Vector3(radius, 0, 0);
+            
+            for (int i = 1; i <= segments; i++)
+            {
+                float angle = i * angleStep * Mathf.Deg2Rad;
+                Vector3 newPoint = center + new Vector3(
+                    Mathf.Cos(angle) * radius, 
+                    0, 
+                    Mathf.Sin(angle) * radius
+                );
+                Gizmos.DrawLine(prevPoint, newPoint);
+                prevPoint = newPoint;
+            }
+        }
+    #endif
 }

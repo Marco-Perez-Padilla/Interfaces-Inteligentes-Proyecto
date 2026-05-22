@@ -64,10 +64,9 @@ public class EnemyInitializer : MonoBehaviour
         contactCollider.isTrigger = true;
         contactCollider.radius = contactTriggerRadius;
 
-        // 🆕 Collider sólido para que el SeatPoint trigger lo detecte
         SphereCollider solidCollider = gameObject.AddComponent<SphereCollider>();
         solidCollider.isTrigger = false;
-        solidCollider.radius = contactTriggerRadius * 0.5f; // un poco más pequeño
+        solidCollider.radius = contactTriggerRadius * 0.5f; 
     }
 
     private void EnsureRigidbody()
@@ -77,7 +76,7 @@ public class EnemyInitializer : MonoBehaviour
             rb = gameObject.AddComponent<Rigidbody>();
 
         rb.useGravity = false;
-        rb.isKinematic = true; // MovePosition + detección de colisiones
+        rb.isKinematic = true; 
         rb.freezeRotation = true;
     }
 

@@ -6653,6 +6653,7 @@ MonoBehaviour:
   visualChasingRotationSpeed: 360
   visualChasingViewAngle: 60
   visualChasingDuration: 5
+  npcAudioClip: {fileID: 8300000, guid: 925b5d6e5d15667419dec565b895ac56, type: 3}
 --- !u!1 &7901366144787319800
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,20 +9,31 @@ using UnityEngine;
  * - El AudioSource debe estar en el mismo GameObject que este script.
  * - El TriggerNotificator define cuándo el jugador entra en la zona de activación.
  */
+using UnityEngine;
+
 public class NPCAudio : MonoBehaviour
 {
-    public AudioClip audioClip;              // Clip de audio que se reproducirá
-    public TriggerNotificator triggerZone;   // Zona trigger que activa el sonido
+    [Header("References")]
+    public TriggerNotificator triggerZone;
+
+    [Header("Audio")]
+    public AudioClip audioClip;
 
     private AudioSource audioSource;
 
     void Awake()
     {
         audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
         audioSource.playOnAwake = false;
-        audioSource.clip = audioClip;
+        audioSource.volume = 0.5f;
+        audioSource.spatialBlend = 0f;
     }
 
+    // OnEnable se llama cada vez que el GO se activa,
+    // pero aquí nos interesa que se llame DESPUÉS de Setup()
     void OnEnable()
     {
         if (triggerZone != null)
@@ -35,9 +46,31 @@ public class NPCAudio : MonoBehaviour
             triggerZone.OnPlayerEntered -= PlaySound;
     }
 
+    void OnDestroy()
+    {
+        if (triggerZone != null)
+            triggerZone.OnPlayerEntered -= PlaySound;
+    }
+
+    /// <summary>
+    /// Llamar justo después de AddComponent para asignar referencias
+    /// antes de que OnEnable se suscriba al evento.
+    /// </summary>
+    public void Setup(TriggerNotificator trigger, AudioClip clip)
+    {
+        triggerZone = trigger;
+        audioClip = clip;
+
+        // Forzar resuscripción porque OnEnable ya se ejecutó con triggerZone null
+        if (triggerZone != null)
+            triggerZone.OnPlayerEntered += PlaySound;
+    }
+
     void PlaySound()
     {
-        if (!audioSource.isPlaying)
-            audioSource.Play();
+        Debug.Log($"[NPCAudio] PlaySound en {gameObject.name}, clip: {audioClip}");
+        if (audioSource.isPlaying) return;
+        audioSource.clip = audioClip;
+        audioSource.Play();
     }
 }

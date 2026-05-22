@@ -17,6 +17,9 @@ public class EnemyInitializer : MonoBehaviour
     [SerializeField] private float visualChasingViewAngle = 60f;
     [SerializeField] private float visualChasingDuration = 5f;
 
+    [Header("NPCAudio")]
+    [SerializeField] private AudioClip npcAudioClip;
+
     private const int BEHAVIOR_COUNT = 2;
 
     private TriggerNotificator overriddenTrigger = null;
@@ -130,6 +133,7 @@ public class EnemyInitializer : MonoBehaviour
         chasing.rotationSpeed = chasingRotationSpeed;
         chasing.chaseDuration = chasingDuration;
         chasing.speedTreshold = chasingSpeedThreshold;
+        AddNPCAudio(nearestTrigger);
     }
 
     private void AssignVisualChasingBehavior(TriggerNotificator nearestTrigger, Transform playerTransform)
@@ -141,5 +145,18 @@ public class EnemyInitializer : MonoBehaviour
         visual.rotationSpeed = visualChasingRotationSpeed;
         visual.viewAngle = visualChasingViewAngle;
         visual.chaseDuration = visualChasingDuration;
+        AddNPCAudio(nearestTrigger); 
+    }
+
+    private void AddNPCAudio(TriggerNotificator nearestTrigger)
+    {
+        if (npcAudioClip == null)
+        {
+            Debug.LogWarning($"[EnemyInitializer] npcAudioClip no asignado en {gameObject.name}");
+            return;
+        }
+
+        NPCAudio audio = gameObject.AddComponent<NPCAudio>();
+        audio.Setup(nearestTrigger, npcAudioClip); // ← en lugar de asignar campos directamente
     }
 }

@@ -339,8 +339,6 @@ Scripts desarrollados para debug:
   (`straightCave`, `TurnL`, `TurnR`, `forkLeftRight`, `forkLeftStraight`,
   `forkRightStraight`, `forkTripleCave`, `corridorUpCave`, `corridorDownCave`,
   `endCave` y sus variantes `VariantChase`, `VariantNoiseDetector`, `VariantNoisePlayer`).
-- Sistema de iluminación del entorno.
-- Integración del sensor de temperatura con UI.
 - [`PathPieceRegistry.asset`](Assets/Pieces/PathPieceRegistry.asset): registro de asociación tipo-pieza.
 
 ### Tareas desarrolladas en grupo
@@ -509,7 +507,7 @@ Scripts desarrollados para debug:
 
 ---
 
-### Ezequiel Juan Canale Oliva — Entorno Visual, Piezas y Sistema de Iluminación
+### Ezequiel Juan Canale Oliva — Entorno Visual, Piezas
 
 #### `Assets/PieceApplier/`
 

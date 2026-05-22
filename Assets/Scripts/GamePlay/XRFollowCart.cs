@@ -1,5 +1,10 @@
 using UnityEngine;
 
+/**
+ * @file: XRFollowCart.cs
+ * @brief: Hace que el jugador siga al carrito con un offset definido en un entorno VR.
+ */
+
 public class XRFollowCart : MonoBehaviour
 {
     [Header("References")]
@@ -16,6 +21,10 @@ public class XRFollowCart : MonoBehaviour
     public Vector3 rotationOffset = Vector3.zero;
     private bool isInitialized = false;
 
+    /// <summary>
+    /// Inicializa el seguimiento al carrito. Si no se asigna un XR Origin, intenta encontrar uno en la escena. Calcula el offset inicial entre el XR Origin y el carrito para mantener la posición relativa durante el seguimiento.
+    /// Si se asigna un seatPoint, el XR Origin se posicionará para que la cámara esté en ese punto, ajustando el offset de la cámara para mantener la posición relativa correcta. Si no se asigna un seatPoint, el XR Origin seguirá al carrito utilizando el offset inicial calculado al inicio.
+    /// </summary>
     void Start()
     {
         if (cart == null)
@@ -43,6 +52,10 @@ public class XRFollowCart : MonoBehaviour
         Initialize();
     }
 
+    /// <summary>
+    /// Calcula la posición objetivo para el XR Origin. Si se asigna un seatPoint, el objetivo es el seatPoint menos el offset local de la cámara para mantener la posición correcta. Si no se asigna un seatPoint, el objetivo es la posición del carrito más el offset inicial calculado al inicio.
+    /// Esto permite que el XR Origin siga al carrito de manera coherente, manteniendo la posición relativa correcta tanto si se utiliza un seatPoint como si no.
+    /// </summary>
     Vector3 GetTargetPosition()
     {
         if (seatPoint != null)
@@ -58,6 +71,10 @@ public class XRFollowCart : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Busca el XR Origin en la escena. Primero intenta encontrar un objeto llamado "XR Origin Hands", luego "XR Origin", y finalmente "Player" como fallback. Esto permite que el script sea flexible y funcione con diferentes configuraciones de XR Origin sin necesidad de asignarlo manualmente.
+    /// Si no se encuentra ningún XR Origin, el método retorna null, lo que puede ser manejado por el método Start para evitar errores y notificar al desarrollador sobre la falta de un XR Origin en la escena.
+    /// </summary>
     Transform FindXROrigin()
     {
         GameObject xrObject = GameObject.Find("XR Origin Hands");
@@ -66,6 +83,9 @@ public class XRFollowCart : MonoBehaviour
         return xrObject?.transform;
     }
 
+    /// <summary>
+    /// Inicializa el seguimiento al carrito calculando el offset inicial entre el XR Origin y el carrito. Esto asegura que el XR Origin mantenga la posición relativa correcta al seguir al carrito, incluso si el jugador se teletransporta o se mueve de manera abrupta. El método también establece la bandera de inicialización para permitir que el seguimiento comience en el método LateUpdate.
+    /// </summary>
     void Initialize()
     {
         // Calcula el offset inicial (posición relativa al carrito)
@@ -74,6 +94,10 @@ public class XRFollowCart : MonoBehaviour
         Debug.Log($"XRFollowCart inicializado. Offset: {initialOffset}");
     }
 
+    /// <summary>
+    /// Actualiza la posición y rotación del XR Origin para seguir al carrito. La posición se interpola suavemente hacia la posición objetivo calculada por el método GetTargetPosition, mientras que la rotación se interpola para seguir la rotación del carrito en el eje Y. Esto permite que el jugador siga al carrito de manera fluida y natural, manteniendo la orientación correcta mientras se mueve.
+    /// Si el seguimiento no ha sido inicializado, el método retorna sin realizar ninguna acción, lo que evita errores y permite que el XR Origin permanezca en su posición actual hasta que se inicialice correctamente.
+    /// </summary>
     void LateUpdate()
     {
         if (!isInitialized) return;
@@ -90,6 +114,10 @@ public class XRFollowCart : MonoBehaviour
         xrOrigin.rotation = Quaternion.Euler(rot);
     }
 
+    /// <summary>
+    /// Teletransporta el XR Origin a la posición del carrito de forma instantánea, sin interpolación. Esto puede ser útil para situaciones donde el jugador necesita ser reposicionado rápidamente, como al montar el carrito o después de un teletransporte. El método también recalcula el offset inicial después de teletransportar para asegurar que el seguimiento continúe funcionando correctamente desde la nueva posición.
+    /// Si el XR Origin o el carrito no están asignados, el método retorna sin realizar ninguna acción, lo que evita errores y permite que el juego continúe funcionando incluso si no se han configurado correctamente las referencias.
+    /// </summary>
     public void TeleportToCart()
     {
         if (xrOrigin == null || cart == null) return;

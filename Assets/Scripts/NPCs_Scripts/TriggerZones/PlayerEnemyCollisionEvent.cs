@@ -17,6 +17,9 @@ public class PlayerEnemyCollisionEvent : MonoBehaviour
     private float contactTimer = 0f;
     private bool inContact = false;
 
+    ///  <summary>
+    ///  Controla el temporizador de contacto y reinicia la escena si el contacto se mantiene durante el tiempo especificado.
+    ///  </summary>
     void Update()
     {
         if (!inContact) return;
@@ -25,6 +28,9 @@ public class PlayerEnemyCollisionEvent : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
+    /// <summary>
+    /// Detecta cuando el jugador entra en contacto con el enemigo y comienza a contar el tiempo de contacto.
+    /// </summary>
     void OnTriggerEnter(Collider other)
     {
         Debug.Log($"[PECE] TriggerEnter: {other.name} | tag: {other.tag}");
@@ -33,6 +39,9 @@ public class PlayerEnemyCollisionEvent : MonoBehaviour
         inContact = true;
     }
 
+    /// <summary>
+    /// Detecta cuando el jugador sale del contacto con el enemigo y resetea el temporizador.
+    /// </summary>
     void OnTriggerExit(Collider other)
     {
         Debug.Log($"[PECE] TriggerExit: {other.name} | tag: {other.tag}");

@@ -32,7 +32,9 @@ public class NPCNoiseSpawner : MonoBehaviour
 
     private float lastSpawnTime = 0f;
 
-    // Suscripción al evento
+    /// <summary>
+    /// Se suscribe al evento 'OnHighNoiseDetected' de todos los NoiseDetectors en la escena para llamar a SpawnNPCs cuando se detecta un ruido fuerte.
+    /// </summary>
     private void OnEnable()
     {
         NoiseDetector[] detectors = Object.FindObjectsByType<NoiseDetector>(FindObjectsSortMode.None);
@@ -42,7 +44,9 @@ public class NPCNoiseSpawner : MonoBehaviour
         }
     }
 
-    // Desuscripción del evento
+    ///  <summary>
+    ///  Se desuscribe del evento 'OnHighNoiseDetected' para evitar llamadas a SpawnNPCs después de que el objeto esté deshabilitado o destruido.
+    ///  </summary>
     private void OnDisable()
     {
         NoiseDetector[] detectors = Object.FindObjectsByType<NoiseDetector>(FindObjectsSortMode.None);
@@ -52,7 +56,9 @@ public class NPCNoiseSpawner : MonoBehaviour
         }
     }
 
-    // Método principal que genera los NPCs
+    /// <summary>
+    /// Spawnea NPCs en posiciones aleatorias alrededor del punto de ruido, respetando el cooldown, la distancia máxima, el cono de exclusión y el círculo interno de exclusión.
+    /// </summary>
     private void SpawnNPCs(Vector3 noisePosition, float intensity)
     {
         if (vagonetaTransform == null)
@@ -170,12 +176,18 @@ public class NPCNoiseSpawner : MonoBehaviour
         }
     }
 
+    ///  <summary>
+    ///  Corrutina para iniciar la persecución después de un delay, permitiendo que el NPC se estabilice después de ser spawneado antes de comenzar a perseguir al jugador.
+    ///  </summary>
     private System.Collections.IEnumerator StartChaseAfterDelay(VisualChasing chasing, float delay, int npcNumber)
     {
         yield return new WaitForSeconds(delay);
         chasing.StartChase();
     }
 
+    ///  <summary>
+    ///  Método de configuración para asignar los parámetros necesarios desde otro script, como el prefab de NPC, la transform de la vagoneta, el número de NPCs a generar, el radio de spawn, el cooldown entre spawns, el ángulo del cono de exclusión y el radio del círculo interno de exclusión.
+    ///  </summary>
     public void Setup(GameObject prefab, Transform vagoneta, int count, float radius, float cooldown, float cone, float innerRadius)
     {
         npcPrefab = prefab;
@@ -187,7 +199,9 @@ public class NPCNoiseSpawner : MonoBehaviour
         innerExclusionRadius = innerRadius;
     }
 
-    // Pintar en un Gizmos el cono de exclusión y círculos -- Debug
+    /// <summary>
+    /// Dibuja gizmos en el editor para visualizar el cono de exclusión, el círculo interno de exclusión y el radio máximo de spawn alrededor del punto de ruido.
+    /// </summary>
     #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {

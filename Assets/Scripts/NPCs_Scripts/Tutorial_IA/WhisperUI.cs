@@ -4,7 +4,17 @@ using UnityEngine.InputSystem;
 using UnityEngine.Networking;
 using System.Collections;
 using UnityEngine.Android;
-
+/**
+ * @file: WhisperUI.cs
+ * @brief: Gestiona la interacción con el sistema de reconocimiento de voz Whisper para NPCs interactivos.
+ *
+ * Notas:
+ * - Permite al jugador grabar su voz usando un botón o una acción de entrada.
+ * - Envía la grabación a un servidor de Whisper para su transcripción.
+ * - Dispara eventos con la transcripción o en caso de error para que otros sistemas (como OllamaUI) puedan reaccionar.
+ * - Muestra el estado actual (listo, grabando, procesando) en un Text UI.
+ * - Requiere permisos de micrófono en Android.
+ */
 public class WhisperUI : MonoBehaviour
 {
     [Header("UI")]
@@ -31,6 +41,10 @@ public class WhisperUI : MonoBehaviour
 
     private const string RECORD_CONTROLS = "Grabar/Parar: Grip izq, \'X\' o Button East\n\n";
 
+    /// <summary>
+    /// Inicializa el estado del UI y solicita permisos de micrófono si es necesario.
+    /// Configura el botón de grabación para alternar entre grabar y detener la grabación.
+    /// </summary>
     void Start()
     {
         if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
@@ -44,6 +58,9 @@ public class WhisperUI : MonoBehaviour
         SetStatus("Listo");
     }
 
+    ///  <summary>
+    /// Se suscribe a la acción de entrada para mostrar/ocultar el panel.
+    /// </summary>
     void OnEnable()
     {
         if (recordAction != null)
@@ -53,6 +70,9 @@ public class WhisperUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Se desuscribe de la acción de entrada para evitar fugas de memoria.
+    /// </summary>
     void OnDisable()
     {
         if (recordAction != null)
@@ -62,6 +82,9 @@ public class WhisperUI : MonoBehaviour
         }
     }
 
+    ///  <summary>
+    /// Permite usar la tecla 'V' para alternar la grabación, útil para pruebas en PC sin VR.
+    /// </summary>
     void Update()
     {
         if (Keyboard.current == null) return;
@@ -69,20 +92,33 @@ public class WhisperUI : MonoBehaviour
             ToggleRecording();
     }
 
+    /// <summary> 
+    /// Maneja la acción de entrada para grabar o detener la grabación.
+    /// </summary> 
     private void OnRecordPressed(InputAction.CallbackContext context) => ToggleRecording();
 
+    ///  <summary>
+    /// Alterna entre iniciar y detener la grabación de audio.
+    /// Inicia la grabación usando el micrófono seleccionado y envía el audio a Whisper al detenerse.
+    /// </summary>
     void ToggleRecording()
     {
         if (!isRecording) StartRecording();
         else StopRecording();
     }
 
+    /// <summary>
+    /// Actualiza el texto de estado en la UI para informar al jugador sobre el estado actual (listo, grabando, procesando).
+    /// </summary>
     void SetStatus(string status)
     {
         if (statusText != null)
             statusText.text = RECORD_CONTROLS + status;
     }
 
+    ///  <summary>
+    /// Inicia la grabación de audio desde el micrófono seleccionado. Verifica permisos y disponibilidad del micrófono antes de comenzar.
+    /// </summary>
     void StartRecording()
     {
         if (isRecording) return;
@@ -98,6 +134,9 @@ public class WhisperUI : MonoBehaviour
         SetStatus("Grabando...");
     }
 
+    /// <summary>
+    /// Detiene la grabación de audio, procesa el clip grabado y lo envía a Whisper para su transcripción. Actualiza el estado a "Procesando..." mientras espera la respuesta.
+    /// </summary>
     void StopRecording()
     {
         if (!isRecording) return;
@@ -109,6 +148,9 @@ public class WhisperUI : MonoBehaviour
         StartCoroutine(SendToWhisper(recordedClip));
     }
 
+    /// <summary>
+    /// Corrutina que convierte el AudioClip grabado a formato WAV, lo envía a la API de Whisper usando UnityWebRequest, y maneja la respuesta o el error. Dispara eventos según el resultado para que otros sistemas puedan reaccionar.
+    /// </summary>
     IEnumerator SendToWhisper(AudioClip clip)
     {
         byte[] wavData = SavWavMemory.FromAudioClip(clip);

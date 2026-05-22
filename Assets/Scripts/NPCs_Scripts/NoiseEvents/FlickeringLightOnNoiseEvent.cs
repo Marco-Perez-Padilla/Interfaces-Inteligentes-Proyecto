@@ -25,6 +25,10 @@ public class FlickeringLightOnNoiseEvent : MonoBehaviour
     private float flickerTimer = 0f;
     private bool flickering = false;
 
+    /// <summary>
+    /// Configura la luz controlada y almacena su intensidad base para poder restaurarla después del parpadeo. Si no se asigna una luz en el Inspector, intenta obtener una del mismo GameObject.
+    /// Esto asegura que el script funcione correctamente incluso si el desarrollador olvida asignar la luz, evitando errores y permitiendo que el parpadeo se realice con la luz predeterminada del objeto.
+    /// </summary>
     void Start()
     {
         if (controlledLight == null)
@@ -33,9 +37,18 @@ public class FlickeringLightOnNoiseEvent : MonoBehaviour
         baseIntensity = controlledLight.intensity;
     }
 
+    /// <summary>
+    /// Suscribe al método OnNoiseHeard al evento OnAnyNoiseDetected del NoiseDetector.
+    /// </summary>
     void OnEnable()  => NoiseDetector.OnAnyNoiseDetected += OnNoiseHeard;
+    /// <summary>
+    /// Desuscribe al método OnNoiseHeard del evento OnAnyNoiseDetected del NoiseDetector.
+    /// </summary>
     void OnDisable() => NoiseDetector.OnAnyNoiseDetected -= OnNoiseHeard;
 
+    /// <summary>
+    /// Actualiza el estado de la luz parpadeante según el temporizador y la intensidad de ruido.
+    /// </summary>
     void Update()
     {
         if (!flickering) return;
@@ -52,6 +65,9 @@ public class FlickeringLightOnNoiseEvent : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Maneja el evento de ruido detectado. Si el ruido ocurre dentro del radio de reacción, inicia el parpadeo de la luz.
+    /// </summary>
     void OnNoiseHeard(Vector3 noisePos, float intensity)
     {
         float distance = Vector3.Distance(transform.position, noisePos);

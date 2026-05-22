@@ -40,6 +40,10 @@ public class OllamaUI : MonoBehaviour
     [Header("Typewriter Settings")]
     public float charDelay = 0.05f;    // Velocidad de escritura del texto
 
+    /// <summary>
+    /// Se suscribe a los eventos de Whisper al habilitar el objeto.
+    /// Se desuscribe al deshabilitar para evitar fugas de memoria.
+    /// </summary>
     void OnEnable()
     {
         // Suscribirse a eventos de Whisper
@@ -49,6 +53,9 @@ public class OllamaUI : MonoBehaviour
         }
     }
 
+    ///  <summary>
+    /// Se desuscribe de los eventos de Whisper al deshabilitar el objeto para evitar fugas de memoria.
+    /// </summary>
     void OnDisable()
     {
         // Desuscribirse de eventos de Whisper
@@ -58,19 +65,27 @@ public class OllamaUI : MonoBehaviour
         }
     }
 
-    // Eventos de Whisper
+    /// <summary>
+    /// Maneja el evento de error en Whisper.
+    /// </summary>
     private void OnWhisperFailed()
     {
         Debug.Log("Whisper falló, usando el texto por defecto.");
         StartCoroutine(DelayedSendFromWhisper(0.1f, texto));  // Enviar texto por defecto al LLM
     }
 
+    /// <summary>
+    /// Maneja el evento de transcripción exitosa en Whisper.
+    /// </summary>
     private void OnWhisperTranscribed()
     {
         string prompt = whisperUI.outputText;
         StartCoroutine(DelayedSendFromWhisper(1.5f, prompt)); // Enviar transcripción al LLM tras pequeño delay
     }
 
+    /// <summary>
+    /// Corrutina que espera un delay antes de enviar el mensaje al LLM. Convierte el prompt en un formato seguro para JSON y construye el payload para la API de Ollama.
+    /// </summary>
     private IEnumerator DelayedSendFromWhisper(float delay, string prompt)
     {
         yield return new WaitForSeconds(delay);
@@ -102,7 +117,9 @@ public class OllamaUI : MonoBehaviour
         StartCoroutine(SendMessageToChatbot(jsonPayload, true));
     }
 
-    // Corrutina que llama al LLM
+    /// <summary>
+    /// Corrutina que envía el mensaje al chatbot (Ollama) usando UnityWebRequest. Procesa la respuesta para extraer el contenido y mostrarlo con efecto máquina de escribir. También detecta la palabra clave "palanca" para disparar un evento.
+    /// </summary>
     public IEnumerator SendMessageToChatbot(string jsonPayload, bool isRawPayload = false)
     {
         Debug.Log("Entra en OllamaUI con mensaje: " + jsonPayload);
@@ -151,7 +168,9 @@ public class OllamaUI : MonoBehaviour
         }
     }
 
-    // Efecto máquina de escribir
+    /// <summary>
+    /// Efecto máquina de escribir
+    /// </summary>
     private IEnumerator TypewriterEffect(string fullText)
     {
         floatingText.SetText("");  // Limpiar texto previo

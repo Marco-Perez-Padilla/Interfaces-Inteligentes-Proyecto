@@ -18,10 +18,10 @@ public class TriggerNotificator : MonoBehaviour
     public event TriggerEvent OnPlayerExited;    // Evento al salir del trigger
 
     public string targetTag = "Player";          // Etiqueta del objeto a detectar
-    //public bool notifyOnlyOnce = true;          // Notificar solo la primera vez (opcional)
 
-    //private bool notified = false;              // Control interno para notifyOnlyOnce
-
+    /// <summary>
+    /// Asegura que el BoxCollider esté configurado como trigger. Si no se encuentra, muestra una advertencia.
+    /// </summary>
     void Awake()
     {
         // Busca específicamente el BoxCollider añadido por PathSurfaceBuilder.
@@ -41,6 +41,9 @@ public class TriggerNotificator : MonoBehaviour
         );
     }
 
+    /// <summary>
+    /// Detecta cuando un objeto con la etiqueta objetivo entra o sale del trigger y dispara los eventos correspondientes.
+    /// </summary>
     private void OnTriggerEnter(Collider other)
     {
         if (!HasTargetTagInHierarchy(other.transform))
@@ -48,6 +51,9 @@ public class TriggerNotificator : MonoBehaviour
         OnPlayerEntered?.Invoke();
     }
 
+    ///  <summary>
+    ///  Detecta cuando un objeto con la etiqueta objetivo sale del trigger y dispara el evento correspondiente.
+    ///  </summary>
     private void OnTriggerExit(Collider other)
     {
         if (!HasTargetTagInHierarchy(other.transform))
@@ -55,6 +61,9 @@ public class TriggerNotificator : MonoBehaviour
         OnPlayerExited?.Invoke();
     }
 
+    ///  <summary>
+    ///  Verifica si el objeto o alguno de sus padres tiene la etiqueta objetivo.
+    /// </summary>
     private bool HasTargetTagInHierarchy(Transform t)
     {
         while (t != null)

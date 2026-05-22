@@ -1,13 +1,14 @@
 using UnityEngine;
 
-/// <summary>
-/// Se suscribe a LegacyPieceApplier.OnPiecesInstantiated y añade
-/// automáticamente un BoxCollider + TriggerNotificator a cada pieza
-/// del mapa para que EnemySpawner pueda detectar al jugador.
-///
-/// Coloca este script en un GameObject vacío en la escena junto al
-/// resto de managers (EnemySpawner, LegacyPieceApplier, etc).
-/// </summary>
+/**
+ * @file: PieceTriggerSetup.cs
+ * @brief: Configura zonas trigger y de ruido para las piezas del mapa.
+ *
+ * Notas:
+ * - Las zonas trigger notifican cuándo el jugador entra/sale de ellas.
+ * - Las zonas de ruido generan eventos de detección de sonido.
+ */
+
 public class PieceTriggerSetup : MonoBehaviour
 {
     [Header("Collider Settings")]
@@ -32,6 +33,13 @@ public class PieceTriggerSetup : MonoBehaviour
     [SerializeField] private float coneAngle = 60f;
     [SerializeField] private float innerExclusionRadius = 2f;
 
+    /// <summary>
+    /// Modos de configuración de zonas:
+    /// - AlwaysTrigger: Todas las piezas tienen TriggerNotificator.
+    /// - AlwaysNoise: Todas las piezas tienen NoiseDetector.
+    /// - AlwaysBoth: Todas las piezas tienen ambos componentes.
+    /// - Random: Cada pieza tiene una probabilidad de ser zona de ruido o trigger.
+    /// </summary>
     private enum ZoneMode
     {
         AlwaysTrigger,
@@ -40,9 +48,17 @@ public class PieceTriggerSetup : MonoBehaviour
         Random
     }
 
+    /// <summary>
+    /// Se suscribe al evento de instanciación de piezas para configurar las zonas trigger y de ruido una vez que las piezas estén listas en la escena.
+    /// Se desuscribe al deshabilitar para evitar fugas de memoria.
+    /// </summary>
     void OnEnable() => LegacyPieceApplier.OnPiecesInstantiated += OnPiecesReady;
     void OnDisable() => LegacyPieceApplier.OnPiecesInstantiated -= OnPiecesReady;
 
+    /// <summary>
+    /// Configura las zonas trigger y de ruido para cada pieza del mapa según el modo seleccionado
+    /// y las opciones configuradas. Añade los componentes necesarios a cada pieza y cuenta cuántas zonas se han configurado.
+    /// </summary>
     void OnPiecesReady()
     {
         if (piecesContainer == null)
@@ -98,11 +114,13 @@ public class PieceTriggerSetup : MonoBehaviour
         Debug.Log($"[PieceTriggerSetup] Zonas configuradas: {count} piezas.");
     }
 
+    ///  <summary>
+    /// Añade un NoiseDetector a la pieza y, si npcPrefab está asignado, también añade un NPCNoiseSpawner configurado con las opciones especificadas para generar enemigos cuando se detecte ruido en esa zona.
+    /// </summary>
     private void AddNoiseZone(Transform piece)
     {
         piece.gameObject.AddComponent<NoiseDetector>();
 
-        // Solo añadir NPCNoiseSpawner si hay prefab configurado
         if (npcPrefab == null)
         {
             Debug.LogWarning($"[PieceTriggerSetup] {piece.name} es zona de ruido pero npcPrefab no está asignado.");

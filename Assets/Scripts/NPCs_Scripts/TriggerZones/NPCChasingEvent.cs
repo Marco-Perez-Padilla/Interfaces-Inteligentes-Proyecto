@@ -1,5 +1,15 @@
 using UnityEngine;
 
+/**
+ * @file: NPCChasingEvent.cs
+ * @brief: Controla el comportamiento de persecución de un NPC cuando el jugador entra en una zona trigger.
+ *
+ * Notas:
+ * - El NPC comenzará a perseguir al jugador cuando este entre en la zona de activación.
+ * - El NPC tendrá una velocidad de persecución basada en la velocidad del jugador.
+ * - El NPC dejará de perseguir al jugador después de un tiempo determinado.
+ */
+
 public class NPCChasingEvent : MonoBehaviour
 {
     [Header("References")]
@@ -19,12 +29,19 @@ public class NPCChasingEvent : MonoBehaviour
     private float chaseTimer = 0f;
     private float npcSpeed = 0f;
 
+    /// <summary>
+    /// Configura el Rigidbody para que solo gire en el eje Y.
+    /// </summary>
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
     }
 
+    /// <summary>
+    /// Se suscribe a los eventos del TriggerNotificator para iniciar y detener la persecución.
+    /// También inicia la persecución inmediatamente si el jugador ya está presente.
+    /// </summary>
     void Start()
     {
         if (triggerZone != null)
@@ -34,7 +51,7 @@ public class NPCChasingEvent : MonoBehaviour
                 triggerZone.OnPlayerExited += StopChase;
         }
 
-        // Perseguir inmediatamente si tenemos player
+        // Fallback
         if (player != null)
         {
             npcSpeed = speedTreshold;
@@ -42,6 +59,9 @@ public class NPCChasingEvent : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Se asegura de desuscribirse de los eventos para evitar errores si el objeto es destruido mientras los eventos aún están activos.
+    /// </summary>
     void OnDestroy()
     {
         if (triggerZone == null) return;
@@ -49,6 +69,9 @@ public class NPCChasingEvent : MonoBehaviour
         triggerZone.OnPlayerExited -= StopChase;
     }
 
+    /// <summary>
+    /// Controla el temporizador de persecución y detiene la persecución cuando el tiempo se agota.
+    /// </summary>
     void Update()
     {
         if (!chasing || chaseDuration < 1f) return;
@@ -56,6 +79,9 @@ public class NPCChasingEvent : MonoBehaviour
         if (chaseTimer <= 0f) StopChase();
     }
 
+    /// <summary>
+    /// Mueve al NPC hacia el jugador y lo rota para que mire en la dirección del movimiento.
+    /// </summary>
     void FixedUpdate()
     {
         if (!chasing || player == null) return;
@@ -78,6 +104,9 @@ public class NPCChasingEvent : MonoBehaviour
         }
     }
 
+    ///  <summary>
+    ///  Inicia la persecución cuando el jugador entra en la zona trigger, ajustando la velocidad del NPC según la velocidad del jugador.
+    ///  </summary>
     void OnPlayerEnteredTrigger()
     {
         if (player == null)
@@ -92,6 +121,9 @@ public class NPCChasingEvent : MonoBehaviour
         StartChase();
     }
 
+    ///  <summary>
+    ///  Inicia la persecución y resetea el temporizador.
+    /// </summary>
     void StartChase()
     {
         chasing = true;
@@ -99,6 +131,9 @@ public class NPCChasingEvent : MonoBehaviour
             chaseTimer = chaseDuration;
     }
 
+    ///  <summary>
+    ///  Detiene la persecución y resetea el temporizador.
+    /// </summary>
     public void StopChase()
     {
         chasing = false;
@@ -106,6 +141,9 @@ public class NPCChasingEvent : MonoBehaviour
         rb.linearVelocity = Vector3.zero;
     }
 
+    /// <summary>
+    /// Obtiene la velocidad actual del jugador. Si no se puede obtener, devuelve un valor predeterminado.
+    /// </summary>
     float GetPlayerSpeed()
     {
         if (player == null) return 5f;

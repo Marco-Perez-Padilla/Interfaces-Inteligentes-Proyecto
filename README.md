@@ -297,6 +297,8 @@ Las siguientes tareas fueron acordadas en común antes del inicio del desarrollo
 - [`PlaceTriggerSetup`](Assets/Scripts/NPCs_Scripts/PlaceTriggerSetup.cs): Asignación de los notificadores de eventos a las piezas del túnel.
 - [`gyro`](Assets/Scripts/NPCs_Scripts/Movement/gyro.cs): Uso de giroscopio para reconocer los grados de orientación respecto al Norte del juego.
 - [`CartControl.inputactions`](Assets/CartControl.inputactions): mapeado multi-dispositivo de la vagoneta (expansiónde la versión inicial para ordenador).
+- [`CartVRFeedback.cs`](Assets/Scripts/GamePlay/CartVRFeedback.cs): encargado de enviar impulsos hápticos en respuesta a eventos.
+- [`XRFollowCart.cs`](Assets/Scripts/GamePlay/XRFollowCart.cs): seguimiento del jugador a la vagoneta. Compatible con cámara VR.
 - Integración de XR Origin y mapeado VR de todas las acciones existentes.
 
 Scripts desarrollados para debug:
@@ -420,6 +422,13 @@ Scripts desarrollados para debug:
 | Script | Descripción |
 |--------|-------------|
 | [`PlaceTriggerSetup.cs`](Assets/Scripts/NPCs_Scripts/PlaceTriggerSetup.cs) | Asignación de notificadores a cada pieza generada |
+
+#### `Assets/Scripts/Gameplay/`
+
+| Script | Descripción | Objeto en escena |
+|--------|-------------|-----------------|
+| [`XRFollowCart.cs`](Assets/Scripts/Gameplay/XRFollowCart.cs) | Lógica que hace que el jugador siga a la vagoneta cuando éste se encuentra montado en la misma. Da la sensación de estar sentado en la misma, y es compatible con VR | XRFollowConroller |
+| [`CartVRFeedback.cs`](Assets/Scripts/Gameplay/CartVRFeedback.cs) | Envía impulsos hápticos a los mandos cuando se disparan los eventos de aceleración y frenado de la vagoneta | Vagoneta |
 
 #### `Assets/Flashlight_Scripts/` y `Assets/Flashlight_InputActions/`
 

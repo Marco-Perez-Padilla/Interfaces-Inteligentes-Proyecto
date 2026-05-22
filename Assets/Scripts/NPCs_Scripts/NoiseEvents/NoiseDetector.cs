@@ -43,16 +43,27 @@ public class NoiseDetector : MonoBehaviour
     private bool isRecording = false;
     private Transform playerTransform; 
 
+    /// <summary>
+    /// Configura el collider del GameObject como trigger para detectar la entrada y salida del jugador.
+    /// </summary>
     void Awake()
     {
         GetComponent<Collider>().isTrigger = true;
     }
 
+    ///  <summary>
+    ///  Solicita permiso para usar el micrófono si aún no se ha concedido. Esto es necesario para que la detección de ruido funcione correctamente.
+    ///  </summary>
     void Start()
     {
         if (!Permission.HasUserAuthorizedPermission(Permission.Microphone))
             Permission.RequestUserPermission(Permission.Microphone);
     }
+
+    ///  <summary>
+    ///  Inicia la grabación del micrófono cuando el jugador entra en el trigger y detiene la grabación cuando el jugador sale del trigger.
+    ///  La detección de ruido se realiza continuamente mientras el jugador esté dentro del trigger.
+    /// </summary>
     void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Player")) return;
@@ -60,6 +71,10 @@ public class NoiseDetector : MonoBehaviour
         StartRecording();
     }
 
+    ///  <summary>
+    ///  Detiene la grabación del micrófono cuando el jugador sale del trigger y resetea la referencia al transform del jugador.
+    ///  Esto asegura que la detección de ruido solo ocurra mientras el jugador esté dentro del trigger y evita que se detecten ruidos irrelevantes cuando el jugador no está presente.
+    ///  </summary>
     void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Player")) return;
@@ -67,6 +82,10 @@ public class NoiseDetector : MonoBehaviour
         StopRecording();
     }
 
+    /// <summary>
+    /// Inicia la grabación del micrófono utilizando el primer dispositivo disponible. Configura el clip de audio para grabar en bucle durante un tiempo determinado con una frecuencia de muestreo específica.
+    /// Esto permite que la detección de ruido se realice continuamente mientras el jugador esté dentro del trigger.
+    /// </summary>
     void StartRecording()
     {
         if (!Permission.HasUserAuthorizedPermission(Permission.Microphone)) return;
@@ -76,6 +95,9 @@ public class NoiseDetector : MonoBehaviour
         isRecording = true;
     }
 
+    ///  <summary>
+    ///  Detiene la grabación del micrófono y libera los recursos asociados. Esto asegura que la detección de ruido se detenga correctamente cuando el jugador salga del trigger y evita que el micrófono siga grabando innecesariamente, lo que podría afectar el rendimiento o la privacidad.
+    ///  </summary>
     void StopRecording()
     {
         if (!isRecording) return;
@@ -83,6 +105,10 @@ public class NoiseDetector : MonoBehaviour
         isRecording = false;
     }
 
+    /// <summary>
+    /// Analiza los datos de audio grabados para calcular la intensidad del ruido. Si la intensidad supera el umbral definido, dispara los eventos correspondientes con la posición del jugador (o del detector si el jugador no está presente) y la intensidad del ruido.
+    /// Esto permite que otros NPCs o sistemas se suscriban a estos eventos y reaccionen de manera adecuada según la intensidad del ruido detectado, creando una experiencia de juego más inmersiva y dinámica.
+    /// </summary>
     void Update()
     {
         if (!isRecording || clip == null) return;

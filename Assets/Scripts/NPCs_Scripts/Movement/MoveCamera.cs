@@ -20,12 +20,19 @@ public class MoveCamera : MonoBehaviour
 
     private float xRotation = 0f;         // Rotación vertical acumulada de la cámara
 
+    /// <summary>
+    /// Bloquea y oculta el cursor al iniciar la escena para una experiencia de cámara en primera persona. Esto permite que el jugador controle la cámara sin que el cursor interfiera o se salga de la ventana del juego, proporcionando una experiencia más inmersiva y fluida.
+    /// </summary>
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
+    /// <summary>
+    /// Lee la entrada del ratón para rotar la cámara y el cuerpo del jugador. La rotación vertical (pitch) se aplica a la cámara con límites para evitar giros extremos, mientras que la rotación horizontal (yaw) se aplica al cuerpo del jugador. Esto permite que el jugador mire alrededor de manera natural mientras mantiene el control sobre la dirección en la que se mueve.
+    /// Si el dispositivo de entrada del ratón no está disponible, el método simplemente retorna sin realizar ninguna acción, lo que permite que la cámara permanezca en su posición actual sin causar errores o comportamientos inesperados.
+    /// </summary>
     void Update()
     {
         if (Mouse.current == null) return;

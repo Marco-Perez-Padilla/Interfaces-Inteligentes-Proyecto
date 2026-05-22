@@ -19,11 +19,19 @@ public class MovementWithRigidbody : MonoBehaviour
     private Rigidbody rigid;
     private Vector3 direction;      // Dirección de movimiento calculada a partir del input
 
+    /// <summary>
+    /// Obtiene la referencia al Rigidbody del objeto al iniciar la escena. Esto es necesario para aplicar las fuerzas de movimiento en el método FixedUpdate, asegurando que el movimiento del jugador se integre correctamente con el sistema de física de Unity.
+    /// Si el Rigidbody no está presente, el script añadirá uno automáticamente para evitar errores y garantizar que el movimiento funcione correctamente.
+    /// </summary>
     private void Awake()
     {
         rigid = GetComponent<Rigidbody>();
     }
 
+    /// <summary>
+    /// Lee la entrada del teclado para determinar la dirección de movimiento del jugador. La dirección se normaliza para asegurar que el movimiento tenga una velocidad constante en todas las direcciones, evitando que el jugador se mueva más rápido en diagonal. Esta dirección se almacena para ser aplicada posteriormente en FixedUpdate, donde se maneja la física del movimiento.
+    /// Si el dispositivo de entrada del teclado no está disponible, el método simplemente retorna sin realizar ninguna acción, lo que permite que el jugador permanezca en su posición actual sin causar errores o comportamientos inesperados.
+    /// </summary>
     private void Update()
     {
         float moveX = 0f;
@@ -38,6 +46,10 @@ public class MovementWithRigidbody : MonoBehaviour
         direction = new Vector3(moveX, 0f, moveZ).normalized;
     }
 
+    /// <summary>
+    /// Aplica la velocidad al Rigidbody del jugador en la dirección calculada, manteniendo la componente vertical del Rigidbody para no interferir con la física (gravedad, saltos). Esto se realiza en FixedUpdate para asegurar que el movimiento se integre correctamente con el sistema de física de Unity, proporcionando un movimiento suave y consistente.
+    /// Si la dirección de movimiento es cero (no se presionan teclas), el método simplemente aplica la velocidad actual sin cambios, lo que permite que el jugador permanezca en su posición actual sin causar errores o comportamientos inesperados.
+    /// </summary>
     private void FixedUpdate()
     {
         // Aplicar velocidad manteniendo la componente vertical del Rigidbody

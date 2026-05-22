@@ -3,6 +3,15 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XR;
 using System.Collections.Generic;
 
+/**
+ * @file: CartVRFeedback.cs
+ * @brief: Proporciona retroalimentación háptica al jugador cuando el jugador interactúa con el carrito en un entorno VR.
+ *
+ * Notas:
+ * - La retroalimentación háptica se reproduce solo una vez mientras el dispositivo esté activo.
+ * - El dispositivo debe estar en el mismo GameObject que este script.
+ */
+ 
 public class CartFeedbackVR : MonoBehaviour
 {
     [Header("References")]
@@ -19,6 +28,9 @@ public class CartFeedbackVR : MonoBehaviour
     public AudioClip impulseClip;
     public AudioClip brakeClip;
 
+    /// <summary>
+    /// Subscribes to cart movement events and logs input devices on enable, and unsubscribes on disable.
+    /// </summary>
     void OnEnable()
     {
         if (cartMovement != null)
@@ -30,6 +42,9 @@ public class CartFeedbackVR : MonoBehaviour
         LogInputDevices();
     }
 
+    /// <summary>
+    /// Unsubscribes from cart movement events to prevent memory leaks.
+    /// </summary>
     void OnDisable()
     {
         if (cartMovement != null)
@@ -39,6 +54,9 @@ public class CartFeedbackVR : MonoBehaviour
         }
     }
 
+    /// <summary> 
+    /// Logs the names and IDs of all connected input devices for debugging purposes.
+    /// </summary>
     private void LogInputDevices()
     {
         List<string> deviceNames = new List<string>();
@@ -48,6 +66,9 @@ public class CartFeedbackVR : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles the impulse event by sending haptic feedback to the right controller and playing the impulse sound if available.
+    /// </summary>
     private void OnImpulse()
     {
         SendHapticToDevice("Right", impulseHapticIntensity, impulseHapticDuration);
@@ -57,6 +78,9 @@ public class CartFeedbackVR : MonoBehaviour
         }
     }
 
+    /// <summary> 
+    /// Handles the brake event by sending haptic feedback to the left controller and playing the brake sound if available. 
+    /// </summary>
     private void OnBrake()
     {
         SendHapticToDevice("Left", brakeHapticIntensity, brakeHapticDuration);
@@ -66,6 +90,9 @@ public class CartFeedbackVR : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Sends haptic feedback to the specified hand's controller. If no specific controller is found, it attempts to send feedback to any available controller.
+    /// </summary>
     private void SendHapticToDevice(string hand, float intensity, float duration)
     {
         foreach (var device in InputSystem.devices)

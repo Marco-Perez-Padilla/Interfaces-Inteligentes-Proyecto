@@ -9,8 +9,6 @@ using UnityEngine;
  * - El AudioSource debe estar en el mismo GameObject que este script.
  * - El TriggerNotificator define cuándo el jugador entra en la zona de activación.
  */
-using UnityEngine;
-
 public class NPCAudio : MonoBehaviour
 {
     [Header("References")]
@@ -21,6 +19,9 @@ public class NPCAudio : MonoBehaviour
 
     private AudioSource audioSource;
 
+    /// <summary>
+    /// Asegura que el AudioSource esté configurado correctamente.
+    /// </summary>
     void Awake()
     {
         audioSource = GetComponent<AudioSource>();
@@ -32,20 +33,27 @@ public class NPCAudio : MonoBehaviour
         audioSource.spatialBlend = 0f;
     }
 
-    // OnEnable se llama cada vez que el GO se activa,
-    // pero aquí nos interesa que se llame DESPUÉS de Setup()
+    /// <summary>
+    /// Se suscribe al evento del TriggerNotificator para reproducir el sonido cuando el jugador entra en la zona.
+    /// </summary>
     void OnEnable()
     {
         if (triggerZone != null)
             triggerZone.OnPlayerEntered += PlaySound;
     }
 
+    /// <summary> 
+    /// Se desuscribe del evento para evitar llamadas a PlaySound después de que el objeto esté deshabilitado o destruido. 
+    /// </summary>
     void OnDisable()
     {
         if (triggerZone != null)
             triggerZone.OnPlayerEntered -= PlaySound;
     }
 
+    /// <summary>
+    /// Se asegura de desuscribirse del evento para evitar errores si el objeto es destruido mientras el evento aún está activo.
+    /// </summary>
     void OnDestroy()
     {
         if (triggerZone != null)
@@ -61,11 +69,13 @@ public class NPCAudio : MonoBehaviour
         triggerZone = trigger;
         audioClip = clip;
 
-        // Forzar resuscripción porque OnEnable ya se ejecutó con triggerZone null
         if (triggerZone != null)
             triggerZone.OnPlayerEntered += PlaySound;
     }
 
+    /// <summary>
+    /// Reproduce el sonido si no se está reproduciendo actualmente.
+    /// </summary>
     void PlaySound()
     {
         Debug.Log($"[NPCAudio] PlaySound en {gameObject.name}, clip: {audioClip}");

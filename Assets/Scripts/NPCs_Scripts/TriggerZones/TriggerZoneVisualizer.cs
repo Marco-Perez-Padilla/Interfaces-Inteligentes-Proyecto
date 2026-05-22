@@ -1,5 +1,12 @@
 using UnityEngine;
-
+/**
+ * @file: TriggerZoneVisualizer.cs
+ * @brief: Visualiza una zona trigger en la Scene View.
+ *
+ * Notas:
+ * - La visualización solo es visible en la Scene View.
+ * - El color de la representación se asigna automáticamente según el tipo de trigger.
+ */
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

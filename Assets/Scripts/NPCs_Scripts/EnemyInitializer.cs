@@ -38,6 +38,8 @@ public class EnemyInitializer : MonoBehaviour
         AddContactTriggerCollider();
         EnsureRigidbody();
         DisableRootMotion();
+        PlayerEnemyCollisionEvent collision = gameObject.AddComponent<PlayerEnemyCollisionEvent>();
+        Debug.Log($"[EnemyInitializer] PlayerEnemyCollisionEvent añadido a {gameObject.name}");
 
         TriggerNotificator nearestTrigger = overriddenTrigger ?? FindNearestTriggerNotificator();
         Transform playerTransform = overriddenPlayer ?? FindPlayerTransform();
@@ -58,6 +60,11 @@ public class EnemyInitializer : MonoBehaviour
         SphereCollider contactCollider = gameObject.AddComponent<SphereCollider>();
         contactCollider.isTrigger = true;
         contactCollider.radius = contactTriggerRadius;
+
+        // 🆕 Collider sólido para que el SeatPoint trigger lo detecte
+        SphereCollider solidCollider = gameObject.AddComponent<SphereCollider>();
+        solidCollider.isTrigger = false;
+        solidCollider.radius = contactTriggerRadius * 0.5f; // un poco más pequeño
     }
 
     private void EnsureRigidbody()

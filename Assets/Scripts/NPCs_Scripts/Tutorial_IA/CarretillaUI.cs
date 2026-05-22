@@ -17,6 +17,7 @@ public class CarretillaUI : MonoBehaviour
 
     private bool playerInside = false;
     private bool uiVisible = false;
+    private bool manuallyClosed = false; 
 
     private void Start()
     {
@@ -50,8 +51,9 @@ public class CarretillaUI : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
         playerInside = true;
-        // Solo mostrar si no está ya montado
-        if (!uiVisible)
+        
+        // Solo mostrar automáticamente si el jugador NO lo cerró manualmente
+        if (!uiVisible && !manuallyClosed)
             ShowUI();
     }
 
@@ -67,6 +69,12 @@ public class CarretillaUI : MonoBehaviour
         if (!playerInside) return;
         uiVisible = !uiVisible;
         uiPanel.SetActive(uiVisible);
+        
+        if (!uiVisible)
+            manuallyClosed = true;
+        else
+            manuallyClosed = false;
+        
         if (uiVisible)
             UpdatePanelPosition();
     }

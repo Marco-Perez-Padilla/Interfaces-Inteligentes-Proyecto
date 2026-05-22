@@ -9,10 +9,9 @@ using UnityEngine.SceneManagement;
 public class PlayerEnemyCollisionEvent : MonoBehaviour
 {
     [Header("Tags")]
-    public string enemyTag = "Enemy";
+    public string playerTag = "Seat";
 
     [Header("Hold Time")]
-    [Tooltip("Segundos de contacto sostenido antes de reiniciar")]
     public float holdTime = 3f;
 
     private float contactTimer = 0f;
@@ -21,7 +20,6 @@ public class PlayerEnemyCollisionEvent : MonoBehaviour
     void Update()
     {
         if (!inContact) return;
-
         contactTimer += Time.deltaTime;
         if (contactTimer >= holdTime)
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -29,13 +27,17 @@ public class PlayerEnemyCollisionEvent : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag(enemyTag)) return;
+        Debug.Log($"[PECE] TriggerEnter: {other.name} | tag: {other.tag}");
+        if (!other.CompareTag(playerTag)) return;
+        Debug.Log("[PECE] Contacto con Player detectado, iniciando timer");
         inContact = true;
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (!other.CompareTag(enemyTag)) return;
+        Debug.Log($"[PECE] TriggerExit: {other.name} | tag: {other.tag}");
+        if (!other.CompareTag(playerTag)) return;
+        Debug.Log("[PECE] Player salió, reseteando timer");
         inContact = false;
         contactTimer = 0f;
     }

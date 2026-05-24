@@ -232,13 +232,19 @@ Directamente (uso directo del giroscopio):
 
 ---
 
-## 6. GIF de ejecución
+## 6. GIFs de ejecución
 
-> *(Pendiente de añadir — insertar GIF animado de la ejecución aquí)*
+A continuación se muestran dos GIFs animados:
 
-```
-![Demo Tunnel Horror](docs/demo.gif)
-```
+- Correspondiente a la zona de tutorial (Velocidad del GIF es 3x).
+
+![GIF_Tutorial](GIFs/GIF_Tutorial.gif)
+
+
+- Correspondiente a una ejecución. Se termina al colisionar los enemigos con nuestro jugador, lo que reinicia la escena (Velocidad del GIF es 3x).
+
+![GIF_Ejecucion](GIFs/GIF_Ejecucion.gif)
+
 
 ---
 
